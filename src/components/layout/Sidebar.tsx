@@ -20,6 +20,7 @@ const navItems: NavItem[] = [
     { key: "employees", href: "/employees", icon: "bx-cog" },
     { key: "systemLog", href: "/system-log", icon: "bx-cog" },
     { key: "financialSystem", href: "/financial-system/trial-balance", icon: "bx-stats" },
+    { key: "settings", href: "/settings", icon: "bx-cog" },
 ];
 
 export default function Sidebar() {

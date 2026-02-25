@@ -36,7 +36,8 @@
         "dailyJournal": "Daily Journal",
         "employees": "Employees",
         "systemLog": "System Log",
-        "financialSystem": "Financial System"
+        "financialSystem": "Financial System",
+        "settings": "Settings"
     },
     "pages": {
         "overview": "Overview",
@@ -271,5 +272,37 @@
         "confirmPassword": "Confirm New Password",
         "submit": "Reset Password",
         "success": "Password reset successfully!"
+    },
+    "settings": {
+        "title": "Settings",
+        "tabs": {
+            "account": "Account Settings",
+            "security": "Account Security",
+            "admins": "Admin Management"
+        },
+        "account": {
+            "title": "Account Settings",
+            "subtitle": "Manage your personal information",
+            "name": "Full Name",
+            "email": "Email Address",
+            "username": "Username"
+        },
+        "security": {
+            "title": "Account Security",
+            "subtitle": "Secure your account with a strong password",
+            "currentPassword": "Current Password",
+            "newPassword": "New Password",
+            "confirmPassword": "Confirm New Password"
+        },
+        "admins": {
+            "title": "Admin Management",
+            "subtitle": "Manage system administrators and their permissions",
+            "table": {
+                "name": "Name",
+                "username": "Username",
+                "role": "Role",
+                "status": "Status"
+            }
+        }
     }
 }
