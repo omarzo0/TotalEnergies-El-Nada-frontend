@@ -1,0 +1,275 @@
+{
+    "app": {
+        "title": "Total Al-Nadi Station",
+        "login": "Login",
+        "logout": "Logout"
+    },
+    "login": {
+        "title": "Total Al-Nadi Station",
+        "username": "Enter username",
+        "password": "Enter password",
+        "submit": "Login"
+    },
+    "overview": {
+        "totalSales": "Total Sales",
+        "totalExpenses": "Total Expenses",
+        "netTreasury": "Net Treasury",
+        "employeeCount": "Employee Count",
+        "salesTrend": "Sales Trend",
+        "expenseDistribution": "Expense Distribution",
+        "insights": "Insights",
+        "insight1": "Sales increased by 15% this week.",
+        "insight2": "Fuel expenses are higher than average.",
+        "weeklySales": "Weekly Sales",
+        "oilSales": "Oil Sales"
+    },
+    "sidebar": {
+        "overview": "Overview",
+        "shiftDiary": "Shift Diary",
+        "oils": "Oils",
+        "expenses": "Expenses",
+        "vouchers": "Vouchers",
+        "deferredClients": "Deferred Clients",
+        "treasuryDiary": "Treasury Diary",
+        "supplyBook": "Supply Book",
+        "treasuryMovement": "Treasury Movement",
+        "dailyJournal": "Daily Journal",
+        "employees": "Employees",
+        "systemLog": "System Log",
+        "financialSystem": "Financial System"
+    },
+    "pages": {
+        "overview": "Overview",
+        "shiftDiary": "Shift Diary",
+        "oilShift": "Oil Shift",
+        "oilStorage": "Oil Storage",
+        "expenses": "Expenses",
+        "vouchers": "Vouchers",
+        "voucherMatching": "Voucher Matching",
+        "deferredClients": "Deferred Clients",
+        "treasuryDiary": "Treasury Diary",
+        "supplyBook": "Supply Book",
+        "balanceMatching": "Balance Matching",
+        "treasuryMovement": "Treasury Movement",
+        "accounts": "Accounts",
+        "dailyJournal": "Daily Journal",
+        "employees": "Employees",
+        "systemLog": "System Log",
+        "financialSystem": "Financial System",
+        "trialBalance": "Trial Balance",
+        "incomeStatement": "Income Statement"
+    },
+    "buttons": {
+        "save": "Save",
+        "attachImage": "Attach Image",
+        "printReport": "Print Report",
+        "search": "Search",
+        "add": "Add",
+        "edit": "Edit",
+        "delete": "Delete",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "addDelete": "Add/Delete",
+        "actions": "Actions"
+    },
+    "modals": {
+        "confirmDeleteTitle": "Confirm Delete",
+        "confirmDeleteMessage": "Are you sure you want to delete this record? This action cannot be undone.",
+        "editRecordTitle": "Edit Record",
+        "createRecordTitle": "Create New Record"
+    },
+    "table": {
+        "shiftDiary": {
+            "pumpNumber": "Pump #",
+            "type": "Type",
+            "start": "Start",
+            "end": "End",
+            "total": "Total"
+        },
+        "oils": {
+            "oilType": "Oil Type",
+            "startBalance": "Opening Balance",
+            "endBalance": "Closing Balance",
+            "incoming": "Incoming",
+            "sold": "Sold",
+            "image": "Image"
+        },
+        "oilStorage": {
+            "oilType": "Oil Type",
+            "startBalance": "Opening Balance",
+            "endBalance": "Closing Balance",
+            "storageIncoming": "Storage Incoming",
+            "image": "Image"
+        },
+        "expenses": {
+            "amount": "Amount",
+            "receipt": "Receipt"
+        },
+        "vouchers": {
+            "entity": "Entity",
+            "serial": "Voucher Serial",
+            "total": "Total",
+            "category": "Category",
+            "price": "Price",
+            "image": "Image"
+        },
+        "voucherMatching": {
+            "total": "Total",
+            "category": "Category",
+            "count": "Count"
+        },
+        "clients": {
+            "amount": "Amount",
+            "receipt": "Receipt",
+            "client": "Client"
+        },
+        "treasuryDiary": {
+            "amount": "Amount",
+            "price": "Price",
+            "quantity": "Quantity",
+            "description": "Description"
+        },
+        "supplyBook": {
+            "standard": "Standard",
+            "end": "End",
+            "pumps": "Pumps",
+            "dispensed": "Dispensed",
+            "incoming": "Incoming",
+            "start": "Start",
+            "date": "Date"
+        },
+        "balanceMatching": {
+            "gasoline95": "Gasoline 95",
+            "gasoline92": "Gasoline 92",
+            "gasoline80": "Gasoline 80",
+            "diesel": "Diesel",
+            "description": "Description"
+        },
+        "treasuryMovement": {
+            "amount": "Amount",
+            "receipt": "Receipt",
+            "description": "Description"
+        },
+        "accounts": {
+            "receipt": "Receipt",
+            "amount": "Amount"
+        },
+        "dailyJournal": {
+            "priceDiff": "Price Diff",
+            "transfer": "Transfer",
+            "description": "Description",
+            "creditor": "Creditor",
+            "debtor": "Debtor"
+        },
+        "employees": {
+            "name": "Name",
+            "nationalId": "National ID",
+            "phone": "Phone",
+            "position": "Position",
+            "salary": "Salary"
+        },
+        "systemLog": {
+            "modifiedTo": "Modified To",
+            "modifiedFrom": "Modified From",
+            "username": "Username",
+            "type": "Type",
+            "time": "Time",
+            "date": "Date"
+        },
+        "financial": {
+            "accountName": "Account Name",
+            "debit": "Debit",
+            "credit": "Credit",
+            "balance": "Balance"
+        }
+    },
+    "labels": {
+        "selectOilType": "Select Oil Type",
+        "startBalance": "Opening Balance",
+        "endBalance": "Closing Balance",
+        "incoming": "Incoming",
+        "sold": "Sold",
+        "storageIncoming": "Storage Incoming",
+        "startBalanceShort": "Start Balance",
+        "endBalanceShort": "End Balance",
+        "receipt": "Receipt",
+        "enterAmount": "Enter Amount",
+        "enterCategory": "Enter Category",
+        "enterSerial": "Enter Voucher Serial",
+        "entity": "Entity",
+        "selectFuelType": "Select Fuel Type",
+        "client": "Client",
+        "amount": "Amount",
+        "description": "Description",
+        "enterIncoming": "Enter Incoming",
+        "enterStart": "Enter Start",
+        "accountant": "Accountant",
+        "enterUsername": "Enter Username",
+        "enterName": "Enter Name",
+        "nationalId": "Enter National ID",
+        "phone": "Enter Phone Number",
+        "position": "Enter Position",
+        "salary": "Enter Salary",
+        "name": "Name",
+        "nationalIdShort": "National ID",
+        "phoneShort": "Phone",
+        "positionShort": "Position",
+        "salaryShort": "Salary"
+    },
+    "fuelTypes": {
+        "diesel": "Diesel",
+        "gasoline95": "Gasoline 95",
+        "gasoline92": "Gasoline 92",
+        "gasoline80": "Gasoline 80"
+    },
+    "entities": {
+        "police": "Police",
+        "association": "Association"
+    },
+    "statementTypes": {
+        "clientAccount": "Client Account"
+    },
+    "treasuryItems": {
+        "gasoline80": "Gasoline 80",
+        "gasoline92": "Gasoline 92",
+        "gasoline95": "Gasoline 95",
+        "oils": "Oils",
+        "total": "Total",
+        "coupons": "Coupons",
+        "deferredClients": "Deferred Clients",
+        "expenses": "Expenses",
+        "net": "Net",
+        "island": "Island",
+        "fromShift": "From Shift",
+        "netCash": "Net Cash"
+    },
+    "balanceItems": {
+        "startBalance": "Start Balance",
+        "incoming": "Incoming",
+        "total": "Total",
+        "dispensed": "Dispensed",
+        "remaining": "Remaining Balance",
+        "pumpGauges": "Pump Gauges",
+        "standard": "Standard"
+    },
+    "employees": {
+        "search": "Search",
+        "add": "Add",
+        "edit": "Edit"
+    },
+    "forgotPassword": {
+        "title": "Forgot Password",
+        "description": "Enter your username to receive a reset link.",
+        "username": "Username",
+        "submit": "Send Reset Link",
+        "backToLogin": "Back to Login",
+        "success": "Reset link sent successfully!"
+    },
+    "resetPassword": {
+        "title": "Reset Password",
+        "password": "New Password",
+        "confirmPassword": "Confirm New Password",
+        "submit": "Reset Password",
+        "success": "Password reset successfully!"
+    }
+}

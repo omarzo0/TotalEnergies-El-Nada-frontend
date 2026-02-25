@@ -1,0 +1,275 @@
+{
+  "app": {
+    "title": "محطه توتال الندي",
+    "login": "دخول",
+    "logout": "تسجيل الخروج"
+  },
+  "login": {
+    "title": "محطه توتال الندي",
+    "username": "أدخل اسم المستخدم",
+    "password": "أدخل كلمه المرور",
+    "submit": "دخول"
+  },
+  "overview": {
+    "totalSales": "إجمالي المبيعات",
+    "totalExpenses": "إجمالي المصاريف",
+    "netTreasury": "صافي الخزينه",
+    "employeeCount": "عدد الموظفين",
+    "salesTrend": "اتجاه المبيعات",
+    "expenseDistribution": "توزيع المصاريف",
+    "insights": "رؤى",
+    "insight1": "زادت المبيعات بنسبة 15٪ هذا الأسبوع.",
+    "insight2": "مصاريف الوقود أعلى من المتوسط.",
+    "weeklySales": "المبيعات الأسبوعية",
+    "oilSales": "مبيعات الزيوت"
+  },
+  "sidebar": {
+    "overview": "نظره عامه",
+    "shiftDiary": "يوميه الورديه",
+    "oils": "الزيوت",
+    "expenses": "المصاريف",
+    "vouchers": "البونات",
+    "deferredClients": "عملاء اجله",
+    "treasuryDiary": "يوميه الخزينه",
+    "supplyBook": "دفتر التموين",
+    "treasuryMovement": "حركه الخزينه",
+    "dailyJournal": "قيد يومي",
+    "employees": "الموظفين",
+    "systemLog": "حركه النظام",
+    "financialSystem": "النظام المالي"
+  },
+  "pages": {
+    "overview": "نظره عامه",
+    "shiftDiary": "يوميه الورديه",
+    "oilShift": "الورديه",
+    "oilStorage": "المخزن",
+    "expenses": "المصاريف",
+    "vouchers": "البونات",
+    "voucherMatching": "مطابقه البونات",
+    "deferredClients": "عملاء أجله",
+    "treasuryDiary": "يوميه الخزينه",
+    "supplyBook": "دفتر التموين",
+    "balanceMatching": "مطابقه الارصده",
+    "treasuryMovement": "حركه الخزينه",
+    "accounts": "الحسابات",
+    "dailyJournal": "قيد يومي",
+    "employees": "الموظفين",
+    "systemLog": "حركه النظام",
+    "financialSystem": "النظام المالي",
+    "trialBalance": "ميزان المراجعة",
+    "incomeStatement": "قائمة الدخل"
+  },
+  "buttons": {
+    "save": "حفظ",
+    "attachImage": "ارفاق صوره",
+    "printReport": "طباعه التقرير",
+    "search": "بحث",
+    "add": "اضافه",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "cancel": "إلغاء",
+    "confirm": "تأكيد",
+    "addDelete": "اضافه/حدف",
+    "actions": "الإجراءات"
+  },
+  "modals": {
+    "confirmDeleteTitle": "تأكيد الحذف",
+    "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.",
+    "editRecordTitle": "تعديل السجل",
+    "createRecordTitle": "إضافة سجل جديد"
+  },
+  "table": {
+    "shiftDiary": {
+      "pumpNumber": "رقم الطلمبه",
+      "type": "النوع",
+      "start": "البدايه",
+      "end": "النهايه",
+      "total": "الاحمالي"
+    },
+    "oils": {
+      "oilType": "نوع الزيت",
+      "startBalance": "رصيد أول",
+      "endBalance": "رصيد آخر",
+      "incoming": "الوارد",
+      "sold": "المباع",
+      "image": "الصورة"
+    },
+    "oilStorage": {
+      "oilType": "نوع الزيت",
+      "startBalance": "رصيد أول",
+      "endBalance": "رصيد آخر",
+      "storageIncoming": "وارد المخزن",
+      "image": "الصورة"
+    },
+    "expenses": {
+      "amount": "المبلغ",
+      "receipt": "السند"
+    },
+    "vouchers": {
+      "entity": "الجهه",
+      "serial": "سريال البونات",
+      "total": "الاجمالي",
+      "category": "الفئه",
+      "price": "السعر",
+      "image": "الصورة"
+    },
+    "voucherMatching": {
+      "total": "الاجمالي",
+      "category": "الفئه",
+      "count": "العدد"
+    },
+    "clients": {
+      "amount": "المبلغ",
+      "receipt": "السند",
+      "client": "العميل"
+    },
+    "treasuryDiary": {
+      "amount": "المبلغ",
+      "price": "السعر",
+      "quantity": "الكميه",
+      "description": "البيان"
+    },
+    "supplyBook": {
+      "standard": "المعيار",
+      "end": "النهايه",
+      "pumps": "الطلمبات",
+      "dispensed": "المنصرف",
+      "incoming": "الوارد",
+      "start": "البدايه",
+      "date": "التاريخ"
+    },
+    "balanceMatching": {
+      "gasoline95": "بنزين 95",
+      "gasoline92": "بنزين 92",
+      "gasoline80": "بنزين 80",
+      "diesel": "سولار",
+      "description": "البيان"
+    },
+    "treasuryMovement": {
+      "amount": "المبلغ",
+      "receipt": "السند",
+      "description": "البيان"
+    },
+    "accounts": {
+      "receipt": "السند",
+      "amount": "المبلغ"
+    },
+    "dailyJournal": {
+      "priceDiff": "فرق السعر",
+      "transfer": "نقل",
+      "description": "البيان",
+      "creditor": "دائن",
+      "debtor": "مدين"
+    },
+    "employees": {
+      "name": "الاسم",
+      "nationalId": "الرقم القومي",
+      "phone": "رقم الهاتف",
+      "position": "الوظيفه",
+      "salary": "المرتب"
+    },
+    "systemLog": {
+      "modifiedTo": "التعديل الي",
+      "modifiedFrom": "التعديل من",
+      "username": "اسم المستخدم",
+      "type": "النوع",
+      "time": "الوقت",
+      "date": "التاريخ"
+    },
+    "financial": {
+      "accountName": "اسم الحساب",
+      "debit": "مدين",
+      "credit": "دائن",
+      "balance": "الرصيد"
+    }
+  },
+  "labels": {
+    "selectOilType": "اختر نوع الزيت",
+    "startBalance": "رصيد اول المده",
+    "endBalance": "رصيد اخر المده",
+    "incoming": "وارد",
+    "sold": "مباع",
+    "storageIncoming": "وارد مخزن",
+    "startBalanceShort": "رصيد البدايه",
+    "endBalanceShort": "رصيد النهايه",
+    "receipt": "السند",
+    "enterAmount": "ادخل المبلغ",
+    "enterCategory": "ادخل الفئه",
+    "enterSerial": "ادخل سريال البون",
+    "entity": "الجهه",
+    "selectFuelType": "اختر نوع البنزين",
+    "client": "العميل",
+    "amount": "المبلغ",
+    "description": "البيان",
+    "enterIncoming": "ادخل الوارد",
+    "enterStart": "ادخل البدايه",
+    "accountant": "المحاسب",
+    "enterUsername": "ادخل اسم المستخدم",
+    "enterName": "ادخل الاسم",
+    "nationalId": "أدخل الرقم القومي",
+    "phone": "أدخل رقم الهاتف",
+    "position": "أدخل الوظيفه",
+    "salary": "أدخل المرتب",
+    "name": "الاسم",
+    "nationalIdShort": "الرقم القومي",
+    "phoneShort": "رقم الهاتف",
+    "positionShort": "الوظيفه",
+    "salaryShort": "المرتب"
+  },
+  "fuelTypes": {
+    "diesel": "سولار",
+    "gasoline95": "بنزين 95",
+    "gasoline92": "بنزين 92",
+    "gasoline80": "بنزين 82"
+  },
+  "entities": {
+    "police": "شرطه",
+    "association": "جمعيه"
+  },
+  "statementTypes": {
+    "clientAccount": "ح/العملاء"
+  },
+  "treasuryItems": {
+    "gasoline80": "بنزين 80",
+    "gasoline92": "بنزين 92",
+    "gasoline95": "بنزين 95",
+    "oils": "زيوت",
+    "total": "الاجمالي",
+    "coupons": "بونات",
+    "deferredClients": "عملائ أجله",
+    "expenses": "المصاريف",
+    "net": "الصافي",
+    "island": "الجزيره",
+    "fromShift": "من الورديه",
+    "netCash": "صافي النقديه"
+  },
+  "balanceItems": {
+    "startBalance": "رصيد البدايه",
+    "incoming": "الوارد",
+    "total": "الاجمالي",
+    "dispensed": "المنصرف",
+    "remaining": "الرصيد المتبقي",
+    "pumpGauges": "عيارات الطلمبات",
+    "standard": "المعيار"
+  },
+  "employees": {
+    "search": "بحث",
+    "add": "اضافه",
+    "edit": "تعديل"
+  },
+  "forgotPassword": {
+    "title": "نسيت كلمة المرور",
+    "description": "أدخل اسم المستخدم لتلقي رابط إعادة التعيين.",
+    "username": "اسم المستخدم",
+    "submit": "إرسال رابط إعادة التعيين",
+    "backToLogin": "العودة لتسجيل الدخول",
+    "success": "تم إرسال رابط إعادة التعيين بنجاح!"
+  },
+  "resetPassword": {
+    "title": "إعادة تعيين كلمة المرور",
+    "password": "كلمة المرور الجديدة",
+    "confirmPassword": "تأكيد كلمة المرور الجديدة",
+    "submit": "إعادة تعيين كلمة المرور",
+    "success": "تمت إعادة تعيين كلمة المرور بنجاح!"
+  }
+}
