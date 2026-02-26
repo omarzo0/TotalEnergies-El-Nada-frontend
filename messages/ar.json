@@ -58,7 +58,8 @@
     "systemLog": "حركه النظام",
     "financialSystem": "النظام المالي",
     "trialBalance": "ميزان المراجعة",
-    "incomeStatement": "قائمة الدخل"
+    "incomeStatement": "قائمة الدخل",
+    "settings": "الإعدادات"
   },
   "buttons": {
     "save": "حفظ",

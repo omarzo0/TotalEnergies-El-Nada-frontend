@@ -58,7 +58,8 @@
         "systemLog": "System Log",
         "financialSystem": "Financial System",
         "trialBalance": "Trial Balance",
-        "incomeStatement": "Income Statement"
+        "incomeStatement": "Income Statement",
+        "settings": "Settings"
     },
     "buttons": {
         "save": "Save",
