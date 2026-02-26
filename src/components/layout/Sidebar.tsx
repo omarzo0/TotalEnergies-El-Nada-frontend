@@ -9,6 +9,7 @@ import { NavItem } from "@/types";
 const navItems: NavItem[] = [
     { key: "overview", href: "/overview", icon: "bxs-home" },
     { key: "shiftDiary", href: "/shift-diary", icon: "bxs-book-add" },
+    { key: "benzene", href: "/benzene", icon: "bx-gas-pump" },
     { key: "oils", href: "/oils/shift", icon: "bx-folder-plus" },
     { key: "expenses", href: "/expenses", icon: "bx-folder-plus" },
     { key: "vouchers", href: "/vouchers/list", icon: "bxs-file-plus" },

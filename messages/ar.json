@@ -34,6 +34,7 @@
     "supplyBook": "دفتر التموين",
     "treasuryMovement": "حركه الخزينه",
     "dailyJournal": "قيد يومي",
+    "benzene": "البنزين",
     "employees": "الموظفين",
     "systemLog": "حركه النظام",
     "financialSystem": "النظام المالي",
@@ -53,6 +54,7 @@
     "balanceMatching": "مطابقه الارصده",
     "treasuryMovement": "حركه الخزينه",
     "accounts": "الحسابات",
+    "benzene": "البنزين",
     "dailyJournal": "قيد يومي",
     "employees": "الموظفين",
     "systemLog": "حركه النظام",
@@ -183,6 +185,16 @@
       "debit": "مدين",
       "credit": "دائن",
       "balance": "الرصيد"
+    },
+    "benzene": {
+      "type": "نوع البنزين",
+      "startBalance": "رصيد البداية",
+      "endBalance": "رصيد النهاية",
+      "incoming": "الوارد",
+      "sold": "المباع",
+      "price": "السعر",
+      "total": "الإجمالي",
+      "date": "التاريخ"
     }
   },
   "labels": {
@@ -273,6 +285,16 @@
     "confirmPassword": "تأكيد كلمة المرور الجديدة",
     "submit": "إعادة تعيين كلمة المرور",
     "success": "تمت إعادة تعيين كلمة المرور بنجاح!"
+  },
+  "benzene": {
+    "title": "إدارة البنزين",
+    "form": {
+      "type": "نوع البنزين",
+      "startBalance": "رصيد البداية",
+      "endBalance": "رصيد النهاية",
+      "incoming": "الوارد",
+      "price": "السعر"
+    }
   },
   "settings": {
     "title": "الإعدادات",

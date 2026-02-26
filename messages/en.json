@@ -34,6 +34,7 @@
         "supplyBook": "Supply Book",
         "treasuryMovement": "Treasury Movement",
         "dailyJournal": "Daily Journal",
+        "benzene": "Benzene",
         "employees": "Employees",
         "systemLog": "System Log",
         "financialSystem": "Financial System",
@@ -53,6 +54,7 @@
         "balanceMatching": "Balance Matching",
         "treasuryMovement": "Treasury Movement",
         "accounts": "Accounts",
+        "benzene": "Benzene",
         "dailyJournal": "Daily Journal",
         "employees": "Employees",
         "systemLog": "System Log",
@@ -183,6 +185,16 @@
             "debit": "Debit",
             "credit": "Credit",
             "balance": "Balance"
+        },
+        "benzene": {
+            "type": "Benzene Type",
+            "startBalance": "Opening Balance",
+            "endBalance": "Closing Balance",
+            "incoming": "Incoming",
+            "sold": "Sold",
+            "price": "Price",
+            "total": "Total",
+            "date": "Date"
         }
     },
     "labels": {
@@ -273,6 +285,16 @@
         "confirmPassword": "Confirm New Password",
         "submit": "Reset Password",
         "success": "Password reset successfully!"
+    },
+    "benzene": {
+        "title": "Benzene Management",
+        "form": {
+            "type": "Benzene Type",
+            "startBalance": "Opening Balance",
+            "endBalance": "Closing Balance",
+            "incoming": "Incoming",
+            "price": "Price"
+        }
     },
     "settings": {
         "title": "Settings",
