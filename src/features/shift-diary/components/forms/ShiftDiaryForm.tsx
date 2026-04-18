@@ -63,6 +63,38 @@ export default function ShiftDiaryForm({ initialData, onSubmit, onCancel, isEdit
                     error={errors.end}
                     type="number"
                 />
+                <Input
+                    label={t("priceDiff")}
+                    value={formData.priceDiff}
+                    onChange={(e) => handleChange("priceDiff", e.target.value)}
+                    type="number"
+                />
+                <Input
+                    label={t("transfer")}
+                    value={formData.transfer}
+                    onChange={(e) => handleChange("transfer", e.target.value)}
+                    type="number"
+                />
+                <Input
+                    label={t("creditor")}
+                    value={formData.creditor}
+                    onChange={(e) => handleChange("creditor", e.target.value)}
+                    type="number"
+                />
+                <Input
+                    label={t("debtor")}
+                    value={formData.debtor}
+                    onChange={(e) => handleChange("debtor", e.target.value)}
+                    type="number"
+                />
+                <div className="md:col-span-2">
+                    <Input
+                        label={t("description")}
+                        value={formData.description}
+                        onChange={(e) => handleChange("description", e.target.value)}
+                        type="text"
+                    />
+                </div>
             </div>
 
             <div className="flex justify-end gap-3 mt-6 border-t pt-4">

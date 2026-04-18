@@ -27,11 +27,27 @@ export default function ShiftDiaryPage() {
         tHeader("type"),
         tHeader("start"),
         tHeader("end"),
-        tHeader("total")
+        tHeader("total"),
+        tHeader("priceDiff"),
+        tHeader("transfer"),
+        tHeader("creditor"),
+        tHeader("debtor"),
+        tHeader("description")
     ];
 
     const rows: DataRow[] = shifts.map(record => ({
-        cells: [record.pump, record.type, record.start, record.end, record.total],
+        cells: [
+            record.pump,
+            record.type,
+            record.start,
+            record.end,
+            record.total,
+            record.priceDiff,
+            record.transfer,
+            record.creditor,
+            record.debtor,
+            record.description
+        ],
         editable: true
     }));
 

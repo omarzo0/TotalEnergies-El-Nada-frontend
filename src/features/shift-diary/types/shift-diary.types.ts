@@ -4,6 +4,11 @@ export interface ShiftRecord {
     start: string;
     end: string;
     total: string;
+    priceDiff: string;
+    transfer: string;
+    description: string;
+    creditor: string;
+    debtor: string;
 }
 
 export interface ShiftFormData {
@@ -11,4 +16,9 @@ export interface ShiftFormData {
     type: string;
     start: string;
     end: string;
+    priceDiff: string;
+    transfer: string;
+    description: string;
+    creditor: string;
+    debtor: string;
 }

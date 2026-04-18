@@ -17,7 +17,6 @@ const navItems: NavItem[] = [
     { key: "treasuryDiary", href: "/treasury-diary", icon: "bx-comment-error" },
     { key: "supplyBook", href: "/supply-book/records", icon: "bx-cog" },
     { key: "treasuryMovement", href: "/treasury-movement/transactions", icon: "bx-cog" },
-    { key: "dailyJournal", href: "/daily-journal", icon: "bx-cog" },
     { key: "employees", href: "/employees", icon: "bx-cog" },
     { key: "systemLog", href: "/system-log", icon: "bx-cog" },
     { key: "financialSystem", href: "/financial-system/trial-balance", icon: "bx-stats" },

@@ -33,7 +33,6 @@
     "treasuryDiary": "يوميه الخزينه",
     "supplyBook": "دفتر التموين",
     "treasuryMovement": "حركه الخزينه",
-    "dailyJournal": "قيد يومي",
     "benzene": "البنزين",
     "employees": "الموظفين",
     "systemLog": "حركه النظام",
@@ -55,7 +54,6 @@
     "treasuryMovement": "حركه الخزينه",
     "accounts": "الحسابات",
     "benzene": "البنزين",
-    "dailyJournal": "قيد يومي",
     "employees": "الموظفين",
     "systemLog": "حركه النظام",
     "financialSystem": "النظام المالي",
@@ -88,7 +86,12 @@
       "type": "النوع",
       "start": "البدايه",
       "end": "النهايه",
-      "total": "الاحمالي"
+      "total": "الاحمالي",
+      "priceDiff": "فرق السعر",
+      "transfer": "نقل",
+      "description": "البيان",
+      "creditor": "دائن",
+      "debtor": "مدين"
     },
     "oils": {
       "oilType": "نوع الزيت",
@@ -157,13 +160,6 @@
     "accounts": {
       "receipt": "السند",
       "amount": "المبلغ"
-    },
-    "dailyJournal": {
-      "priceDiff": "فرق السعر",
-      "transfer": "نقل",
-      "description": "البيان",
-      "creditor": "دائن",
-      "debtor": "مدين"
     },
     "employees": {
       "name": "الاسم",

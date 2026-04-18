@@ -33,7 +33,6 @@
         "treasuryDiary": "Treasury Diary",
         "supplyBook": "Supply Book",
         "treasuryMovement": "Treasury Movement",
-        "dailyJournal": "Daily Journal",
         "benzene": "Benzene",
         "employees": "Employees",
         "systemLog": "System Log",
@@ -55,7 +54,6 @@
         "treasuryMovement": "Treasury Movement",
         "accounts": "Accounts",
         "benzene": "Benzene",
-        "dailyJournal": "Daily Journal",
         "employees": "Employees",
         "systemLog": "System Log",
         "financialSystem": "Financial System",
@@ -88,7 +86,12 @@
             "type": "Type",
             "start": "Start",
             "end": "End",
-            "total": "Total"
+            "total": "Total",
+            "priceDiff": "Price Diff",
+            "transfer": "Transfer",
+            "description": "Description",
+            "creditor": "Creditor",
+            "debtor": "Debtor"
         },
         "oils": {
             "oilType": "Oil Type",
@@ -157,13 +160,6 @@
         "accounts": {
             "receipt": "Receipt",
             "amount": "Amount"
-        },
-        "dailyJournal": {
-            "priceDiff": "Price Diff",
-            "transfer": "Transfer",
-            "description": "Description",
-            "creditor": "Creditor",
-            "debtor": "Debtor"
         },
         "employees": {
             "name": "Name",

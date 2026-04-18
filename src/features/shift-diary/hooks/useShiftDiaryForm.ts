@@ -8,7 +8,12 @@ export function useShiftDiaryForm(initialData?: ShiftRecord) {
         pump: initialData?.pump || "",
         type: initialData?.type || "بنزين 92",
         start: initialData?.start || "0",
-        end: initialData?.end || "0"
+        end: initialData?.end || "0",
+        priceDiff: initialData?.priceDiff || "0",
+        transfer: initialData?.transfer || "0",
+        description: initialData?.description || "",
+        creditor: initialData?.creditor || "0",
+        debtor: initialData?.debtor || "0"
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof ShiftFormData, string>>>({});
@@ -44,7 +49,12 @@ export function useShiftDiaryForm(initialData?: ShiftRecord) {
             pump: "",
             type: "بنزين 92",
             start: "0",
-            end: "0"
+            end: "0",
+            priceDiff: "0",
+            transfer: "0",
+            description: "",
+            creditor: "0",
+            debtor: "0"
         })
     };
 }
