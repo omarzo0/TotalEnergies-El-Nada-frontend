@@ -21,10 +21,12 @@ export interface TabItem {
     href: string;
     labelKey: string;
     active: boolean;
+    onClick?: () => void;
 }
 
 export interface DataRow {
     cells: string[];
+    id?: string;
     editable?: boolean;
 }
 

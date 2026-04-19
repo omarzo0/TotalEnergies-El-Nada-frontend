@@ -1,11 +1,13 @@
-export interface ExpenseRecord {
+export interface Expense {
+    _id?: string;
     id?: string;
-    amount: string;
-    receipt: string;
-    date?: string;
+    date: string;
+    receiptName: string;
+    money: number;
 }
 
 export interface ExpenseFormData {
-    amount: string;
-    receipt: string;
+    receiptName: string;
+    money: number;
+    date: string;
 }

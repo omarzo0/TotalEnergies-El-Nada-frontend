@@ -1,46 +1,54 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Employee } from '../types/employees.types';
+import { useState, useEffect, useCallback } from 'react';
+import { Employee, EmployeeFormData } from '../types/employees.types';
 import { employeesApi } from '../api/employees.api';
 
 export function useEmployees() {
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [searchName, setSearchName] = useState("");
 
-    const fetchEmployees = async () => {
+    const fetchEmployees = useCallback(async () => {
         try {
             setIsLoading(true);
             const data = await employeesApi.getEmployees();
             setEmployees(data);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch employees");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch employees");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const addEmployee = async (data: Partial<Employee>) => {
+    useEffect(() => {
+        fetchEmployees();
+    }, [fetchEmployees]);
+
+    // Client-side filtering
+    const filteredEmployees = employees.filter(emp =>
+        emp.name.toLowerCase().includes(searchName.toLowerCase())
+    );
+
+    const addEmployee = async (data: EmployeeFormData) => {
         try {
-            const newEmployee = await employeesApi.createEmployee(data);
-            setEmployees(prev => [...prev, newEmployee]);
-            return newEmployee;
-        } catch (err) {
-            setError("Failed to add employee");
+            await employeesApi.createEmployee(data);
+            await fetchEmployees();
+        } catch (err: any) {
+            setError(err.message || "Failed to create employee");
             throw err;
         }
     };
 
-    const updateEmployee = async (id: string, data: Partial<Employee>) => {
+    const updateEmployee = async (id: string, data: EmployeeFormData) => {
         try {
-            const updated = await employeesApi.updateEmployee(id, data);
-            setEmployees(prev => prev.map(emp => emp.id === id ? updated : emp));
-            return updated;
-        } catch (err) {
-            setError("Failed to update employee");
+            await employeesApi.updateEmployee(id, data);
+            await fetchEmployees();
+        } catch (err: any) {
+            setError(err.message || "Failed to update employee");
             throw err;
         }
     };
@@ -48,21 +56,20 @@ export function useEmployees() {
     const removeEmployee = async (id: string) => {
         try {
             await employeesApi.deleteEmployee(id);
-            setEmployees(prev => prev.filter(emp => emp.id !== id));
-        } catch (err) {
-            setError("Failed to delete employee");
+            await fetchEmployees();
+        } catch (err: any) {
+            setError(err.message || "Failed to delete employee");
             throw err;
         }
     };
 
-    useEffect(() => {
-        fetchEmployees();
-    }, []);
-
     return {
-        employees,
+        employees: filteredEmployees, // Return filtered list
+        allEmployees: employees,     // Keep raw list if needed
         isLoading,
         error,
+        searchName,
+        setSearchName,
         addEmployee,
         updateEmployee,
         removeEmployee,

@@ -1,79 +1,97 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
-import { Employee } from "../../types/employees.types";
-import { useEmployeesForm } from "../../hooks/useEmployeesForm";
+import Button from "@/ui/Button";
+import { Employee, EmployeeFormData } from "../../types/employees.types";
 
 interface EmployeeFormProps {
     initialData?: Employee;
-    onSubmit: (data: any) => void;
+    onSubmit: (data: EmployeeFormData) => void;
     onCancel: () => void;
     isEditing?: boolean;
 }
 
 export default function EmployeeForm({ initialData, onSubmit, onCancel, isEditing }: EmployeeFormProps) {
+    const t = useTranslations("employees");
     const tLabels = useTranslations("labels");
     const tButtons = useTranslations("buttons");
-    const { formData, errors, handleChange, validate } = useEmployeesForm(initialData);
+
+    const [formData, setFormData] = useState<EmployeeFormData>({
+        name: initialData?.name || "",
+        nationalId: initialData?.nationalId || 0,
+        mobileNum: initialData?.mobileNum || 0,
+        job: initialData?.job || "",
+        salary: initialData?.salary || 0,
+    });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (validate()) {
-            onSubmit(formData);
-        }
+        onSubmit(formData);
+    };
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        const isNumeric = ["nationalId", "mobileNum", "salary"].includes(name);
+        setFormData(prev => ({
+            ...prev,
+            [name]: isNumeric ? (value === "" ? 0 : Number(value)) : value
+        }));
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <Input
                 label={tLabels("name")}
+                name="name"
                 value={formData.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-                error={errors.name}
-                type="text"
-            />
-            <Input
-                label={tLabels("nationalId")}
-                value={formData.nationalId}
-                onChange={(e) => handleChange("nationalId", e.target.value)}
-                error={errors.nationalId}
-                type="text"
-            />
-            <Input
-                label={tLabels("phone")}
-                value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                type="text"
-            />
-            <Input
-                label={tLabels("position")}
-                value={formData.position}
-                onChange={(e) => handleChange("position", e.target.value)}
-                type="text"
-            />
-            <Input
-                label={tLabels("salary")}
-                value={formData.salary}
-                onChange={(e) => handleChange("salary", e.target.value)}
-                type="text"
+                onChange={handleChange}
+                required
             />
 
-            <div className="flex justify-end gap-3 mt-6">
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="btn-secondary"
-                >
+            <Input
+                label={tLabels("nationalIdShort")}
+                name="nationalId"
+                type="number"
+                value={formData.nationalId || ""}
+                onChange={handleChange}
+                required
+            />
+
+            <Input
+                label={tLabels("phoneShort")}
+                name="mobileNum"
+                type="number"
+                value={formData.mobileNum || ""}
+                onChange={handleChange}
+                required
+            />
+
+            <Input
+                label={tLabels("positionShort")}
+                name="job"
+                value={formData.job}
+                onChange={handleChange}
+                required
+            />
+
+            <Input
+                label={tLabels("salaryShort")}
+                name="salary"
+                type="number"
+                value={formData.salary || ""}
+                onChange={handleChange}
+                required
+            />
+
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+                <Button type="button" variant="secondary" onClick={onCancel}>
                     {tButtons("cancel")}
-                </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
-                    {isEditing ? tButtons("save") : tButtons("confirm")}
-                </button>
+                </Button>
+                <Button type="submit">
+                    {isEditing ? tButtons("save") : tButtons("add")}
+                </Button>
             </div>
         </form>
     );

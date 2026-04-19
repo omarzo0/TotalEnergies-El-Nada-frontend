@@ -1,50 +1,61 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { VoucherRecord, VoucherMatchingRecord, FuelType, VoucherEntity } from '../types/vouchers.types';
 import { vouchersApi } from '../api/vouchers.api';
 
-export function useVouchers() {
+export function useVouchers(date?: string) {
     const [vouchers, setVouchers] = useState<VoucherRecord[]>([]);
     const [matchingRecords, setMatchingRecords] = useState<VoucherMatchingRecord[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [matchingTotal, setMatchingTotal] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchVouchers = useCallback(async () => {
+    const fetchVouchers = useCallback(async (currentDate?: string, benzType?: FuelType) => {
+        const targetDate = currentDate || date;
+        if (!targetDate) return;
+
         try {
             setIsLoading(true);
-            const data = await vouchersApi.getVouchers();
+            const data = await vouchersApi.getVouchers(targetDate, benzType);
             setVouchers(data);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch vouchers");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch vouchers");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [date]);
 
-    const fetchMatching = useCallback(async (filters?: { fuelType?: FuelType, entity?: VoucherEntity }) => {
+    const fetchMatching = useCallback(async (currentDate?: string, filters?: { benzType?: FuelType, side?: VoucherEntity }) => {
+        const targetDate = currentDate || date;
+        if (!targetDate) return;
+
         try {
             setIsLoading(true);
-            const data = await vouchersApi.getMatchingRecords(filters);
-            setMatchingRecords(data);
+            const records = await vouchersApi.getMatchingRecords(targetDate, filters);
+            const total = await vouchersApi.getMatchingTotal(targetDate, filters);
+            setMatchingRecords(records);
+            setMatchingTotal(total);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch matching records");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch matching records");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [date]);
 
     const addVoucher = async (data: Partial<VoucherRecord>) => {
         try {
             const newVoucher = await vouchersApi.createVoucher(data);
-            setVouchers(prev => [...prev, newVoucher]);
+            if (data.date === date) {
+                setVouchers(prev => [...prev, newVoucher]);
+            }
             return newVoucher;
-        } catch (err) {
-            setError("Failed to add voucher");
+        } catch (err: any) {
+            setError(err.message || "Failed to add voucher");
             throw err;
         }
     };
@@ -54,8 +65,8 @@ export function useVouchers() {
             const updated = await vouchersApi.updateVoucher(id, data);
             setVouchers(prev => prev.map(v => v.id === id ? updated : v));
             return updated;
-        } catch (err) {
-            setError("Failed to update voucher");
+        } catch (err: any) {
+            setError(err.message || "Failed to update voucher");
             throw err;
         }
     };
@@ -64,8 +75,8 @@ export function useVouchers() {
         try {
             await vouchersApi.deleteVoucher(id);
             setVouchers(prev => prev.filter(v => v.id !== id));
-        } catch (err) {
-            setError("Failed to delete voucher");
+        } catch (err: any) {
+            setError(err.message || "Failed to delete voucher");
             throw err;
         }
     };
@@ -73,6 +84,7 @@ export function useVouchers() {
     return {
         vouchers,
         matchingRecords,
+        matchingTotal,
         isLoading,
         error,
         fetchVouchers,
@@ -82,3 +94,4 @@ export function useVouchers() {
         removeVoucher
     };
 }
+

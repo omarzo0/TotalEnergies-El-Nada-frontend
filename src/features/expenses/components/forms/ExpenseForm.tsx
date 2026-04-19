@@ -3,11 +3,12 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
-import { ExpenseRecord } from "../../types/expenses.types";
+import { Expense } from "../../types/expenses.types";
 import { useExpensesForm } from "../../hooks/useExpensesForm";
+import Button from "@/ui/Button";
 
 interface ExpenseFormProps {
-    initialData?: ExpenseRecord;
+    initialData?: Expense;
     onSubmit: (data: any) => void;
     onCancel: () => void;
     isEditing?: boolean;
@@ -30,36 +31,32 @@ export default function ExpenseForm({ initialData, onSubmit, onCancel, isEditing
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-4">
                 <Input
-                    label={tLabels("receipt")}
-                    value={formData.receipt}
-                    onChange={(e) => handleChange("receipt", e.target.value)}
-                    error={errors.receipt}
-                    placeholder="e.g. سند #001"
+                    label={t("receiptName") || "Receipt Name"}
+                    value={formData.receiptName}
+                    onChange={(e) => handleChange("receiptName", e.target.value)}
+                    error={errors.receiptName}
+                    placeholder="e.g. فاتورة كهرباء"
+                    required
                 />
                 <Input
-                    label={tLabels("enterAmount")}
-                    value={formData.amount}
-                    onChange={(e) => handleChange("amount", e.target.value)}
-                    error={errors.amount}
+                    label={t("amount") || "Amount"}
+                    value={formData.money}
+                    onChange={(e) => handleChange("money", Number(e.target.value))}
+                    error={errors.money}
                     type="number"
+                    step="0.01"
                     placeholder="0.00"
+                    required
                 />
             </div>
 
             <div className="flex justify-end gap-3 mt-6 border-t pt-4">
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="btn-secondary"
-                >
+                <Button variant="secondary" onClick={onCancel}>
                     {tButtons("cancel")}
-                </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
+                </Button>
+                <Button type="submit">
                     {isEditing ? tButtons("save") : tButtons("confirm")}
-                </button>
+                </Button>
             </div>
         </form>
     );

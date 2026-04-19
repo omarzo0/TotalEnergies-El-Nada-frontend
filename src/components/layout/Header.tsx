@@ -55,7 +55,7 @@ export default function Header({ titleKey, tabs, children }: HeaderProps) {
                             {tabs.map((tab) => (
                                 <button
                                     key={tab.href}
-                                    onClick={() => router.push(tab.href)}
+                                    onClick={() => tab.onClick ? tab.onClick() : router.push(tab.href)}
                                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
                                         ${tab.active
                                             ? "bg-primary text-white shadow-card"
@@ -68,11 +68,6 @@ export default function Header({ titleKey, tabs, children }: HeaderProps) {
                         </div>
                     )}
 
-                    {/* Date picker */}
-                    <input
-                        type="datetime-local"
-                        className="form-input w-auto text-xs"
-                    />
                 </div>
             </div>
 

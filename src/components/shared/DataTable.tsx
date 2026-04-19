@@ -9,9 +9,10 @@ interface DataTableProps {
     onEdit?: (index: number) => void;
     onDelete?: (index: number) => void;
     onImageClick?: (url: string) => void;
+    loading?: boolean;
 }
 
-export default function DataTable({ columns, rows, onEdit, onDelete, onImageClick }: DataTableProps) {
+export default function DataTable({ columns, rows, onEdit, onDelete, onImageClick, loading }: DataTableProps) {
     const hasActions = onEdit || onDelete;
 
     const isImage = (value: string) => {
@@ -35,55 +36,16 @@ export default function DataTable({ columns, rows, onEdit, onDelete, onImageClic
                     </tr>
                 </thead>
                 <tbody>
-                    {rows.map((row, rowIdx) => (
-                        <tr key={rowIdx} className="hover:bg-slate-50/80 transition-colors">
-                            {row.cells.map((cell, cellIdx) => (
-                                <td key={cellIdx} className="text-center whitespace-pre-line">
-                                    {isImage(cell) ? (
-                                        <div
-                                            className="relative w-10 h-10 mx-auto rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all active:scale-95 shadow-sm"
-                                            onClick={() => onImageClick?.(cell)}
-                                        >
-                                            <Image
-                                                src={cell}
-                                                alt="Row thumbnail"
-                                                fill
-                                                className="object-cover"
-                                                unoptimized
-                                            />
-                                        </div>
-                                    ) : (
-                                        cell
-                                    )}
-                                </td>
-                            ))}
-                            {hasActions && (
-                                <td className="text-center">
-                                    <div className="flex items-center justify-center gap-1">
-                                        {onEdit && row.editable !== false && (
-                                            <button
-                                                onClick={() => onEdit(rowIdx)}
-                                                className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-all active:scale-95"
-                                                title="Edit"
-                                            >
-                                                <i className="bx bx-edit-alt text-lg"></i>
-                                            </button>
-                                        )}
-                                        {onDelete && (
-                                            <button
-                                                onClick={() => onDelete(rowIdx)}
-                                                className="p-2 rounded-lg text-danger hover:bg-danger/10 transition-all active:scale-95"
-                                                title="Delete"
-                                            >
-                                                <i className="bx bx-trash text-lg"></i>
-                                            </button>
-                                        )}
-                                    </div>
-                                </td>
-                            )}
+                    {loading ? (
+                        <tr>
+                            <td colSpan={columns.length + (hasActions ? 1 : 0)} className="text-center py-20">
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent shadow-sm"></div>
+                                    <span className="text-slate-400 font-medium animate-pulse text-sm">Loading data...</span>
+                                </div>
+                            </td>
                         </tr>
-                    ))}
-                    {rows.length === 0 && (
+                    ) : rows.length === 0 ? (
                         <tr>
                             <td colSpan={columns.length + (hasActions ? 1 : 0)} className="text-center py-10 text-text-muted">
                                 <div className="flex flex-col items-center gap-2">
@@ -92,6 +54,55 @@ export default function DataTable({ columns, rows, onEdit, onDelete, onImageClic
                                 </div>
                             </td>
                         </tr>
+                    ) : (
+                        rows.map((row, rowIdx) => (
+                            <tr key={rowIdx} className="hover:bg-slate-50/80 transition-colors">
+                                {row.cells.map((cell, cellIdx) => (
+                                    <td key={cellIdx} className="text-center whitespace-pre-line">
+                                        {isImage(cell) ? (
+                                            <div
+                                                className="relative w-10 h-10 mx-auto rounded-lg overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all active:scale-95 shadow-sm"
+                                                onClick={() => onImageClick?.(cell)}
+                                            >
+                                                <Image
+                                                    src={cell}
+                                                    alt="Row thumbnail"
+                                                    fill
+                                                    className="object-cover"
+                                                    unoptimized
+                                                />
+                                            </div>
+                                        ) : (
+                                            cell
+                                        )}
+                                    </td>
+                                ))}
+                                {hasActions && (
+                                    <td className="text-center">
+                                        <div className="flex items-center justify-center gap-1">
+                                            {onEdit && row.editable !== false && (
+                                                <button
+                                                    onClick={() => onEdit(rowIdx)}
+                                                    className="p-2 rounded-lg text-primary hover:bg-primary/10 transition-all active:scale-95"
+                                                    title="Edit"
+                                                >
+                                                    <i className="bx bx-edit-alt text-lg"></i>
+                                                </button>
+                                            )}
+                                            {onDelete && (
+                                                <button
+                                                    onClick={() => onDelete(rowIdx)}
+                                                    className="p-2 rounded-lg text-danger hover:bg-danger/10 transition-all active:scale-95"
+                                                    title="Delete"
+                                                >
+                                                    <i className="bx bx-trash text-lg"></i>
+                                                </button>
+                                            )}
+                                        </div>
+                                    </td>
+                                )}
+                            </tr>
+                        ))
                     )}
                 </tbody>
             </table>

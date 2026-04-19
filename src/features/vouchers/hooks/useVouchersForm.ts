@@ -5,19 +5,19 @@ import { VoucherRecord, VoucherFormData } from '../types/vouchers.types';
 
 export function useVouchersForm(initialData?: VoucherRecord) {
     const [formData, setFormData] = useState<VoucherFormData>({
-        entity: initialData?.entity || 'police',
-        serial: initialData?.serial || '',
-        total: initialData?.total || '',
-        category: initialData?.category || '',
-        price: initialData?.price || '',
-        fuelType: initialData?.fuelType || 'gasoline92',
-        image: initialData?.image || '/images/logo.png',
+        date: initialData?.date || new Date().toISOString().split("T")[0],
+        side: initialData?.side || 'police',
+        voucherSerial: initialData?.voucherSerial || '',
+        total: initialData?.total,
+        category: initialData?.category || 0,
+        price: initialData?.price,
+        benzType: initialData?.benzType || 'بنزين 92',
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof VoucherFormData, string>>>({});
 
-    const handleChange = (field: keyof VoucherFormData, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value as any }));
+    const handleChange = (field: keyof VoucherFormData, value: any) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -29,10 +29,9 @@ export function useVouchersForm(initialData?: VoucherRecord) {
 
     const validate = () => {
         const newErrors: Partial<Record<keyof VoucherFormData, string>> = {};
-        if (!formData.serial) newErrors.serial = "Serial is required";
-        if (!formData.total) newErrors.total = "Total is required";
+        if (!formData.voucherSerial) newErrors.voucherSerial = "Serial is required";
         if (!formData.category) newErrors.category = "Category is required";
-        if (!formData.price) newErrors.price = "Price is required";
+        if (!formData.date) newErrors.date = "Date is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -44,13 +43,15 @@ export function useVouchersForm(initialData?: VoucherRecord) {
         handleChange,
         validate,
         reset: () => setFormData({
-            entity: 'police',
-            serial: '',
-            total: '',
-            category: '',
-            price: '',
-            fuelType: 'gasoline92',
-            image: '/images/logo.png',
+            date: new Date().toISOString().split("T")[0],
+            side: 'police',
+            voucherSerial: '',
+            total: undefined,
+            category: 0,
+            price: undefined,
+            benzType: 'بنزين 92',
         })
     };
 }
+
+

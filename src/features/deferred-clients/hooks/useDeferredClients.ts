@@ -1,71 +1,74 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { DeferredClientRecord } from '../types/deferred-clients.types';
+import { DeferredClientPayment } from '../types/deferred-clients.types';
 import { deferredClientsApi } from '../api/deferred-clients.api';
 
-export function useDeferredClients() {
-    const [clients, setClients] = useState<DeferredClientRecord[]>([]);
+export function useDeferredClients(selectedDate: string) {
+    const [payments, setPayments] = useState<DeferredClientPayment[]>([]);
+    const [dailyTotal, setDailyTotal] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchClients = useCallback(async () => {
+    const fetchPayments = useCallback(async () => {
         try {
             setIsLoading(true);
-            const data = await deferredClientsApi.getClients();
-            setClients(data);
+            const response = await deferredClientsApi.getPaymentsByDate(selectedDate);
+            setPayments(response.data);
+            setDailyTotal(response.total);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch deferred clients");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch deferred clients");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [selectedDate]);
 
-    const addClient = async (data: Partial<DeferredClientRecord>) => {
+    const addPayment = async (data: Partial<DeferredClientPayment>) => {
         try {
-            const newClient = await deferredClientsApi.createClient(data);
-            setClients(prev => [...prev, newClient]);
-            return newClient;
-        } catch (err) {
-            setError("Failed to add client");
+            const newPayment = await deferredClientsApi.addPayment({ date: selectedDate, ...data });
+            await fetchPayments();
+            return newPayment;
+        } catch (err: any) {
+            setError(err.message || "Failed to add payment");
             throw err;
         }
     };
 
-    const updateClient = async (id: string, data: Partial<DeferredClientRecord>) => {
+    const updatePayment = async (id: string, data: Partial<DeferredClientPayment>) => {
         try {
-            const updated = await deferredClientsApi.updateClient(id, data);
-            setClients(prev => prev.map(c => c.id === id ? updated : c));
+            const updated = await deferredClientsApi.updatePayment(id, data);
+            await fetchPayments();
             return updated;
-        } catch (err) {
-            setError("Failed to update client");
+        } catch (err: any) {
+            setError(err.message || "Failed to update payment");
             throw err;
         }
     };
 
-    const removeClient = async (id: string) => {
+    const removePayment = async (id: string) => {
         try {
-            await deferredClientsApi.deleteClient(id);
-            setClients(prev => prev.filter(c => c.id !== id));
-        } catch (err) {
-            setError("Failed to delete client");
+            await deferredClientsApi.deletePayment(id);
+            await fetchPayments();
+        } catch (err: any) {
+            setError(err.message || "Failed to delete payment");
             throw err;
         }
     };
 
     useEffect(() => {
-        fetchClients();
-    }, [fetchClients]);
+        fetchPayments();
+    }, [fetchPayments]);
 
     return {
-        clients,
+        payments,
+        dailyTotal,
         isLoading,
         error,
-        addClient,
-        updateClient,
-        removeClient,
-        refresh: fetchClients
+        addPayment,
+        updatePayment,
+        removePayment,
+        refresh: fetchPayments
     };
 }

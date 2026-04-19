@@ -8,7 +8,8 @@
     "title": "محطه توتال الندي",
     "username": "أدخل اسم المستخدم",
     "password": "أدخل كلمه المرور",
-    "submit": "دخول"
+    "submit": "دخول",
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
   },
   "overview": {
     "totalSales": "إجمالي المبيعات",
@@ -30,13 +31,14 @@
     "expenses": "المصاريف",
     "vouchers": "البونات",
     "deferredClients": "عملاء اجله",
-    "treasuryDiary": "يوميه الخزينه",
+    "dailyTreasury": "يومية الخزينة",
     "supplyBook": "دفتر التموين",
     "treasuryMovement": "حركه الخزينه",
     "benzene": "البنزين",
     "employees": "الموظفين",
-    "systemLog": "حركه النظام",
-    "financialSystem": "النظام المالي",
+    "systemLog": "سجل النظام",
+    "financialHub": "المركز المالي",
+    "statements": "إدارة البيانات/البيان",
     "settings": "الإعدادات"
   },
   "pages": {
@@ -44,21 +46,25 @@
     "shiftDiary": "يوميه الورديه",
     "oilShift": "الورديه",
     "oilStorage": "المخزن",
+    "oilManagement": "إدارة الزيوت",
     "expenses": "المصاريف",
     "vouchers": "البونات",
     "voucherMatching": "مطابقه البونات",
     "deferredClients": "عملاء أجله",
-    "treasuryDiary": "يوميه الخزينه",
+    "dailyTreasury": "يومية الخزينة",
     "supplyBook": "دفتر التموين",
     "balanceMatching": "مطابقه الارصده",
     "treasuryMovement": "حركه الخزينه",
     "accounts": "الحسابات",
     "benzene": "البنزين",
+    "benzeneReadings": "قراءات الطلمبات",
+    "benzenePrices": "الأسعار",
     "employees": "الموظفين",
     "systemLog": "حركه النظام",
-    "financialSystem": "النظام المالي",
-    "trialBalance": "ميزان المراجعة",
-    "incomeStatement": "قائمة الدخل",
+    "financialHub": "المركز المالي",
+    "financialHubSummary": "الملخص اليومي",
+    "financialHubReport": "التقرير الدوري",
+    "statements": "إدارة البيانات/البيان",
     "settings": "الإعدادات"
   },
   "buttons": {
@@ -72,13 +78,15 @@
     "cancel": "إلغاء",
     "confirm": "تأكيد",
     "addDelete": "اضافه/حدف",
-    "actions": "الإجراءات"
+    "actions": "الإجراءات",
+    "reset": "إعادة تعيين"
   },
   "modals": {
     "confirmDeleteTitle": "تأكيد الحذف",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.",
     "editRecordTitle": "تعديل السجل",
-    "createRecordTitle": "إضافة سجل جديد"
+    "createRecordTitle": "إضافة سجل جديد",
+    "imagePreviewTitle": "معاينة الصورة"
   },
   "table": {
     "shiftDiary": {
@@ -97,8 +105,12 @@
       "oilType": "نوع الزيت",
       "startBalance": "رصيد أول",
       "endBalance": "رصيد آخر",
+      "firstTermBalance": "رصيد أول المدة",
+      "endTermBalance": "رصيد آخر المدة",
       "incoming": "الوارد",
       "sold": "المباع",
+      "price": "السعر",
+      "total": "الإجمالي",
       "image": "الصورة"
     },
     "oilStorage": {
@@ -110,33 +122,34 @@
     },
     "expenses": {
       "amount": "المبلغ",
-      "receipt": "السند"
+      "receiptName": "اسم السند"
     },
     "vouchers": {
+      "date": "التاريخ",
       "entity": "الجهه",
       "serial": "سريال البونات",
       "total": "الاجمالي",
       "category": "الفئه",
       "price": "السعر",
-      "image": "الصورة"
+      "benzType": "نوع البنزين"
     },
     "voucherMatching": {
+      "voucherMatching": "ملخص مطابقة البونات",
       "total": "الاجمالي",
       "category": "الفئه",
-      "count": "العدد"
+      "count": "العدد",
+      "price": "السعر"
     },
     "clients": {
-      "amount": "المبلغ",
-      "receipt": "السند",
-      "client": "العميل"
-    },
-    "treasuryDiary": {
-      "amount": "المبلغ",
-      "price": "السعر",
-      "quantity": "الكميه",
-      "description": "البيان"
+      "money": "المبلغ",
+      "amount": "الكمية / القيمة",
+      "receiptName": "اسم السند",
+      "receiptNumber": "رقم السند",
+      "client": "العميل",
+      "image": "الصورة"
     },
     "supplyBook": {
+      "benzType": "نوع الوقود",
       "standard": "المعيار",
       "end": "النهايه",
       "pumps": "الطلمبات",
@@ -152,22 +165,6 @@
       "diesel": "سولار",
       "description": "البيان"
     },
-    "treasuryMovement": {
-      "amount": "المبلغ",
-      "receipt": "السند",
-      "description": "البيان"
-    },
-    "accounts": {
-      "receipt": "السند",
-      "amount": "المبلغ"
-    },
-    "employees": {
-      "name": "الاسم",
-      "nationalId": "الرقم القومي",
-      "phone": "رقم الهاتف",
-      "position": "الوظيفه",
-      "salary": "المرتب"
-    },
     "systemLog": {
       "modifiedTo": "التعديل الي",
       "modifiedFrom": "التعديل من",
@@ -176,24 +173,91 @@
       "time": "الوقت",
       "date": "التاريخ"
     },
-    "financial": {
-      "accountName": "اسم الحساب",
-      "debit": "مدين",
-      "credit": "دائن",
-      "balance": "الرصيد"
-    },
     "benzene": {
-      "type": "نوع البنزين",
-      "startBalance": "رصيد البداية",
-      "endBalance": "رصيد النهاية",
+      "trumbaNumber": "رقم الطرمبة",
+      "type": "النوع",
+      "startBalance": "رصيد أول",
+      "endBalance": "رصيد أخر",
       "incoming": "الوارد",
       "sold": "المباع",
       "price": "السعر",
-      "total": "الإجمالي",
-      "date": "التاريخ"
-    }
+      "total": "الإجمالي"
+    },
+    "statements": {
+      "name": "اسم البيان",
+      "createdAt": "تاريخ الإنشاء"
+    },
+    "date": "التاريخ"
+  },
+  "dailyTreasury": {
+    "date": "التاريخ",
+    "amount": "المبلغ",
+    "price": "السعر",
+    "quantity": "الكميه",
+    "statement": "البيان",
+    "money": "المبلغ",
+    "fuelSales": "مبيعات الوقود",
+    "oilSales": "مبيعات الزيوت",
+    "deductions": "الخصومات",
+    "expenses": "المصاريف",
+    "vouchers": "البونات",
+    "termClients": "عملاء أجله",
+    "totalSafe": "إجمالي الخزينة",
+    "island": "الجزيرة",
+    "fromShift": "من الوردية",
+    "manualEntries": "مدخلات إضافية",
+    "enterStatement": "أدخل تفاصيل البيان...",
+    "totalIncome": "إجمالي الدخل",
+    "summaryHighlights": "أهم المبيعات",
+    "totalDeductions": "إجمالي الخصومات",
+    "lastSafe": "رصيد سابق",
+    "solar": "سولار",
+    "ben80": "بنزين 80",
+    "ben92": "بنزين 92",
+    "ben95": "بنزين 95",
+    "fuelBreakdown": "تفاصيل الوقود"
+  },
+  "treasuryMovement": {
+    "money": "المبلغ",
+    "receiptName": "اسم السند",
+    "statement": "البيان",
+    "description": "ملاحظات",
+    "type": "النوع",
+    "income": "مقبوضات",
+    "expense": "مدفوعات",
+    "date": "التاريخ"
+  },
+  "accounts": {
+    "receipt": "السند",
+    "amount": "المبلغ"
+  },
+  "shiftDiaryPage": {
+    "selectDate": "اختر التاريخ:",
+    "loading": "جاري تحميل البيانات...",
+    "retry": "إعادة المحاولة",
+    "shiftNumber": "يومية الوردية رقم",
+    "shiftDate": "تاريخ اليومية",
+    "pumpReadings": "قراءات الطلمبات (البنزين)",
+    "receipts": "المقبوضات",
+    "payments": "المدفوعات",
+    "noEntries": "لا يوجد قيود",
+    "totalOf": "إجمالي الـ",
+    "currency": "ج.م",
+    "noDataTitle": "لا توجد بيانات متاحة لهذا التاريخ",
+    "noDataSubtitle": "برجاء اختيار تاريخ آخر من الأعلى."
+  },
+  "systemLog": {
+    "adminName": "المسؤول",
+    "email": "البريد الإلكتروني",
+    "role": "الدور",
+    "type": "النوع",
+    "category": "القسم",
+    "move": "الإجراء",
+    "time": "الوقت",
+    "date": "التاريخ"
   },
   "labels": {
+    "date": "التاريخ",
     "selectOilType": "اختر نوع الزيت",
     "startBalance": "رصيد اول المده",
     "endBalance": "رصيد اخر المده",
@@ -203,6 +267,7 @@
     "startBalanceShort": "رصيد البدايه",
     "endBalanceShort": "رصيد النهايه",
     "receipt": "السند",
+    "receiptName": "اسم السند",
     "enterAmount": "ادخل المبلغ",
     "enterCategory": "ادخل الفئه",
     "enterSerial": "ادخل سريال البون",
@@ -227,10 +292,11 @@
     "salaryShort": "المرتب"
   },
   "fuelTypes": {
+    "all": "الكل",
     "diesel": "سولار",
     "gasoline95": "بنزين 95",
     "gasoline92": "بنزين 92",
-    "gasoline80": "بنزين 82"
+    "gasoline80": "بنزين 80"
   },
   "entities": {
     "police": "شرطه",
@@ -269,27 +335,58 @@
   },
   "forgotPassword": {
     "title": "نسيت كلمة المرور",
-    "description": "أدخل اسم المستخدم لتلقي رابط إعادة التعيين.",
-    "username": "اسم المستخدم",
-    "submit": "إرسال رابط إعادة التعيين",
+    "description": "أدخل بريدك الإلكتروني لتلقي رمز التحقق المكون من 6 أرقام.",
+    "email": "البريد الإلكتروني",
+    "submit": "إرسال رمز التحقق",
+    "otp": "رمز التحقق",
+    "verify": "تحقق من الرمز",
+    "success": "تم التحقق من الرمز بنجاح!",
+    "otpSent": "تم إرسال رمز التحقق إلى بريدك الإلكتروني.",
     "backToLogin": "العودة لتسجيل الدخول",
-    "success": "تم إرسال رابط إعادة التعيين بنجاح!"
+    "email_send_error": "فشل إرسال البريد الإلكتروني. يرجى التواصل مع المدير.",
+    "admin_not_found": "لم يتم العثور على حساب بهذا البريد الإلكتروني."
   },
   "resetPassword": {
     "title": "إعادة تعيين كلمة المرور",
     "password": "كلمة المرور الجديدة",
-    "confirmPassword": "تأكيد كلمة المرور الجديدة",
-    "submit": "إعادة تعيين كلمة المرور",
-    "success": "تمت إعادة تعيين كلمة المرور بنجاح!"
+    "confirmPassword": "تأكيد كلمة المرور",
+    "submit": "تحديث كلمة المرور",
+    "success": "تم تحديث كلمة المرور بنجاح!"
+  },
+  "oils": {
+    "addOilTitle": "إضافة نوع زيت جديد للمنظومة",
+    "oilNameLabel": "اسم الزيت",
+    "oilNamePlaceholder": "مثال: زيت توتال 5000",
+    "priceLabel": "السعر",
+    "addOilButton": "إضافة الزيت",
+    "manageOils": "إدارة أنواع الزيوت",
+    "salesReadingTitle": "قراءة وردية الزيوت",
+    "inventoryReadingTitle": "قراءة مخزون الزيوت",
+    "firstTermLabel": "رصيد أول المدة",
+    "endTermLabel": "رصيد آخر المدة",
+    "incoming": "الوارد",
+    "startStorageLabel": "رصيد المخزن (بداية)",
+    "treasuryWardLabel": "الوارد (الخزينة)"
   },
   "benzene": {
     "title": "إدارة البنزين",
     "form": {
       "type": "نوع البنزين",
+      "trumbaNumber": "رقم الطلمبة",
       "startBalance": "رصيد البداية",
       "endBalance": "رصيد النهاية",
       "incoming": "الوارد",
       "price": "السعر"
+    },
+    "pricesTab": {
+      "date": "التاريخ",
+      "solar": "سولار",
+      "ben80": "بنزين 80",
+      "ben92": "بنزين 92",
+      "ben95": "بنزين 95",
+      "currency": "ج.م",
+      "noData": "لا توجد بيانات أسعار لهذا التاريخ",
+      "saving": "جاري الحفظ..."
     }
   },
   "settings": {
@@ -302,26 +399,85 @@
     "account": {
       "title": "إعدادات الحساب",
       "subtitle": "إدارة معلوماتك الشخصية",
-      "name": "الاسم الكامل",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
       "email": "البريد الإلكتروني",
-      "username": "اسم المستخدم"
+      "phoneNumber": "رقم الهاتف",
+      "language": "اللغة المفضلة",
+      "updateSuccess": "تم تحديث البيانات بنجاح!"
     },
     "security": {
       "title": "أمان الحساب",
       "subtitle": "تأمين حسابك بكلمة مرور قوية",
       "currentPassword": "كلمة المرور الحالية",
       "newPassword": "كلمة المرور الجديدة",
-      "confirmPassword": "تأكيد كلمة المرور الجديدة"
+      "confirmPassword": "تأكيد كلمة المرور الجديدة",
+      "passwordsDoNotMatch": "كلمات المرور الجديدة غير متطابقة",
+      "passwordUpdateSuccess": "تم تغيير كلمة المرور بنجاح!"
     },
     "admins": {
       "title": "إدارة المسؤولين",
       "subtitle": "إدارة مسؤولي النظام وصلاحياتهم",
+      "searchPlaceholder": "بحث بالبريد الإلكتروني...",
+      "deleteConfirmMessage": "هل أنت متأكد من حذف المسؤول",
       "table": {
         "name": "الاسم",
-        "username": "اسم المستخدم",
+        "email": "البريد الإلكتروني",
         "role": "الدور",
-        "status": "الحالة"
+        "phoneNumber": "رقم الهاتف"
+      },
+      "form": {
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "passwordKeep": "اتركها فارغة للاحتفاظ بكلمة المرور الحالية",
+        "role": "الدور",
+        "phoneNumber": "رقم الهاتف",
+        "nationalId": "الرقم القومي"
+      },
+      "roles": {
+        "super_admin": "مدير عام",
+        "admin": "مدير",
+        "manager": "مشرف",
+        "cashier": "كاشير",
+        "financial": "مالي"
       }
     }
+  },
+  "financialHub": {
+    "title": "المركز المالي",
+    "dailySummary": "الملخص اليومي",
+    "periodicReport": "التقرير الدوري",
+    "tabs": {
+      "summary": "الملخص اليومي",
+      "report": "التقرير الدوري"
+    },
+    "metrics": {
+      "fuelRevenue": "إيرادات الوقود",
+      "oilRevenue": "إيرادات الزيوت",
+      "receipts": "المقبوضات",
+      "payments": "المدفوعات",
+      "expenses": "المصاريف التشغيلية",
+      "netProfit": "صافي الربح",
+      "totalIn": "إجمالي الداخل",
+      "totalOut": "إجمالي الخارج",
+      "liters": "لترات مباعة",
+      "transactionCount": "عدد العمليات",
+      "salaries": "التزامات الرواتب",
+      "employees": "موظف",
+      "clientPayments": "تحصيلات العملاء",
+      "clientDebts": "مديونيات العملاء",
+      "islandCash": "نقدية الجزيرة",
+      "vouchers": "إجمالي البونات"
+    },
+    "form": {
+      "selectDate": "اختر التاريخ",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "generateReport": "اصدار تقرير"
+    },
+    "noData": "لا توجد بيانات مالية لهذا الاختيار.",
+    "loading": "جاري تجميع البيانات المالية..."
   }
 }

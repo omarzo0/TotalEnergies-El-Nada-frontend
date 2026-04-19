@@ -1,52 +1,143 @@
-import { OilRecord, OilRecordType } from '../types/oils.types';
+import { Oil, OilStorage, OilShift } from '../types/oils.types';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getHeaders = () => {
+    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+
+    if (token) {
+        token = token.trim().replace(/^"(.*)"$/, '$1');
+    }
+
+    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
+        console.warn("FrontEnd API (Oils): Token is missing or invalid!");
+        return { "Content-Type": "application/json" };
+    }
+
+    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    return {
+        "Content-Type": "application/json",
+        "Authorization": finalToken
+    };
+};
 
 export const oilsApi = {
-    getRecords: async (type: OilRecordType): Promise<OilRecord[]> => {
-        // In a real app, this would be a real API call
-        // For now, we mock based on the type
-        await new Promise(resolve => setTimeout(resolve, 500));
+    // ── Master Data ──────────────────────────────────────
+    getAllOils: async (): Promise<Oil[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
 
-        if (type === 'shift') {
-            return [
-                { oilType: "زيت موتور", startBalance: "100", endBalance: "80", incoming: "0", sold: "20", image: "/images/logo.png" },
-                { oilType: "زيت فرامل", startBalance: "50", endBalance: "45", incoming: "0", sold: "5", image: "/images/logo.png" },
-                { oilType: "زيت جير", startBalance: "30", endBalance: "28", incoming: "0", sold: "2", image: "/images/logo.png" },
-            ];
-        } else {
-            return [
-                { oilType: "زيت موتور", startBalance: "200", endBalance: "180", incoming: "0", image: "/images/logo.png" },
-                { oilType: "زيت فرامل", startBalance: "100", endBalance: "95", incoming: "0", image: "/images/logo.png" },
-                { oilType: "زيت جير", startBalance: "60", endBalance: "55", incoming: "0", image: "/images/logo.png" },
-            ];
+        const response = await fetch(`${API_URL}/oils`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return Array.isArray(result.data) ? result.data : [];
+    },
+
+    addOil: async (data: { oilName: string; price: number; date: string }): Promise<Oil> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
+    },
+
+    // ── Storage (Inventory) ──────────────────────────────
+    getStorage: async (date: string): Promise<OilStorage[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/storage/${date}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return [];
+            throw new Error(result.message);
         }
+
+        return Array.isArray(result.data) ? result.data : [];
     },
 
-    createRecord: async (type: OilRecordType, data: Partial<OilRecord>): Promise<OilRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            oilType: data.oilType || "",
-            startBalance: data.startBalance || "0",
-            endBalance: data.endBalance || "0",
-            incoming: data.incoming || "0",
-            sold: type === 'shift' ? (parseFloat(data.startBalance || "0") + parseFloat(data.incoming || "0") - parseFloat(data.endBalance || "0")).toString() : undefined,
-            image: data.image || "/images/logo.png"
-        };
+    updateStorage: async (data: { date: string; oilName: string; startBalance: number; storageIncoming: number }): Promise<OilStorage> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/storage`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
     },
 
-    updateRecord: async (type: OilRecordType, oilType: string, data: Partial<OilRecord>): Promise<OilRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            oilType,
-            startBalance: "0",
-            endBalance: "0",
-            incoming: "0",
-            image: "/images/logo.png",
-            ...data
-        };
+    // ── Shift Sales ──────────────────────────────────────
+    getShiftSales: async (date: string): Promise<OilShift[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/shift/${date}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return [];
+            throw new Error(result.message);
+        }
+
+        return Array.isArray(result.data) ? result.data : [];
     },
 
-    deleteRecord: async (type: OilRecordType, oilType: string): Promise<boolean> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return true;
+    updateShiftSales: async (data: { date: string; oilName: string; firstTermBalance: number; endTermBalance: number; incoming: number }): Promise<OilShift> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/shift`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
+    },
+
+    deleteStorage: async (id: string): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/storage/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
+    },
+
+    deleteShiftSales: async (id: string): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/oils/shift/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
     }
 };

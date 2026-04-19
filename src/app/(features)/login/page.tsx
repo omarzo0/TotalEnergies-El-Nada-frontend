@@ -12,16 +12,41 @@ export default function LoginPage() {
     const t = useTranslations("login");
     const router = useRouter();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (username && password) {
-            localStorage.setItem(
-                "auth_user",
-                JSON.stringify({ username, loggedInAt: new Date().toISOString() })
-            );
-            router.push("/overview");
-        } else {
-            setError("Please fill all fields");
+        setError("");
+
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email: username, password }),
+            });
+
+            const result = await response.json();
+            console.log("Login result:", result);
+
+            if (result.success) {
+                // Determine if data is an array (returned by backend) or an object
+                const authData = Array.isArray(result.data) ? result.data[0] : result.data;
+                const token = authData?.token;
+                const admin = authData?.admin;
+
+                if (token) {
+                    console.log("Setting token:", token.substring(0, 10) + "...");
+                    localStorage.setItem("token", token);
+                    localStorage.setItem("auth_user", JSON.stringify(admin));
+                    router.push("/overview");
+                } else {
+                    setError("Login successful but no token received");
+                }
+            } else {
+                setError(t(result.message) || "Invalid credentials");
+            }
+        } catch (err) {
+            setError("Server connection failed");
         }
     };
 

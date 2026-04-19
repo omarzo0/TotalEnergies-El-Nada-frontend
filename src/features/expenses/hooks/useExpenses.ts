@@ -1,46 +1,46 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { ExpenseRecord } from '../types/expenses.types';
+import { Expense } from '../types/expenses.types';
 import { expensesApi } from '../api/expenses.api';
 
-export function useExpenses() {
-    const [expenses, setExpenses] = useState<ExpenseRecord[]>([]);
+export function useExpenses(selectedDate: string) {
+    const [expenses, setExpenses] = useState<Expense[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     const fetchExpenses = useCallback(async () => {
         try {
             setIsLoading(true);
-            const data = await expensesApi.getExpenses();
+            const data = await expensesApi.getExpensesByDate(selectedDate);
             setExpenses(data);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch expenses");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch expenses");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, [selectedDate]);
 
-    const addExpense = async (data: ExpenseRecord) => {
+    const addExpense = async (data: { sand: string; money: number }) => {
         try {
-            const newExpense = await expensesApi.createExpense(data);
-            setExpenses(prev => [...prev, newExpense]);
+            const newExpense = await expensesApi.addExpense({ date: selectedDate, ...data });
+            await fetchExpenses();
             return newExpense;
-        } catch (err) {
-            setError("Failed to add expense");
+        } catch (err: any) {
+            setError(err.message || "Failed to add expense");
             throw err;
         }
     };
 
-    const updateExpense = async (id: string, data: Partial<ExpenseRecord>) => {
+    const updateExpense = async (id: string, data: { sand?: string; money?: number }) => {
         try {
             const updated = await expensesApi.updateExpense(id, data);
-            setExpenses(prev => prev.map(e => e.id === id ? updated : e));
+            await fetchExpenses();
             return updated;
-        } catch (err) {
-            setError("Failed to update expense");
+        } catch (err: any) {
+            setError(err.message || "Failed to update expense");
             throw err;
         }
     };
@@ -48,9 +48,9 @@ export function useExpenses() {
     const removeExpense = async (id: string) => {
         try {
             await expensesApi.deleteExpense(id);
-            setExpenses(prev => prev.filter(e => e.id !== id));
-        } catch (err) {
-            setError("Failed to delete expense");
+            await fetchExpenses();
+        } catch (err: any) {
+            setError(err.message || "Failed to delete expense");
             throw err;
         }
     };

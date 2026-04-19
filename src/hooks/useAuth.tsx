@@ -19,6 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 userData = JSON.parse(stored);
             } catch {
                 localStorage.removeItem("auth_user");
+                localStorage.removeItem("token");
             }
         }
         setUser(userData);
@@ -26,19 +27,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const login = async (username: string, password: string) => {
-        // Placeholder: replace with real API call
+        // This is a placeholder that matches the LoginPage logic
+        // In a real app, this would call the API
         if (username && password) {
-            const userData: User = { username, loggedInAt: new Date().toISOString() };
-            localStorage.setItem("auth_user", JSON.stringify(userData));
-            setUser(userData);
-            router.push("/overview");
-            return { success: true };
+            // Note: The actual login is handled in LoginPage.tsx
+            // This hook exists as a global state manager
+            return { success: false, error: "Use LoginPage to sign in" };
         }
         return { success: false, error: "Invalid credentials" };
     };
 
     const logout = () => {
         localStorage.removeItem("auth_user");
+        localStorage.removeItem("token");
         setUser(null);
         router.push("/login");
     };

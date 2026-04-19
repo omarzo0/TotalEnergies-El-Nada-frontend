@@ -1,79 +1,179 @@
-import { SupplyBookRecord, BalanceMatchingRecord, GaugeRecord } from '../types/supply-book.types';
+import {
+    SupplyBookRecord,
+    MonthlyBalanceResponse,
+    StandardGaugesResponse,
+    StandardUpdatePayload
+} from '../types/supply-book.types';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getHeaders = () => {
+    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+
+    if (token) {
+        token = token.trim().replace(/^"(.*)"$/, '$1');
+    }
+
+    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
+        console.warn("FrontEnd API (Supply Book): Token is missing or invalid!");
+        return { "Content-Type": "application/json" };
+    }
+
+    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    return {
+        "Content-Type": "application/json",
+        "Authorization": finalToken
+    };
+};
 
 export const supplyBookApi = {
-    getRecords: async (): Promise<SupplyBookRecord[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            { id: "1", standard: "0", end: "9500", start: "10000", pumps: "9500", dispensed: "500", incoming: "0", date: "22/12", fuelType: "diesel" },
-            { id: "2", standard: "0", end: "4800", start: "5000", pumps: "4800", dispensed: "200", incoming: "0", date: "22/12", fuelType: "diesel" },
-            { id: "3", standard: "0", end: "7000", start: "8000", pumps: "7000", dispensed: "1000", incoming: "0", date: "22/12", fuelType: "diesel" },
-        ];
+    // 1. GET /api/supply-book/:date — daily records with optional benzType filter
+    getRecordsByDate: async (date: string, benzType?: string): Promise<SupplyBookRecord[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        let url = `${API_URL}/supply-book/${date}`;
+        if (benzType) url += `?benzType=${encodeURIComponent(benzType)}`;
+
+        const response = await fetch(url, { headers: getHeaders() });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return [];
+            throw new Error(result.message);
+        }
+
+        return result.data || [];
     },
 
+    // 2. POST /api/supply-book — create record
     createRecord: async (data: Partial<SupplyBookRecord>): Promise<SupplyBookRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id: Math.random().toString(36).substr(2, 9),
-            standard: data.standard || "0",
-            end: data.end || "0",
-            start: data.start || "0",
-            pumps: data.pumps || "0",
-            dispensed: data.dispensed || "0",
-            incoming: data.incoming || "0",
-            date: data.date || new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit' }),
-            fuelType: data.fuelType || "diesel",
-        };
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
     },
 
-    updateRecord: async (id: string, data: Partial<SupplyBookRecord>): Promise<SupplyBookRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id,
-            standard: "0",
-            end: "0",
-            start: "0",
-            pumps: "0",
-            dispensed: "0",
-            incoming: "0",
-            date: "",
-            fuelType: "diesel",
-            ...data
-        };
+    // 3. PUT /api/supply-book — update full record
+    updateRecord: async (data: Partial<SupplyBookRecord>): Promise<SupplyBookRecord> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
     },
 
-    deleteRecord: async (id: string): Promise<boolean> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+    // 4. PUT /api/supply-book/standard — update gauges for all 4 fuel types
+    updateStandard: async (data: StandardUpdatePayload): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book/standard`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
         return true;
     },
 
-    getBalanceMatching: async (): Promise<BalanceMatchingRecord[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            { id: "1", gasoline95: "1000", gasoline92: "2000", gasoline80: "3000", diesel: "5000", descriptionKey: "startBalance" },
-            { id: "2", gasoline95: "0", gasoline92: "0", gasoline80: "0", diesel: "0", descriptionKey: "incoming" },
-            { id: "3", gasoline95: "1000", gasoline92: "2000", gasoline80: "3000", diesel: "5000", descriptionKey: "total" },
-            { id: "4", gasoline95: "500", gasoline92: "1000", gasoline80: "1500", diesel: "2500", descriptionKey: "dispensed" },
-            { id: "5", gasoline95: "500", gasoline92: "1000", gasoline80: "1500", diesel: "2500", descriptionKey: "remaining" },
-        ];
+    // 5. GET /api/supply-book/balance/:month — monthly balance
+    getMonthlyBalance: async (month: number): Promise<MonthlyBalanceResponse> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book/balance/${month}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return {};
+            throw new Error(result.message);
+        }
+
+        const data = Array.isArray(result.data) ? result.data[0] : result.data;
+        return data || {};
     },
 
-    getGauges: async (): Promise<GaugeRecord[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            { id: "gauge1", gasoline95: "0", gasoline92: "0", gasoline80: "0", diesel: "0", descriptionKey: "standard" },
-        ];
+    // 6. GET /api/supply-book/standard/:date — get gauges by date
+    getStandardByDate: async (date: string): Promise<StandardGaugesResponse> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book/standard/${date}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return {};
+            throw new Error(result.message);
+        }
+
+        const data = Array.isArray(result.data) ? result.data[0] : result.data;
+        return data || {};
     },
 
-    updateGauge: async (id: string, data: Partial<GaugeRecord>): Promise<GaugeRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id,
-            gasoline95: "0",
-            gasoline92: "0",
-            gasoline80: "0",
-            diesel: "0",
-            descriptionKey: "standard",
-            ...data
-        };
+    // 7. DELETE /api/supply-book/:id — delete single record
+    deleteRecord: async (id: string): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
+    },
+
+    // 8. DELETE /api/supply-book/balance/:month — delete monthly records
+    deleteBalance: async (month: number, benzType?: string): Promise<number> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        let url = `${API_URL}/supply-book/balance/${month}`;
+        if (benzType) url += `?benzType=${encodeURIComponent(benzType)}`;
+
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data?.deletedCount || 0;
+    },
+
+    // 9. DELETE /api/supply-book/standard/:date — reset gauges
+    resetStandard: async (date: string): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/supply-book/standard/${date}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
     }
 };

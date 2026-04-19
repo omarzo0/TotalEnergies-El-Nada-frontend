@@ -1,17 +1,18 @@
 "use client";
 
 import { useState } from 'react';
-import { ExpenseRecord, ExpenseFormData } from '../types/expenses.types';
+import { Expense, ExpenseFormData } from '../types/expenses.types';
 
-export function useExpensesForm(initialData?: ExpenseRecord) {
+export function useExpensesForm(initialData?: Expense) {
     const [formData, setFormData] = useState<ExpenseFormData>({
-        amount: initialData?.amount || "",
-        receipt: initialData?.receipt || "",
+        money: initialData?.money || 0,
+        receiptName: initialData?.receiptName || (initialData as any)?.sand || "",
+        date: initialData?.date || new Date().toISOString().split("T")[0]
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof ExpenseFormData, string>>>({});
 
-    const handleChange = (field: keyof ExpenseFormData, value: string) => {
+    const handleChange = (field: keyof ExpenseFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors(prev => {
@@ -24,8 +25,8 @@ export function useExpensesForm(initialData?: ExpenseRecord) {
 
     const validate = () => {
         const newErrors: Partial<Record<keyof ExpenseFormData, string>> = {};
-        if (!formData.amount) newErrors.amount = "Amount is required";
-        if (!formData.receipt) newErrors.receipt = "Receipt is required";
+        if (!formData.money || formData.money <= 0) newErrors.money = "Valid amount is required";
+        if (!formData.receiptName) newErrors.receiptName = "Receipt name is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -36,6 +37,6 @@ export function useExpensesForm(initialData?: ExpenseRecord) {
         errors,
         handleChange,
         validate,
-        reset: () => setFormData({ amount: "", receipt: "" })
+        reset: () => setFormData({ money: 0, receiptName: "", date: "" })
     };
 }

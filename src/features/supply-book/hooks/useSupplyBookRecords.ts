@@ -4,35 +4,55 @@ import { useState, useEffect, useCallback } from 'react';
 import { SupplyBookRecord } from '../types/supply-book.types';
 import { supplyBookApi } from '../api/supply-book.api';
 
-export function useSupplyBookRecords() {
+export function useSupplyBookRecords(selectedDate: string, benzTypeFilter?: string) {
     const [records, setRecords] = useState<SupplyBookRecord[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchRecords = useCallback(async () => {
-        setIsLoading(true);
-        const data = await supplyBookApi.getRecords();
-        setRecords(data);
-        setIsLoading(false);
-    }, []);
+        try {
+            setIsLoading(true);
+            const data = await supplyBookApi.getRecordsByDate(selectedDate, benzTypeFilter);
+            setRecords(data);
+            setError(null);
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch records");
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [selectedDate, benzTypeFilter]);
 
     const addRecord = async (data: Partial<SupplyBookRecord>) => {
-        const newRecord = await supplyBookApi.createRecord(data);
-        setRecords(prev => [newRecord, ...prev]);
-        return newRecord;
+        try {
+            const newRecord = await supplyBookApi.createRecord({ date: selectedDate, ...data });
+            await fetchRecords();
+            return newRecord;
+        } catch (err: any) {
+            setError(err.message || "Failed to add record");
+            throw err;
+        }
     };
 
-    const updateRecord = async (id: string, data: Partial<SupplyBookRecord>) => {
-        const updated = await supplyBookApi.updateRecord(id, data);
-        setRecords(prev => prev.map(r => r.id === id ? updated : r));
-        return updated;
+    const updateRecord = async (data: Partial<SupplyBookRecord>) => {
+        try {
+            const updated = await supplyBookApi.updateRecord(data);
+            await fetchRecords();
+            return updated;
+        } catch (err: any) {
+            setError(err.message || "Failed to update record");
+            throw err;
+        }
     };
 
     const removeRecord = async (id: string) => {
-        const success = await supplyBookApi.deleteRecord(id);
-        if (success) {
-            setRecords(prev => prev.filter(r => r.id !== id));
+        try {
+            await supplyBookApi.deleteRecord(id);
+            await fetchRecords();
+        } catch (err: any) {
+            setError(err.message || "Failed to delete record");
+            throw err;
         }
-        return success;
     };
 
     useEffect(() => {
@@ -42,6 +62,7 @@ export function useSupplyBookRecords() {
     return {
         records,
         isLoading,
+        error,
         addRecord,
         updateRecord,
         removeRecord,

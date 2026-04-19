@@ -1,42 +1,105 @@
-import { Employee } from '../types/employees.types';
+import { Employee, EmployeeFormData } from '../types/employees.types';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getHeaders = () => {
+    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+    if (token) {
+        token = token.trim().replace(/^"(.*)"$/, '$1');
+    }
+
+    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
+        console.warn("FrontEnd API (Employees): Token is missing or invalid!");
+        return { "Content-Type": "application/json" };
+    }
+
+    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    return {
+        "Content-Type": "application/json",
+        "Authorization": finalToken
+    };
+};
 
 export const employeesApi = {
+    // 1. Get All Employees
     getEmployees: async (): Promise<Employee[]> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            { id: "1", name: "محمد أحمد", nationalId: "29001011234567", phone: "01012345678", position: "مدير", salary: "15000" },
-            { id: "2", name: "محمود علي", nationalId: "28502022345678", phone: "01123456789", position: "كاشير", salary: "8000" },
-            { id: "3", name: "سيد حسن", nationalId: "29203033456789", phone: "01234567890", position: "عامل صيانة", salary: "6000" },
-        ];
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to fetch employees");
+        return result.data;
     },
 
-    createEmployee: async (data: Partial<Employee>): Promise<Employee> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id: Math.random().toString(36).substr(2, 9),
-            name: data.name || "",
-            nationalId: data.nationalId || "",
-            phone: data.phone || "",
-            position: data.position || "",
-            salary: data.salary || "0",
-        };
+    // 2. Get Employee Names
+    getEmployeeNames: async (): Promise<string[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees/names`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to fetch employee names");
+        return result.data; // Array of strings
     },
 
-    updateEmployee: async (id: string, data: Partial<Employee>): Promise<Employee> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id,
-            name: "",
-            nationalId: "",
-            phone: "",
-            position: "",
-            salary: "0",
-            ...data
-        };
+    // 3. Search Employee by Name
+    searchEmployees: async (name: string): Promise<Employee[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees/search?name=${encodeURIComponent(name)}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to search employees");
+        return result.data;
     },
 
+    // 4. Create Employee
+    createEmployee: async (data: EmployeeFormData): Promise<Employee> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to create employee");
+        return result.data;
+    },
+
+    // 5. Update Employee
+    updateEmployee: async (id: string, data: EmployeeFormData): Promise<Employee> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Failed to update employee");
+        return result.data;
+    },
+
+    // 6. Delete Employee
     deleteEmployee: async (id: string): Promise<boolean> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return true;
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/employees/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
     }
 };

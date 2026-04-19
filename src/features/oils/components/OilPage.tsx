@@ -2,193 +2,135 @@
 
 import React, { useState } from "react";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
 import Header from "@/components/layout/Header";
-import DataTable from "@/components/shared/DataTable";
 import Modal from "@/components/shared/Modal";
-import Image from "next/image";
+import Button from "@/ui/Button";
+import { Input } from "@/ui/Input";
 import { useOils } from "../hooks/useOils";
-import OilForm from "./forms/OilForm";
-import { OilRecord, OilRecordType } from "../types/oils.types";
-import { DataRow, TabItem } from "@/types";
+import OilSalesTab from "./OilSalesTab";
+import OilInventoryTab from "./OilInventoryTab";
 
-interface OilPageProps {
-    type: OilRecordType;
-}
+type OilTab = 'sales' | 'inventory';
 
-export default function OilPage({ type }: OilPageProps) {
-    const t = useTranslations("table.oils");
-    const tStorage = useTranslations("table.oilStorage");
+export default function OilPage() {
+    const t = useTranslations("oils");
     const tButtons = useTranslations("buttons");
-    const tModals = useTranslations("modals");
-    const pathname = usePathname();
+    const tPages = useTranslations("pages");
+    const tBenzene = useTranslations("benzene"); // Reusing date label
 
-    const { records, isLoading, addRecord, updateRecord, removeRecord } = useOils(type);
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+    const [activeTab, setActiveTab] = useState<OilTab>("sales");
+    const [isAddOilOpen, setIsAddOilOpen] = useState(false);
 
-    const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [isEditOpen, setIsEditOpen] = useState(false);
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [isImageOpen, setIsImageOpen] = useState(false);
+    const { oils, isLoading: isOilsLoading, addOil } = useOils();
+    const [oilFormData, setOilFormData] = useState({
+        oilName: "",
+        price: 0
+    });
 
-    const [selectedRecord, setSelectedRecord] = useState<OilRecord | null>(null);
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const handleAddOil = async (e: React.FormEvent) => {
+        e.preventDefault();
+        await addOil({
+            ...oilFormData,
+            date: selectedDate
+        });
+        setIsAddOilOpen(false);
+        setOilFormData({ oilName: "", price: 0 });
+    };
 
-    const tabs: TabItem[] = [
-        { href: "/oils/shift", labelKey: "oilShift", active: type === 'shift' },
-        { href: "/oils/storage", labelKey: "oilStorage", active: type === 'storage' },
+    const tabs: { key: OilTab; label: string; icon: string }[] = [
+        { key: "sales", label: tPages("oilShift"), icon: "bx-receipt" },
+        { key: "inventory", label: tPages("oilStorage"), icon: "bx-package" }
     ];
-
-    const columns = type === 'shift'
-        ? [t("oilType"), t("startBalance"), t("endBalance"), t("incoming"), t("sold"), t("image")]
-        : [t("oilType"), t("startBalance"), t("endBalance"), tStorage("storageIncoming"), t("image")];
-
-    const rows: DataRow[] = records.map(record => ({
-        cells: type === 'shift'
-            ? [record.oilType, record.startBalance, record.endBalance, record.incoming, record.sold || "0", record.image]
-            : [record.oilType, record.startBalance, record.endBalance, record.incoming, record.image],
-        editable: true
-    }));
-
-    const handleEdit = (index: number) => {
-        setSelectedRecord(records[index]);
-        setIsEditOpen(true);
-    };
-
-    const handleDelete = (index: number) => {
-        setSelectedRecord(records[index]);
-        setIsDeleteOpen(true);
-    };
-
-    const handleImageClick = (url: string) => {
-        setSelectedImage(url);
-        setIsImageOpen(true);
-    };
-
-    const onAddSubmit = async (data: any) => {
-        await addRecord(data);
-        setIsCreateOpen(false);
-    };
-
-    const onEditSubmit = async (data: any) => {
-        if (selectedRecord) {
-            await updateRecord(selectedRecord.oilType, data);
-            setIsEditOpen(false);
-        }
-    };
-
-    const onDeleteConfirm = async () => {
-        if (selectedRecord) {
-            await removeRecord(selectedRecord.oilType);
-            setIsDeleteOpen(false);
-        }
-    };
 
     return (
         <div className="pb-10">
-            <Header titleKey={type === 'shift' ? "oilShift" : "oilStorage"} tabs={tabs} />
+            <Header titleKey="oilManagement" />
 
-            <div className="flex justify-end mb-6">
-                <button
-                    onClick={() => setIsCreateOpen(true)}
-                    className="btn-primary flex items-center gap-2 shadow-sm"
-                >
-                    <i className="bx bx-plus text-lg"></i>
-                    {tButtons("add")}
-                </button>
+            {/* Global Date Filter Always Visible */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div className="flex gap-2">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.key}
+                            onClick={() => setActiveTab(tab.key)}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200
+                                ${activeTab === tab.key
+                                    ? "bg-primary text-white shadow-md shadow-primary/25"
+                                    : "bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                                }`}
+                        >
+                            <i className={`bx ${tab.icon} text-lg`}></i>
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => setIsAddOilOpen(true)}
+                        className="btn-secondary flex items-center gap-2 h-[42px]"
+                    >
+                        <i className="bx bx-plus-circle text-lg"></i>
+                        {t("manageOils")}
+                    </button>
+                    <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm h-[42px]">
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{tBenzene("pricesTab.date")}:</span>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer"
+                        />
+                    </div>
+                </div>
             </div>
 
-            <div className="page-card shadow-glass">
-                {isLoading ? (
+            {/* Content Tabs */}
+            <div className="page-card">
+                {isOilsLoading ? (
                     <div className="flex justify-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     </div>
+                ) : activeTab === "sales" ? (
+                    <OilSalesTab date={selectedDate} oils={oils} />
                 ) : (
-                    <DataTable
-                        columns={columns}
-                        rows={rows}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onImageClick={handleImageClick}
-                    />
+                    <OilInventoryTab date={selectedDate} oils={oils} />
                 )}
             </div>
 
-            {/* Create Modal */}
+            {/* Add New Oil Type Modal */}
             <Modal
-                isOpen={isCreateOpen}
-                onClose={() => setIsCreateOpen(false)}
-                title={tModals("createRecordTitle")}
+                isOpen={isAddOilOpen}
+                onClose={() => setIsAddOilOpen(false)}
+                title={t("addOilTitle")}
             >
-                <OilForm
-                    type={type}
-                    onSubmit={onAddSubmit}
-                    onCancel={() => setIsCreateOpen(false)}
-                />
-            </Modal>
-
-            {/* Edit Modal */}
-            <Modal
-                isOpen={isEditOpen}
-                onClose={() => setIsEditOpen(false)}
-                title={tModals("editRecordTitle")}
-            >
-                <OilForm
-                    type={type}
-                    initialData={selectedRecord || undefined}
-                    onSubmit={onEditSubmit}
-                    onCancel={() => setIsEditOpen(false)}
-                    isEditing
-                />
-            </Modal>
-
-            {/* Delete Confirmation Modal */}
-            <Modal
-                isOpen={isDeleteOpen}
-                onClose={() => setIsDeleteOpen(false)}
-                title={tModals("confirmDeleteTitle")}
-                footer={
-                    <div className="flex gap-3">
-                        <button className="btn-secondary" onClick={() => setIsDeleteOpen(false)}>
+                <form onSubmit={handleAddOil} className="space-y-4">
+                    <Input
+                        label={t("oilNameLabel")}
+                        placeholder={t("oilNamePlaceholder")}
+                        value={oilFormData.oilName}
+                        onChange={(e) => setOilFormData({ ...oilFormData, oilName: e.target.value })}
+                        required
+                    />
+                    <Input
+                        label={t("priceLabel")}
+                        type="number"
+                        step="0.01"
+                        placeholder="150"
+                        value={oilFormData.price}
+                        onChange={(e) => setOilFormData({ ...oilFormData, price: Number(e.target.value) })}
+                        required
+                    />
+                    <div className="flex justify-end gap-3 mt-6">
+                        <Button variant="secondary" onClick={() => setIsAddOilOpen(false)}>
                             {tButtons("cancel")}
-                        </button>
-                        <button className="btn-danger" onClick={onDeleteConfirm}>
-                            {tButtons("delete")}
-                        </button>
+                        </Button>
+                        <Button type="submit">
+                            {t("addOilButton")}
+                        </Button>
                     </div>
-                }
-            >
-                <div className="flex flex-col items-center text-center py-4">
-                    <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 mb-4 scale-110">
-                        <i className="bx bx-trash text-3xl"></i>
-                    </div>
-                    <p className="text-slate-600 font-medium">
-                        {tModals("confirmDeleteMessage")}
-                    </p>
-                    {selectedRecord && (
-                        <p className="mt-2 font-bold text-slate-800">
-                            {selectedRecord.oilType}
-                        </p>
-                    )}
-                </div>
-            </Modal>
-
-            {/* Image Viewer Modal */}
-            <Modal
-                isOpen={isImageOpen}
-                onClose={() => setIsImageOpen(false)}
-                title={t("image")}
-            >
-                <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-2xl">
-                    {selectedImage && (
-                        <Image
-                            src={selectedImage}
-                            alt="Oil Preview"
-                            fill
-                            className="object-contain bg-slate-900"
-                            unoptimized
-                        />
-                    )}
-                </div>
+                </form>
             </Modal>
         </div>
     );

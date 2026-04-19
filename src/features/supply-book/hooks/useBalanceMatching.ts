@@ -1,29 +1,62 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { BalanceMatchingRecord, GaugeRecord } from '../types/supply-book.types';
+import { MonthlyBalanceResponse, StandardGaugesResponse, StandardUpdatePayload } from '../types/supply-book.types';
 import { supplyBookApi } from '../api/supply-book.api';
 
-export function useBalanceMatching() {
-    const [balanceRecords, setBalanceRecords] = useState<BalanceMatchingRecord[]>([]);
-    const [gauges, setGauges] = useState<GaugeRecord[]>([]);
+export function useBalanceMatching(selectedMonth: number, selectedDate: string) {
+    const [balanceData, setBalanceData] = useState<MonthlyBalanceResponse>({});
+    const [gauges, setGauges] = useState<StandardGaugesResponse>({});
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     const fetchData = useCallback(async () => {
-        setIsLoading(true);
-        const [balanceData, gaugeData] = await Promise.all([
-            supplyBookApi.getBalanceMatching(),
-            supplyBookApi.getGauges()
-        ]);
-        setBalanceRecords(balanceData);
-        setGauges(gaugeData);
-        setIsLoading(false);
-    }, []);
+        try {
+            setIsLoading(true);
+            const [balance, standardData] = await Promise.all([
+                supplyBookApi.getMonthlyBalance(selectedMonth),
+                supplyBookApi.getStandardByDate(selectedDate)
+            ]);
+            setBalanceData(balance);
+            setGauges(standardData);
+            setError(null);
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch balance data");
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    }, [selectedMonth, selectedDate]);
 
-    const updateGauge = async (id: string, data: Partial<GaugeRecord>) => {
-        const updated = await supplyBookApi.updateGauge(id, data);
-        setGauges(prev => prev.map(g => g.id === id ? updated : g));
-        return updated;
+    const updateStandard = async (data: StandardUpdatePayload) => {
+        try {
+            await supplyBookApi.updateStandard(data);
+            await fetchData();
+        } catch (err: any) {
+            setError(err.message || "Failed to update standard");
+            throw err;
+        }
+    };
+
+    const resetStandard = async (date: string) => {
+        try {
+            await supplyBookApi.resetStandard(date);
+            await fetchData();
+        } catch (err: any) {
+            setError(err.message || "Failed to reset standard");
+            throw err;
+        }
+    };
+
+    const deleteBalance = async (month: number, benzType?: string) => {
+        try {
+            const count = await supplyBookApi.deleteBalance(month, benzType);
+            await fetchData();
+            return count;
+        } catch (err: any) {
+            setError(err.message || "Failed to delete balance");
+            throw err;
+        }
     };
 
     useEffect(() => {
@@ -31,10 +64,13 @@ export function useBalanceMatching() {
     }, [fetchData]);
 
     return {
-        balanceRecords,
+        balanceData,
         gauges,
         isLoading,
-        updateGauge,
+        error,
+        updateStandard,
+        resetStandard,
+        deleteBalance,
         refresh: fetchData
     };
 }

@@ -1,16 +1,23 @@
 export interface Employee {
-    id: string;
+    id?: string;
+    _id?: string;
     name: string;
-    nationalId: string;
-    phone: string;
-    position: string;
-    salary: string;
+    nationalId: number;
+    mobileNum: number;
+    job: string;
+    salary: number;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface EmployeeFormData {
     name: string;
-    nationalId: string;
-    phone: string;
-    position: string;
-    salary: string;
+    nationalId: number;
+    mobileNum: number;
+    job: string;
+    salary: number;
+}
+
+export interface EmployeeSearchFilters {
+    name?: string;
 }

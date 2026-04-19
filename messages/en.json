@@ -8,7 +8,8 @@
         "title": "Total Al-Nadi Station",
         "username": "Enter username",
         "password": "Enter password",
-        "submit": "Login"
+        "submit": "Login",
+        "Invalid email or password": "Invalid email or password"
     },
     "overview": {
         "totalSales": "Total Sales",
@@ -30,13 +31,14 @@
         "expenses": "Expenses",
         "vouchers": "Vouchers",
         "deferredClients": "Deferred Clients",
-        "treasuryDiary": "Treasury Diary",
+        "dailyTreasury": "Daily Treasury",
         "supplyBook": "Supply Book",
         "treasuryMovement": "Treasury Movement",
         "benzene": "Benzene",
         "employees": "Employees",
         "systemLog": "System Log",
-        "financialSystem": "Financial System",
+        "financialHub": "Financial Hub",
+        "statements": "Statements Management",
         "settings": "Settings"
     },
     "pages": {
@@ -44,21 +46,25 @@
         "shiftDiary": "Shift Diary",
         "oilShift": "Oil Shift",
         "oilStorage": "Oil Storage",
+        "oilManagement": "Oil Management",
         "expenses": "Expenses",
         "vouchers": "Vouchers",
         "voucherMatching": "Voucher Matching",
         "deferredClients": "Deferred Clients",
-        "treasuryDiary": "Treasury Diary",
+        "dailyTreasury": "Daily Treasury",
         "supplyBook": "Supply Book",
         "balanceMatching": "Balance Matching",
         "treasuryMovement": "Treasury Movement",
         "accounts": "Accounts",
         "benzene": "Benzene",
+        "benzeneReadings": "Pump Readings",
+        "benzenePrices": "Prices",
         "employees": "Employees",
         "systemLog": "System Log",
-        "financialSystem": "Financial System",
-        "trialBalance": "Trial Balance",
-        "incomeStatement": "Income Statement",
+        "financialHub": "Financial Hub",
+        "financialHubSummary": "Summary",
+        "financialHubReport": "Report",
+        "statements": "Statements Management",
         "settings": "Settings"
     },
     "buttons": {
@@ -72,13 +78,15 @@
         "cancel": "Cancel",
         "confirm": "Confirm",
         "addDelete": "Add/Delete",
-        "actions": "Actions"
+        "actions": "Actions",
+        "reset": "Reset"
     },
     "modals": {
         "confirmDeleteTitle": "Confirm Delete",
         "confirmDeleteMessage": "Are you sure you want to delete this record? This action cannot be undone.",
         "editRecordTitle": "Edit Record",
-        "createRecordTitle": "Create New Record"
+        "createRecordTitle": "Create New Record",
+        "imagePreviewTitle": "Image Preview"
     },
     "table": {
         "shiftDiary": {
@@ -95,10 +103,14 @@
         },
         "oils": {
             "oilType": "Oil Type",
-            "startBalance": "Opening Balance",
-            "endBalance": "Closing Balance",
+            "startBalance": "Start Balance",
+            "endBalance": "End Balance",
+            "firstTermBalance": "1st Term Bal.",
+            "endTermBalance": "End Term Bal.",
             "incoming": "Incoming",
             "sold": "Sold",
+            "price": "Price",
+            "total": "Total",
             "image": "Image"
         },
         "oilStorage": {
@@ -110,33 +122,34 @@
         },
         "expenses": {
             "amount": "Amount",
-            "receipt": "Receipt"
+            "receiptName": "Receipt Name"
         },
         "vouchers": {
+            "date": "Date",
             "entity": "Entity",
             "serial": "Voucher Serial",
             "total": "Total",
             "category": "Category",
             "price": "Price",
-            "image": "Image"
+            "benzType": "Fuel Type"
         },
         "voucherMatching": {
+            "voucherMatching": "Voucher Matching Summary",
             "total": "Total",
             "category": "Category",
-            "count": "Count"
+            "count": "Count",
+            "price": "Price"
         },
         "clients": {
+            "money": "Money",
             "amount": "Amount",
-            "receipt": "Receipt",
-            "client": "Client"
-        },
-        "treasuryDiary": {
-            "amount": "Amount",
-            "price": "Price",
-            "quantity": "Quantity",
-            "description": "Description"
+            "receiptName": "Receipt Name",
+            "receiptNumber": "Receipt No.",
+            "client": "Client",
+            "image": "Image"
         },
         "supplyBook": {
+            "benzType": "Fuel Type",
             "standard": "Standard",
             "end": "End",
             "pumps": "Pumps",
@@ -152,22 +165,6 @@
             "diesel": "Diesel",
             "description": "Description"
         },
-        "treasuryMovement": {
-            "amount": "Amount",
-            "receipt": "Receipt",
-            "description": "Description"
-        },
-        "accounts": {
-            "receipt": "Receipt",
-            "amount": "Amount"
-        },
-        "employees": {
-            "name": "Name",
-            "nationalId": "National ID",
-            "phone": "Phone",
-            "position": "Position",
-            "salary": "Salary"
-        },
         "systemLog": {
             "modifiedTo": "Modified To",
             "modifiedFrom": "Modified From",
@@ -176,24 +173,91 @@
             "time": "Time",
             "date": "Date"
         },
-        "financial": {
-            "accountName": "Account Name",
-            "debit": "Debit",
-            "credit": "Credit",
-            "balance": "Balance"
-        },
         "benzene": {
-            "type": "Benzene Type",
+            "trumbaNumber": "Pump Number",
+            "type": "Type",
             "startBalance": "Opening Balance",
             "endBalance": "Closing Balance",
             "incoming": "Incoming",
             "sold": "Sold",
             "price": "Price",
-            "total": "Total",
-            "date": "Date"
-        }
+            "total": "Total"
+        },
+        "statements": {
+            "name": "Statement Name",
+            "createdAt": "Created At"
+        },
+        "date": "Date"
+    },
+    "dailyTreasury": {
+        "date": "Date",
+        "amount": "Amount",
+        "price": "Price",
+        "quantity": "Quantity",
+        "statement": "Statement",
+        "money": "Money",
+        "fuelSales": "Fuel Sales",
+        "oilSales": "Oil Sales",
+        "deductions": "Deductions",
+        "expenses": "Expenses",
+        "vouchers": "Vouchers",
+        "termClients": "Deferred Clients",
+        "totalSafe": "Safe Total",
+        "island": "Island",
+        "fromShift": "From Shift",
+        "manualEntries": "Additional Entries",
+        "enterStatement": "Enter statement details...",
+        "totalIncome": "Total Income",
+        "summaryHighlights": "Summary Highlights",
+        "totalDeductions": "Total Deductions",
+        "lastSafe": "Last Safe",
+        "solar": "Solar",
+        "ben80": "Benzene 80",
+        "ben92": "Benzene 92",
+        "ben95": "Benzene 95",
+        "fuelBreakdown": "Fuel Breakdown"
+    },
+    "treasuryMovement": {
+        "money": "Amount",
+        "receiptName": "Receipt Name",
+        "statement": "Statement",
+        "description": "Notes",
+        "type": "Type",
+        "income": "Receipts",
+        "expense": "Payments",
+        "date": "Date"
+    },
+    "accounts": {
+        "receipt": "Receipt",
+        "amount": "Amount"
+    },
+    "shiftDiaryPage": {
+        "selectDate": "Select Date:",
+        "loading": "Loading data...",
+        "retry": "Retry",
+        "shiftNumber": "Shift Diary Number",
+        "shiftDate": "Shift Date",
+        "pumpReadings": "Pump Readings (Benzene)",
+        "receipts": "Receipts",
+        "payments": "Payments",
+        "noEntries": "No entries",
+        "totalOf": "Total of",
+        "currency": "EGP",
+        "noDataTitle": "No data available for this date",
+        "noDataSubtitle": "Please select another date from above."
+    },
+    "systemLog": {
+        "adminName": "Admin",
+        "email": "Email",
+        "role": "Role",
+        "type": "Type",
+        "category": "Category",
+        "move": "Action",
+        "time": "Time",
+        "date": "Date"
     },
     "labels": {
+        "date": "Date",
         "selectOilType": "Select Oil Type",
         "startBalance": "Opening Balance",
         "endBalance": "Closing Balance",
@@ -203,6 +267,7 @@
         "startBalanceShort": "Start Balance",
         "endBalanceShort": "End Balance",
         "receipt": "Receipt",
+        "receiptName": "Receipt Name",
         "enterAmount": "Enter Amount",
         "enterCategory": "Enter Category",
         "enterSerial": "Enter Voucher Serial",
@@ -227,6 +292,7 @@
         "salaryShort": "Salary"
     },
     "fuelTypes": {
+        "all": "All Types",
         "diesel": "Diesel",
         "gasoline95": "Gasoline 95",
         "gasoline92": "Gasoline 92",
@@ -269,27 +335,58 @@
     },
     "forgotPassword": {
         "title": "Forgot Password",
-        "description": "Enter your username to receive a reset link.",
-        "username": "Username",
-        "submit": "Send Reset Link",
+        "description": "Enter your email to receive a 6-digit verification code.",
+        "email": "Email Address",
+        "submit": "Send OTP Code",
+        "otp": "OTP Code",
+        "verify": "Verify Code",
+        "success": "OTP verified successfully!",
+        "otpSent": "OTP has been sent to your email.",
         "backToLogin": "Back to Login",
-        "success": "Reset link sent successfully!"
+        "email_send_error": "Failed to send email. Please contact the administrator.",
+        "admin_not_found": "No account found with this email."
     },
     "resetPassword": {
         "title": "Reset Password",
         "password": "New Password",
         "confirmPassword": "Confirm New Password",
-        "submit": "Reset Password",
-        "success": "Password reset successfully!"
+        "submit": "Update Password",
+        "success": "Password has been updated successfully!"
+    },
+    "oils": {
+        "addOilTitle": "Add New Oil Type",
+        "oilNameLabel": "Oil Name",
+        "oilNamePlaceholder": "e.g. Total 5000",
+        "priceLabel": "Price",
+        "addOilButton": "Add Oil",
+        "manageOils": "Manage Oil Types",
+        "salesReadingTitle": "Oil Shift Reading",
+        "inventoryReadingTitle": "Oil Inventory Reading",
+        "firstTermLabel": "First Term Balance",
+        "endTermLabel": "End Term Balance",
+        "incoming": "Incoming",
+        "startStorageLabel": "Storage Balance (Start)",
+        "treasuryWardLabel": "Incoming (Treasury)"
     },
     "benzene": {
         "title": "Benzene Management",
         "form": {
             "type": "Benzene Type",
+            "trumbaNumber": "Pump Number",
             "startBalance": "Opening Balance",
             "endBalance": "Closing Balance",
             "incoming": "Incoming",
             "price": "Price"
+        },
+        "pricesTab": {
+            "date": "Date",
+            "solar": "Solar",
+            "ben80": "Benzene 80",
+            "ben92": "Benzene 92",
+            "ben95": "Benzene 95",
+            "currency": "EGP",
+            "noData": "No price data for this date",
+            "saving": "Saving..."
         }
     },
     "settings": {
@@ -302,26 +399,85 @@
         "account": {
             "title": "Account Settings",
             "subtitle": "Manage your personal information",
-            "name": "Full Name",
+            "firstName": "First Name",
+            "lastName": "Last Name",
             "email": "Email Address",
-            "username": "Username"
+            "phoneNumber": "Phone Number",
+            "language": "Preferred Language",
+            "updateSuccess": "Profile updated successfully!"
         },
         "security": {
             "title": "Account Security",
             "subtitle": "Secure your account with a strong password",
             "currentPassword": "Current Password",
             "newPassword": "New Password",
-            "confirmPassword": "Confirm New Password"
+            "confirmPassword": "Confirm New Password",
+            "passwordsDoNotMatch": "New passwords do not match",
+            "passwordUpdateSuccess": "Password changed successfully!"
         },
         "admins": {
             "title": "Admin Management",
             "subtitle": "Manage system administrators and their permissions",
+            "searchPlaceholder": "Search by email...",
+            "deleteConfirmMessage": "Are you sure you want to delete admin",
             "table": {
                 "name": "Name",
-                "username": "Username",
+                "email": "Email",
                 "role": "Role",
-                "status": "Status"
+                "phoneNumber": "Phone Number"
+            },
+            "form": {
+                "firstName": "First Name",
+                "lastName": "Last Name",
+                "email": "Email Address",
+                "password": "Password",
+                "passwordKeep": "Leave empty to keep current password",
+                "role": "Role",
+                "phoneNumber": "Phone Number",
+                "nationalId": "National ID"
+            },
+            "roles": {
+                "super_admin": "Super Admin",
+                "admin": "Admin",
+                "manager": "Manager",
+                "cashier": "Cashier",
+                "financial": "Financial"
             }
         }
+    },
+    "financialHub": {
+        "title": "Financial Hub",
+        "dailySummary": "Daily Summary",
+        "periodicReport": "Periodic Report",
+        "tabs": {
+            "summary": "Daily Summary",
+            "report": "Periodic Report"
+        },
+        "metrics": {
+            "fuelRevenue": "Fuel Revenue",
+            "oilRevenue": "Oil Revenue",
+            "receipts": "Safe Receipts",
+            "payments": "Safe Payments",
+            "expenses": "Operational Expenses",
+            "netProfit": "Net Profit",
+            "totalIn": "Total Inflow",
+            "totalOut": "Total Outflow",
+            "liters": "Liters Sold",
+            "transactionCount": "Transactions",
+            "salaries": "Salary Liability",
+            "employees": "Employees",
+            "clientPayments": "Client Payments",
+            "clientDebts": "Client Debts",
+            "islandCash": "Island Cash",
+            "vouchers": "Voucher Total"
+        },
+        "form": {
+            "selectDate": "Select Date",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "generateReport": "Generate Report"
+        },
+        "noData": "No financial data found for this selection.",
+        "loading": "Aggregating financial data..."
     }
 }

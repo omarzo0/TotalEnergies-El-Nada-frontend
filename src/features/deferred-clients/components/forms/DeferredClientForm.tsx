@@ -3,11 +3,12 @@
 import React from "react";
 import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
-import { DeferredClientRecord } from "../../types/deferred-clients.types";
+import { DeferredClientPayment } from "../../types/deferred-clients.types";
 import { useDeferredClientsForm } from "../../hooks/useDeferredClientsForm";
+import Button from "@/ui/Button";
 
 interface DeferredClientFormProps {
-    initialData?: DeferredClientRecord;
+    initialData?: DeferredClientPayment;
     onSubmit: (data: any) => void;
     onCancel: () => void;
     isEditing?: boolean;
@@ -31,66 +32,61 @@ export default function DeferredClientForm({ initialData, onSubmit, onCancel, is
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input
-                    label={tLabels("client")}
-                    value={formData.client}
-                    onChange={(e) => handleChange("client", e.target.value)}
-                    error={errors.client}
-                    placeholder="e.g. عميل 1"
+                    label={tLabels("client") || "Client Name"}
+                    value={formData.clientName}
+                    onChange={(e) => handleChange("clientName", e.target.value)}
+                    error={errors.clientName}
+                    placeholder="e.g. شركة النصر"
+                    required
                 />
                 <Input
-                    label={tLabels("receipt")}
-                    value={formData.receipt}
-                    onChange={(e) => handleChange("receipt", e.target.value)}
-                    error={errors.receipt}
-                    placeholder="e.g. سند #100"
+                    label={tLabels("receiptName") || "Receipt Name"}
+                    value={formData.receiptName}
+                    onChange={(e) => handleChange("receiptName", e.target.value)}
+                    error={errors.receiptName}
+                    placeholder="e.g. توريد وقود"
+                    required
                 />
-                <div className="sm:col-span-2">
-                    <Input
-                        label={tLabels("amount")}
-                        type="number"
-                        value={formData.amount}
-                        onChange={(e) => handleChange("amount", e.target.value)}
-                        error={errors.amount}
-                        placeholder="0.00"
-                    />
+                <Input
+                    label={tLabels("receiptNumber") || "Receipt Number"}
+                    value={formData.receiptNumber}
+                    onChange={(e) => handleChange("receiptNumber", e.target.value)}
+                    error={errors.receiptNumber}
+                    placeholder="e.g. REC-123"
+                    required
+                />
+                <div className="hidden">
+                    {/* Placeholder grid spacing if needed */}
                 </div>
-            </div>
-
-            <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500">{t("image")}</label>
-                {isEditing ? (
-                    <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-sm border border-slate-200 group">
-                        <img
-                            src={formData.image}
-                            alt="Current Preview"
-                            className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-                            <span className="text-white text-xs font-bold uppercase tracking-wider">{tButtons("attachImage")}</span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center hover:border-primary/50 transition-colors cursor-pointer group">
-                        <i className="bx bx-cloud-upload text-3xl text-slate-300 group-hover:text-primary transition-colors"></i>
-                        <p className="text-sm text-slate-400 mt-2">{tButtons("attachImage")}</p>
-                    </div>
-                )}
+                <Input
+                    label={t("money") || "Money"}
+                    type="number"
+                    step="0.01"
+                    value={formData.money}
+                    onChange={(e) => handleChange("money", Number(e.target.value))}
+                    error={errors.money}
+                    placeholder="0.00"
+                    required
+                />
+                <Input
+                    label={t("amount") || "Amount"}
+                    type="number"
+                    step="0.01"
+                    value={formData.amount}
+                    onChange={(e) => handleChange("amount", Number(e.target.value))}
+                    error={errors.amount}
+                    placeholder="0.00"
+                    required
+                />
             </div>
 
             <div className="flex justify-end gap-3 mt-6 border-t pt-4">
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="btn-secondary"
-                >
+                <Button variant="secondary" onClick={onCancel}>
                     {tButtons("cancel")}
-                </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
+                </Button>
+                <Button type="submit" className="shadow-lg shadow-primary/20">
                     {isEditing ? tButtons("save") : tButtons("confirm")}
-                </button>
+                </Button>
             </div>
         </form>
     );

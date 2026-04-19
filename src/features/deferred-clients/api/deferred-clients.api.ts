@@ -1,41 +1,89 @@
-import { DeferredClientRecord } from '../types/deferred-clients.types';
+import { DeferredClientPayment, TermClientResponse } from '../types/deferred-clients.types';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getHeaders = () => {
+    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
+
+    if (token) {
+        token = token.trim().replace(/^"(.*)"$/, '$1');
+    }
+
+    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
+        console.warn("FrontEnd API (Deferred Clients): Token is missing or invalid!");
+        return { "Content-Type": "application/json" };
+    }
+
+    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    return {
+        "Content-Type": "application/json",
+        "Authorization": finalToken
+    };
+};
 
 export const deferredClientsApi = {
-    getClients: async (): Promise<DeferredClientRecord[]> => {
-        // Mock data
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return [
-            { id: "1", client: "عميل 1", receipt: "سند #100", amount: "5000", image: "/images/logo.png" },
-            { id: "2", client: "عميل 2", receipt: "سند #101", amount: "3000", image: "/images/logo.png" },
-            { id: "3", client: "عميل 3", receipt: "سند #102", amount: "7500", image: "/images/logo.png" },
-        ];
-    },
+    getPaymentsByDate: async (date: string): Promise<TermClientResponse> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
 
-    createClient: async (data: Partial<DeferredClientRecord>): Promise<DeferredClientRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const response = await fetch(`${API_URL}/term-clients/${date}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            const msg = (result.message || "").toLowerCase();
+            const isNoData = response.status === 404 || msg.includes("data") || msg.includes("بيانات");
+            if (isNoData) return { data: [], total: 0 };
+            throw new Error(result.message);
+        }
+
+        // Backend returns data in result.data which is an array [ { data: [], total: 0 } ]
+        const mainData = Array.isArray(result.data) ? result.data[0] : result.data;
+
         return {
-            id: Math.random().toString(36).substr(2, 9),
-            client: data.client || '',
-            receipt: data.receipt || '',
-            amount: data.amount || '0',
-            image: data.image || '/images/logo.png',
+            data: mainData?.data || [],
+            total: mainData?.total || 0
         };
     },
 
-    updateClient: async (id: string, data: Partial<DeferredClientRecord>): Promise<DeferredClientRecord> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return {
-            id,
-            client: '',
-            receipt: '',
-            amount: '0',
-            image: '/images/logo.png',
-            ...data
-        };
+    addPayment: async (data: Partial<DeferredClientPayment>): Promise<DeferredClientPayment> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/term-clients`, {
+            method: 'POST',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
     },
 
-    deleteClient: async (id: string): Promise<boolean> => {
-        await new Promise(resolve => setTimeout(resolve, 500));
-        return true;
+    updatePayment: async (id: string, data: Partial<DeferredClientPayment>): Promise<DeferredClientPayment> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/term-clients/${id}`, {
+            method: 'PUT',
+            headers: getHeaders(),
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return result.data;
+    },
+
+    deletePayment: async (id: string): Promise<boolean> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/term-clients/${id}`, {
+            method: 'DELETE',
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        return result.success;
     }
 };

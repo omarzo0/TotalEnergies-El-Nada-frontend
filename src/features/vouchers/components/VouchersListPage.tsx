@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import Header from "@/components/layout/Header";
 import DataTable from "@/components/shared/DataTable";
 import Modal from "@/components/shared/Modal";
-import Image from "next/image";
 import { useVouchers } from "../hooks/useVouchers";
 import VoucherForm from "./forms/VoucherForm";
 import { VoucherRecord } from "../types/vouchers.types";
@@ -16,33 +15,51 @@ export default function VouchersListPage() {
     const t = useTranslations("table.vouchers");
     const tButtons = useTranslations("buttons");
     const tModals = useTranslations("modals");
+    const tPrices = useTranslations("benzene.pricesTab");
     const pathname = usePathname();
 
-    const { vouchers, isLoading, fetchVouchers, addVoucher, updateVoucher, removeVoucher } = useVouchers();
+    const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+    const { vouchers, isLoading, fetchVouchers, addVoucher, updateVoucher, removeVoucher, error } = useVouchers(selectedDate);
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const [isImageOpen, setIsImageOpen] = useState(false);
 
     const [selectedVoucher, setSelectedVoucher] = useState<VoucherRecord | null>(null);
 
     useEffect(() => {
-        fetchVouchers();
-    }, [fetchVouchers]);
+        fetchVouchers(selectedDate);
+    }, [selectedDate, fetchVouchers]);
 
     const tabs: TabItem[] = [
         { href: "/vouchers/list", labelKey: "vouchers", active: pathname === "/vouchers/list" },
         { href: "/vouchers/matching", labelKey: "voucherMatching", active: pathname === "/vouchers/matching" },
     ];
 
-    const columns = [t("entity"), t("serial"), t("total"), t("category"), t("price"), t("image")];
+    const columns = [
+        t("date"),
+        t("entity"),
+        t("serial"),
+        t("total"),
+        t("category"),
+        t("price"),
+        t("benzType")
+    ];
 
     const rows: DataRow[] = vouchers.map(voucher => ({
-        cells: [voucher.entity, voucher.serial, voucher.total, voucher.category, voucher.price, voucher.image],
+        cells: [
+            voucher.date,
+            voucher.side,
+            voucher.voucherSerial,
+            (voucher.total ?? 0).toLocaleString(),
+            (voucher.category ?? 0).toString(),
+            (voucher.price ?? 0).toLocaleString(),
+            voucher.benzType
+        ],
         editable: true,
         id: voucher.id
     }));
+
 
     const handleEdit = (index: number) => {
         setSelectedVoucher(vouchers[index]);
@@ -54,23 +71,17 @@ export default function VouchersListPage() {
         setIsDeleteOpen(true);
     };
 
-    const handleImageClick = (url: string) => {
-        const voucher = vouchers.find(v => v.image === url);
-        if (voucher) {
-            setSelectedVoucher(voucher);
-            setIsImageOpen(true);
-        }
-    };
-
     const onAddSubmit = async (data: any) => {
         await addVoucher(data);
         setIsCreateOpen(false);
+        fetchVouchers(selectedDate);
     };
 
     const onEditSubmit = async (data: any) => {
         if (selectedVoucher && selectedVoucher.id) {
             await updateVoucher(selectedVoucher.id, data);
             setIsEditOpen(false);
+            fetchVouchers(selectedDate);
         }
     };
 
@@ -85,7 +96,17 @@ export default function VouchersListPage() {
         <div className="pb-10">
             <Header titleKey="vouchers" tabs={tabs} />
 
-            <div className="flex justify-end mb-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm">
+                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{tPrices("date")}:</span>
+                    <input
+                        type="date"
+                        value={selectedDate}
+                        onChange={(e) => setSelectedDate(e.target.value)}
+                        className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer"
+                    />
+                </div>
+
                 <button
                     onClick={() => setIsCreateOpen(true)}
                     className="btn-primary flex items-center gap-2 shadow-sm"
@@ -95,19 +116,33 @@ export default function VouchersListPage() {
                 </button>
             </div>
 
+            {error && (
+                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center gap-3">
+                    <i className="bx bx-error-circle text-2xl"></i>
+                    <p className="text-sm font-medium">{error}</p>
+                </div>
+            )}
+
             <div className="page-card shadow-glass">
                 {isLoading ? (
                     <div className="flex justify-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     </div>
                 ) : (
-                    <DataTable
-                        columns={columns}
-                        rows={rows}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onImageClick={handleImageClick}
-                    />
+                    <>
+                        <DataTable
+                            columns={columns}
+                            rows={rows}
+                            onEdit={handleEdit}
+                            onDelete={handleDelete}
+                        />
+                        {vouchers.length === 0 && (
+                            <div className="text-center py-20 text-slate-400">
+                                <i className="bx bx-receipt text-5xl mb-3 block"></i>
+                                <p>No vouchers found for this date.</p>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
 
@@ -118,6 +153,7 @@ export default function VouchersListPage() {
                 title={tModals("createRecordTitle")}
             >
                 <VoucherForm
+                    initialData={{ date: selectedDate } as any}
                     onSubmit={onAddSubmit}
                     onCancel={() => setIsCreateOpen(false)}
                 />
@@ -135,26 +171,6 @@ export default function VouchersListPage() {
                     onCancel={() => setIsEditOpen(false)}
                     isEditing
                 />
-            </Modal>
-
-            {/* Image Preview Modal */}
-            <Modal
-                isOpen={isImageOpen}
-                onClose={() => setIsImageOpen(false)}
-                title={tModals("imagePreviewTitle") || "Image Preview"}
-                maxWidth="max-w-4xl"
-            >
-                {selectedVoucher && (
-                    <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 group shadow-inner border border-slate-200/50">
-                        <Image
-                            src={selectedVoucher.image}
-                            alt="Receipt Preview"
-                            fill
-                            className="object-contain"
-                            unoptimized
-                        />
-                    </div>
-                )}
             </Modal>
 
             {/* Delete Confirmation Modal */}
@@ -182,7 +198,7 @@ export default function VouchersListPage() {
                     </p>
                     {selectedVoucher && (
                         <p className="mt-2 font-bold text-slate-800">
-                            {selectedVoucher.serial} - {selectedVoucher.entity}
+                            {selectedVoucher.voucherSerial} - {selectedVoucher.side}
                         </p>
                     )}
                 </div>
@@ -190,3 +206,5 @@ export default function VouchersListPage() {
         </div>
     );
 }
+
+

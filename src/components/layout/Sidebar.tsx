@@ -14,12 +14,13 @@ const navItems: NavItem[] = [
     { key: "expenses", href: "/expenses", icon: "bx-folder-plus" },
     { key: "vouchers", href: "/vouchers/list", icon: "bxs-file-plus" },
     { key: "deferredClients", href: "/deferred-clients", icon: "bx-comment-error" },
-    { key: "treasuryDiary", href: "/treasury-diary", icon: "bx-comment-error" },
+    { key: "dailyTreasury", href: "/daily-treasury", icon: "bx-calendar-check" },
     { key: "supplyBook", href: "/supply-book/records", icon: "bx-cog" },
-    { key: "treasuryMovement", href: "/treasury-movement/transactions", icon: "bx-cog" },
+    { key: "treasuryMovement", href: "/treasury-movement", icon: "bx-cog" },
     { key: "employees", href: "/employees", icon: "bx-cog" },
     { key: "systemLog", href: "/system-log", icon: "bx-cog" },
-    { key: "financialSystem", href: "/financial-system/trial-balance", icon: "bx-stats" },
+    { key: "financialHub", href: "/financial-hub", icon: "bx-calculator" },
+    { key: "statements", href: "/statements", icon: "bx-list-check" },
     { key: "settings", href: "/settings", icon: "bx-cog" },
 ];
 

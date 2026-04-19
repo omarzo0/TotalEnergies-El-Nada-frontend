@@ -1,19 +1,21 @@
 "use client";
 
 import { useState } from 'react';
-import { DeferredClientRecord, DeferredClientFormData } from '../types/deferred-clients.types';
+import { DeferredClientPayment, DeferredClientFormData } from '../types/deferred-clients.types';
 
-export function useDeferredClientsForm(initialData?: DeferredClientRecord) {
+export function useDeferredClientsForm(initialData?: DeferredClientPayment) {
     const [formData, setFormData] = useState<DeferredClientFormData>({
-        client: initialData?.client || '',
-        receipt: initialData?.receipt || '',
-        amount: initialData?.amount || '',
-        image: initialData?.image || '/images/logo.png',
+        clientName: initialData?.clientName || '',
+        receiptName: initialData?.receiptName || (initialData as any)?.sand || '',
+        money: initialData?.money || 0,
+        amount: initialData?.amount || 0,
+        receiptNumber: initialData?.receiptNumber || '',
+        date: initialData?.date || new Date().toISOString().split("T")[0]
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof DeferredClientFormData, string>>>({});
 
-    const handleChange = (field: keyof DeferredClientFormData, value: string) => {
+    const handleChange = (field: keyof DeferredClientFormData, value: any) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors(prev => {
@@ -26,9 +28,11 @@ export function useDeferredClientsForm(initialData?: DeferredClientRecord) {
 
     const validate = () => {
         const newErrors: Partial<Record<keyof DeferredClientFormData, string>> = {};
-        if (!formData.client) newErrors.client = "Client is required";
-        if (!formData.receipt) newErrors.receipt = "Receipt is required";
-        if (!formData.amount) newErrors.amount = "Amount is required";
+        if (!formData.clientName) newErrors.clientName = "Client name is required";
+        if (!formData.receiptName) newErrors.receiptName = "Receipt name is required";
+        if (formData.money === undefined || formData.money < 0) newErrors.money = "Valid money is required";
+        if (formData.amount === undefined || formData.amount < 0) newErrors.amount = "Valid amount is required";
+        if (!formData.receiptNumber) newErrors.receiptNumber = "Receipt number is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -40,10 +44,12 @@ export function useDeferredClientsForm(initialData?: DeferredClientRecord) {
         handleChange,
         validate,
         reset: () => setFormData({
-            client: '',
-            receipt: '',
-            amount: '',
-            image: '/images/logo.png',
+            clientName: '',
+            receiptName: '',
+            money: 0,
+            amount: 0,
+            receiptNumber: '',
+            date: new Date().toISOString().split("T")[0]
         })
     };
 }

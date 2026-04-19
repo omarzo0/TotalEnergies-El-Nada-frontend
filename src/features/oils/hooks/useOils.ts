@@ -1,71 +1,48 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { OilRecord, OilRecordType } from '../types/oils.types';
+import { Oil } from '../types/oils.types';
 import { oilsApi } from '../api/oils.api';
 
-export function useOils(type: OilRecordType) {
-    const [records, setRecords] = useState<OilRecord[]>([]);
+export function useOils() {
+    const [oils, setOils] = useState<Oil[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchRecords = useCallback(async () => {
+    const fetchOils = useCallback(async () => {
         try {
             setIsLoading(true);
-            const data = await oilsApi.getRecords(type);
-            setRecords(data);
+            const data = await oilsApi.getAllOils();
+            setOils(data);
             setError(null);
-        } catch (err) {
-            setError("Failed to fetch oil records");
+        } catch (err: any) {
+            setError(err.message || "Failed to fetch oils");
             console.error(err);
         } finally {
             setIsLoading(false);
         }
-    }, [type]);
+    }, []);
 
-    const addRecord = async (data: Partial<OilRecord>) => {
+    const addOil = async (data: { oilName: string; price: number; date: string }) => {
         try {
-            const newRecord = await oilsApi.createRecord(type, data);
-            setRecords(prev => [...prev, newRecord]);
-            return newRecord;
-        } catch (err) {
-            setError("Failed to add record");
-            throw err;
-        }
-    };
-
-    const updateRecord = async (oilType: string, data: Partial<OilRecord>) => {
-        try {
-            const updated = await oilsApi.updateRecord(type, oilType, data);
-            setRecords(prev => prev.map(r => r.oilType === oilType ? updated : r));
-            return updated;
-        } catch (err) {
-            setError("Failed to update record");
-            throw err;
-        }
-    };
-
-    const removeRecord = async (oilType: string) => {
-        try {
-            await oilsApi.deleteRecord(type, oilType);
-            setRecords(prev => prev.filter(r => r.oilType !== oilType));
-        } catch (err) {
-            setError("Failed to delete record");
+            const newOil = await oilsApi.addOil(data);
+            await fetchOils();
+            return newOil;
+        } catch (err: any) {
+            setError(err.message || "Failed to add oil");
             throw err;
         }
     };
 
     useEffect(() => {
-        fetchRecords();
-    }, [fetchRecords]);
+        fetchOils();
+    }, [fetchOils]);
 
     return {
-        records,
+        oils,
         isLoading,
         error,
-        addRecord,
-        updateRecord,
-        removeRecord,
-        refresh: fetchRecords
+        addOil,
+        refresh: fetchOils
     };
 }
