@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/routing";
 import Image from "next/image";
-import { authApi } from "@/features/auth/api/auth.api";
+import { useAuthActions } from "@/features/auth/hooks/useAuthActions";
 
 function ResetPasswordForm() {
     const searchParams = useSearchParams();
@@ -14,38 +14,36 @@ function ResetPasswordForm() {
     const [password, setPassword] = useState<string>("");
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [isSuccess, setIsSuccess] = useState<boolean>(false);
-    const [error, setError] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [localError, setLocalError] = useState<string>("");
 
     const t = useTranslations("resetPassword");
     const router = useRouter();
+
+    const { resetPassword, isResettingPassword } = useAuthActions();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!email) {
-            setError("Email is missing. Please go back to forgot password.");
+            setLocalError("Email is missing. Please go back to forgot password.");
             return;
         }
 
         if (password !== confirmPassword) {
-            setError("Passwords do not match");
+            setLocalError("Passwords do not match");
             return;
         }
 
-        setError("");
-        setIsLoading(true);
+        setLocalError("");
 
         try {
-            await authApi.resetPassword(email, password);
+            await resetPassword({ email, password });
             setIsSuccess(true);
             setTimeout(() => {
                 router.push("/login");
             }, 3000);
         } catch (err: any) {
-            setError(err.message || "Failed to reset password");
-        } finally {
-            setIsLoading(false);
+            setLocalError(err.message || "Failed to reset password");
         }
     };
 
@@ -96,16 +94,16 @@ function ResetPasswordForm() {
                         />
                     </div>
 
-                    {error && (
-                        <p className="text-red-300 text-sm text-center font-medium">{error}</p>
+                    {localError && (
+                        <p className="text-red-300 text-sm text-center font-medium">{localError}</p>
                     )}
 
                     <button
                         type="submit"
-                        disabled={isLoading || !email}
+                        disabled={isResettingPassword || !email}
                         className="w-full py-3.5 bg-white text-primary font-semibold rounded-xl text-sm hover:bg-white/90 transition-all duration-200 hover:shadow-lg active:scale-[0.98] disabled:opacity-50"
                     >
-                        {isLoading ? "Updating..." : t("submit")}
+                        {isResettingPassword ? "Updating..." : t("submit")}
                     </button>
                 </form>
             ) : (

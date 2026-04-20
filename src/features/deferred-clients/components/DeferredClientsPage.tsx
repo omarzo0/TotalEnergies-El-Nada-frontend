@@ -38,7 +38,7 @@ export default function DeferredClientsPage() {
     const rows: DataRow[] = payments.map(payment => ({
         cells: [
             (payment.money || 0).toLocaleString(),
-            payment.receiptName || (payment as any).sand,
+            payment.receiptName,
             payment.receiptNumber || "—",
             payment.clientName
         ],
@@ -82,44 +82,45 @@ export default function DeferredClientsPage() {
         <div className="pb-10">
             <Header titleKey="deferredClients" />
 
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm h-[42px]">
-                    <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{tBenzene("pricesTab.date")}:</span>
-                    <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer"
-                    />
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6 bg-slate-50/50 p-2 rounded-2xl border border-slate-100">
+                <div className="flex flex-wrap items-center gap-4">
+                    {/* Date Picker */}
+                    <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-slate-200 shadow-sm h-[48px]">
+                        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{tBenzene("pricesTab.date")}:</span>
+                        <input
+                            type="date"
+                            value={selectedDate}
+                            onChange={(e) => setSelectedDate(e.target.value)}
+                            className="bg-transparent border-none text-sm font-bold text-slate-700 focus:ring-0 cursor-pointer"
+                        />
+                    </div>
+
+                    {/* Compact Total Card */}
+                    {isLoading ? (
+                        <div className="h-[48px] w-32 bg-slate-200/50 animate-pulse rounded-xl border border-slate-200" />
+                    ) : (
+                        <div className="flex items-center gap-4 bg-white px-5 py-2 rounded-xl border border-slate-200 shadow-sm h-[48px] border-l-4 border-l-primary">
+                            <div className="flex flex-col justify-center">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">{t("money") || "Total"}</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-lg font-black text-slate-800 leading-none">{dailyTotal.toLocaleString()}</span>
+                                    <span className="text-[10px] font-bold text-slate-400">EGP</span>
+                                </div>
+                            </div>
+                            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <i className="bx bx-wallet text-lg"></i>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <Button
                     onClick={() => setIsCreateOpen(true)}
-                    className="flex items-center gap-2 shadow-lg shadow-primary/20"
+                    className="flex items-center gap-2 shadow-lg shadow-primary/20 h-[48px] !px-6"
                 >
                     <i className="bx bx-plus text-lg"></i>
                     {tButtons("add")}
                 </Button>
-            </div>
-
-            {/* Total Summary Card */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {isLoading ? (
-                    <DeferredClientsSummarySkeleton />
-                ) : (
-                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-glass flex items-center justify-between group hover:border-primary/30 transition-all duration-300">
-                        <div>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t("money") || "Total Money"}</p>
-                            <h3 className="text-3xl font-black text-slate-800 tracking-tight">
-                                {dailyTotal.toLocaleString()}
-                                <span className="text-sm font-medium text-slate-400 ms-2">EGP</span>
-                            </h3>
-                        </div>
-                        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                            <i className="bx bx-wallet text-3xl"></i>
-                        </div>
-                    </div>
-                )}
             </div>
 
             <div className="page-card shadow-glass overflow-hidden">
@@ -184,7 +185,7 @@ export default function DeferredClientsPage() {
                     <p className="text-slate-600 font-medium">{tModals("confirmDeleteMessage")}</p>
                     {selectedPayment && (
                         <p className="mt-2 font-bold text-slate-800">
-                            {selectedPayment.clientName} - {selectedPayment.receiptName || (selectedPayment as any).sand} ({selectedPayment.money})
+                            {selectedPayment.clientName} - {selectedPayment.receiptName} ({selectedPayment.money})
                         </p>
                     )}
                 </div>

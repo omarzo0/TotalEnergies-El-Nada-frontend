@@ -6,7 +6,7 @@ import { Expense, ExpenseFormData } from '../types/expenses.types';
 export function useExpensesForm(initialData?: Expense) {
     const [formData, setFormData] = useState<ExpenseFormData>({
         money: initialData?.money || 0,
-        receiptName: initialData?.receiptName || (initialData as any)?.sand || "",
+        receiptName: initialData?.receiptName || "",
         date: initialData?.date || new Date().toISOString().split("T")[0]
     });
 

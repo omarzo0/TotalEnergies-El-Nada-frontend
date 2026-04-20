@@ -26,14 +26,15 @@ const getHeaders = () => {
 const mapStatementGroup = (group: any, originalType?: string): StatementSummary => ({
     statement: group.statement ?? '',
     entries: (group.entries ?? []).map((e: any) => ({
-        sand: e.receiptName ?? e.sand ?? '',
+        receiptName: e.receiptName ?? '',
         money: e.money ?? 0
     })),
     total: group.total ?? 0,
-    na2l: group.na2l ?? group.transfer ?? 0,
-    fr2s3r: group.fr2s3r ?? group.priceDiff ?? 0,
+    transfer: group.transfer ?? 0,
+    priceDiff: group.priceDiff ?? 0,
     originalType,
 });
+
 
 // Map backend benzene reading to frontend BenzeneReading
 const mapBenzeneReading = (b: any): BenzeneReading => ({
@@ -111,7 +112,7 @@ export const shiftDiaryApi = {
         return mapApiResponse(raw);
     },
 
-    updateNa2lFr2: async (data: { date: string, type: string, statement: string, na2l: number, fr2s3r: number }): Promise<any> => {
+    updateNa2lFr2: async (data: { date: string, type: string, statement: string, transfer: number, priceDiff: number }): Promise<any> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         // Map frontend field names back to backend field names
@@ -119,9 +120,10 @@ export const shiftDiaryApi = {
             date: data.date,
             type: data.type,
             statement: data.statement,
-            transfer: data.na2l,
-            priceDiff: data.fr2s3r,
+            transfer: data.transfer,
+            priceDiff: data.priceDiff,
         };
+
 
         const response = await fetch(`${API_URL}/shift-diary/entry-adjustment`, {
             method: 'PUT',

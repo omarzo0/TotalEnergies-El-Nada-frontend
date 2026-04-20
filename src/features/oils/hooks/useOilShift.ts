@@ -1,58 +1,48 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OilShift } from '../types/oils.types';
 import { oilsApi } from '../api/oils.api';
 
 export function useOilShift(selectedDate: string) {
-    const [shiftSales, setShiftSales] = useState<OilShift[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
-    const fetchShiftSales = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await oilsApi.getShiftSales(selectedDate);
-            setShiftSales(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch shift sales");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    // Fetch shift sales using TanStack Query
+    const {
+        data: shiftSales,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['oil-shift', formattedDate],
+        queryFn: () => oilsApi.getShiftSales(formattedDate),
+        enabled: !!formattedDate,
+    });
+
+    // Update shift sale mutation
+    const updateMutation = useMutation({
+        mutationFn: (data: { oilName: string; firstTermBalance: number; endTermBalance: number; incoming: number }) =>
+            oilsApi.updateShiftSales({ date: formattedDate, ...data }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['oil-shift', formattedDate] });
+            // Also invalidate shift diary as oil sales affect it
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    }, [selectedDate]);
+    });
 
-    const updateShiftSales = async (data: { oilName: string; firstTermBalance: number; endTermBalance: number; incoming: number }) => {
-        try {
-            await oilsApi.updateShiftSales({ date: selectedDate, ...data });
-            await fetchShiftSales();
-        } catch (err: any) {
-            setError(err.message || "Failed to update shift sales");
-            throw err;
+    // Remove shift sale mutation
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => oilsApi.deleteShiftSales(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['oil-shift', formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    };
-
-    const removeShiftSale = async (id: string) => {
-        try {
-            await oilsApi.deleteShiftSales(id);
-            await fetchShiftSales();
-        } catch (err: any) {
-            setError(err.message || "Failed to delete shift sale record");
-            throw err;
-        }
-    };
-
-    useEffect(() => {
-        fetchShiftSales();
-    }, [fetchShiftSales]);
+    });
 
     return {
-        shiftSales,
+        shiftSales: shiftSales ?? [],
         isLoading,
-        error,
-        updateShiftSales,
-        removeShiftSale,
-        refresh: fetchShiftSales
+        error: error ? (error as any).message || "Failed to fetch shift sales" : null,
+        updateShiftSales: updateMutation.mutateAsync,
+        removeShiftSale: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['oil-shift', formattedDate] })
     };
 }

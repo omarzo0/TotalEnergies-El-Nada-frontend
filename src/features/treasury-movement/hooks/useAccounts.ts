@@ -1,72 +1,59 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Account, AccountFormData, AccountSearchFilters } from '../types/treasury-movement.types';
 import { accountsApi } from '../api/accounts.api';
 
-export function useAccounts(initialFilters: AccountSearchFilters) {
-    const [accounts, setAccounts] = useState<Account[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export function useAccounts(initialFilters: AccountSearchFilters, options?: { enabled?: boolean }) {
+    const queryClient = useQueryClient();
     const [filters, setFilters] = useState<AccountSearchFilters>(initialFilters);
 
-    const fetchAccounts = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await accountsApi.getAccounts(filters);
-            setAccounts(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch accounts");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [filters]);
+    // Fetch accounts using Query
+    const {
+        data: accounts,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['accounts', filters],
+        queryFn: () => accountsApi.getAccounts(filters),
+        enabled: options?.enabled !== false,
+    });
 
-    useEffect(() => {
-        fetchAccounts();
-    }, [fetchAccounts]);
-
-    const addAccount = async (data: AccountFormData) => {
-        try {
-            await accountsApi.createAccount(data);
-            await fetchAccounts();
-        } catch (err: any) {
-            setError(err.message || "Failed to create account entry");
-            throw err;
+    // Mutations
+    const addMutation = useMutation({
+        mutationFn: (data: AccountFormData) => accountsApi.createAccount(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['accounts'] });
+            // Accounts are often used as labels in treasury movements
+            queryClient.invalidateQueries({ queryKey: ['treasury-movements'] });
         }
-    };
+    });
 
-    const updateAccount = async (id: string, data: AccountFormData) => {
-        try {
-            await accountsApi.updateAccount(id, data);
-            await fetchAccounts();
-        } catch (err: any) {
-            setError(err.message || "Failed to update account entry");
-            throw err;
+    const updateMutation = useMutation({
+        mutationFn: (variables: { id: string, data: AccountFormData }) =>
+            accountsApi.updateAccount(variables.id, variables.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['accounts'] });
+            queryClient.invalidateQueries({ queryKey: ['treasury-movements'] });
         }
-    };
+    });
 
-    const removeAccount = async (id: string) => {
-        try {
-            await accountsApi.deleteAccount(id);
-            await fetchAccounts();
-        } catch (err: any) {
-            setError(err.message || "Failed to delete account entry");
-            throw err;
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => accountsApi.deleteAccount(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['accounts'] });
+            queryClient.invalidateQueries({ queryKey: ['treasury-movements'] });
         }
-    };
+    });
 
     return {
-        accounts,
+        accounts: accounts ?? [],
         isLoading,
-        error,
+        error: error ? (error as any).message || "Failed to fetch accounts" : null,
         filters,
         setFilters,
-        addAccount,
-        updateAccount,
-        removeAccount,
-        refresh: fetchAccounts
+        addAccount: addMutation.mutateAsync,
+        updateAccount: (id: string, data: AccountFormData) => updateMutation.mutateAsync({ id, data }),
+        removeAccount: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['accounts', filters] })
     };
 }

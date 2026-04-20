@@ -14,14 +14,21 @@ export default function StatementsPage() {
     const tButtons = useTranslations('buttons');
     const tModals = useTranslations('modals');
 
-    const { statements, isLoading, error, addStatement, updateStatement, removeStatement } = useStatements();
+    const {
+        statements,
+        isLoading,
+        error,
+        addStatement,
+        updateStatement,
+        removeStatement
+    } = useStatements();
 
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedStatement, setSelectedStatement] = useState<Statement | null>(null);
     const [formData, setFormData] = useState({ name: '' });
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [localSubmitting, setLocalSubmitting] = useState(false);
 
     const columnLabels = [
         tTable('name'),
@@ -37,37 +44,46 @@ export default function StatementsPage() {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
-        const success = await addStatement(formData.name);
-        if (success) {
+        setLocalSubmitting(true);
+        try {
+            await addStatement(formData.name);
             setIsCreateModalOpen(false);
             setFormData({ name: '' });
+        } catch (err) {
+            // Error is handled by the hook
+        } finally {
+            setLocalSubmitting(false);
         }
-        setIsSubmitting(false);
     };
 
     const handleEdit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!selectedStatement) return;
-        setIsSubmitting(true);
-        const success = await updateStatement(selectedStatement.name, formData.name);
-        if (success) {
+        setLocalSubmitting(true);
+        try {
+            await updateStatement(selectedStatement.name, formData.name);
             setIsEditModalOpen(false);
             setSelectedStatement(null);
             setFormData({ name: '' });
+        } catch (err) {
+            // Error handled by hook
+        } finally {
+            setLocalSubmitting(false);
         }
-        setIsSubmitting(false);
     };
 
     const handleDelete = async () => {
         if (!selectedStatement) return;
-        setIsSubmitting(true);
-        const success = await removeStatement(selectedStatement.name);
-        if (success) {
+        setLocalSubmitting(true);
+        try {
+            await removeStatement(selectedStatement.name);
             setIsDeleteModalOpen(false);
             setSelectedStatement(null);
+        } catch (err) {
+            // Error handled by hook
+        } finally {
+            setLocalSubmitting(false);
         }
-        setIsSubmitting(false);
     };
 
     return (
@@ -143,10 +159,10 @@ export default function StatementsPage() {
                         </button>
                         <button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={localSubmitting}
                             className="btn btn-primary"
                         >
-                            {isSubmitting ? tButtons('save') + '...' : tButtons('save')}
+                            {localSubmitting ? tButtons('save') + '...' : tButtons('save')}
                         </button>
                     </div>
                 </form>
@@ -181,10 +197,10 @@ export default function StatementsPage() {
                         </button>
                         <button
                             type="submit"
-                            disabled={isSubmitting}
+                            disabled={localSubmitting}
                             className="btn btn-primary"
                         >
-                            {isSubmitting ? tButtons('save') + '...' : tButtons('save')}
+                            {localSubmitting ? tButtons('save') + '...' : tButtons('save')}
                         </button>
                     </div>
                 </form>
@@ -208,10 +224,10 @@ export default function StatementsPage() {
                         </button>
                         <button
                             onClick={handleDelete}
-                            disabled={isSubmitting}
+                            disabled={localSubmitting}
                             className="btn bg-red-600 hover:bg-red-700 text-white"
                         >
-                            {isSubmitting ? tButtons('delete') + '...' : tButtons('delete')}
+                            {localSubmitting ? tButtons('delete') + '...' : tButtons('delete')}
                         </button>
                     </div>
                 </div>

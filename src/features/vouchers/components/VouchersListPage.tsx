@@ -20,17 +20,13 @@ export default function VouchersListPage() {
     const pathname = usePathname();
 
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
-    const { vouchers, isLoading, fetchVouchers, addVoucher, updateVoucher, removeVoucher, error } = useVouchers(selectedDate);
+    const { vouchers, isLoading, addVoucher, updateVoucher, removeVoucher, error } = useVouchers(selectedDate, undefined, undefined, { fetchVouchers: true, fetchMatching: false });
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     const [selectedVoucher, setSelectedVoucher] = useState<VoucherRecord | null>(null);
-
-    useEffect(() => {
-        fetchVouchers(selectedDate);
-    }, [selectedDate, fetchVouchers]);
 
     const tabs: TabItem[] = [
         { href: "/vouchers/list", labelKey: "vouchers", active: pathname === "/vouchers/list" },
@@ -75,14 +71,12 @@ export default function VouchersListPage() {
     const onAddSubmit = async (data: any) => {
         await addVoucher(data);
         setIsCreateOpen(false);
-        fetchVouchers(selectedDate);
     };
 
     const onEditSubmit = async (data: any) => {
         if (selectedVoucher && selectedVoucher.id) {
             await updateVoucher(selectedVoucher.id, data);
             setIsEditOpen(false);
-            fetchVouchers(selectedDate);
         }
     };
 

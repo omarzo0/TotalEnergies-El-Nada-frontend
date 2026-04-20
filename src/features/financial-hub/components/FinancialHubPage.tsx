@@ -5,9 +5,8 @@ import { useTranslations } from "next-intl";
 import Header from "@/components/layout/Header";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
-import { financialHubApi } from "../api/financial-hub.api";
-import { DailyFinancialSummary, PeriodicFinancialReport } from "../types/financial-hub.types";
 import { FinancialHubSummarySkeleton, FinancialHubReportSkeleton } from "../ui/FinancialHubSkeleton";
+import { useFinancialHub } from "../hooks/useFinancialHub";
 
 export default function FinancialHubPage() {
     const t = useTranslations("financialHub");
@@ -20,49 +19,35 @@ export default function FinancialHubPage() {
         end: new Date().toISOString().split('T')[0]
     });
 
-    const [summary, setSummary] = useState<DailyFinancialSummary | null>(null);
-    const [report, setReport] = useState<PeriodicFinancialReport | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const { useDailySummary, usePeriodicReport } = useFinancialHub();
 
-    const fetchSummary = async (date: string) => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await financialHubApi.getDailySummary(date);
-            setSummary(data);
-        } catch (err: any) {
-            setError(err.message);
-            setSummary(null);
-        } finally {
-            setLoading(false);
-        }
+    // Queries
+    const {
+        data: summary,
+        isLoading: isSummaryLoading,
+        error: summaryError
+    } = useDailySummary(summaryDate, { enabled: true });
+
+    const {
+        data: report,
+        isLoading: isReportLoading,
+        error: reportError,
+        refetch: refetchReport
+    } = usePeriodicReport(reportRange.start, reportRange.end, {
+        enabled: activeTab === 'report'
+    });
+
+    const handleFetchReport = () => {
+        refetchReport();
     };
-
-    const fetchReport = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const data = await financialHubApi.getPeriodicReport(reportRange.start, reportRange.end);
-            setReport(data);
-        } catch (err: any) {
-            setError(err.message);
-            setReport(null);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (activeTab === "summary") {
-            fetchSummary(summaryDate);
-        }
-    }, [summaryDate, activeTab]);
 
     const tabs = [
         { labelKey: "financialHubSummary", href: "#summary", onClick: () => setActiveTab("summary"), active: activeTab === "summary" },
         { labelKey: "financialHubReport", href: "#report", onClick: () => setActiveTab("report"), active: activeTab === "report" },
     ];
+
+    const loading = activeTab === "summary" ? isSummaryLoading : isReportLoading;
+    const error = activeTab === "summary" ? (summaryError as any)?.message : (reportError as any)?.message;
 
     // Helper to format numbers safely
     const formatNumber = (val: any) => {
@@ -256,7 +241,7 @@ export default function FinancialHubPage() {
                                     value={reportRange.end}
                                     onChange={(e) => setReportRange({ ...reportRange, end: e.target.value })}
                                 />
-                                <Button onClick={fetchReport} className="w-full h-[52px]">
+                                <Button onClick={handleFetchReport} className="w-full h-[52px]">
                                     {t("form.generateReport")}
                                 </Button>
                             </div>

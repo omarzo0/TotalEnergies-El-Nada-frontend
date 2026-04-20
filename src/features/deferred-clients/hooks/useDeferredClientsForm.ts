@@ -6,7 +6,7 @@ import { DeferredClientPayment, DeferredClientFormData } from '../types/deferred
 export function useDeferredClientsForm(initialData?: DeferredClientPayment) {
     const [formData, setFormData] = useState<DeferredClientFormData>({
         clientName: initialData?.clientName || '',
-        receiptName: initialData?.receiptName || (initialData as any)?.sand || '',
+        receiptName: initialData?.receiptName || '',
         money: initialData?.money || 0,
         receiptNumber: initialData?.receiptNumber || '',
         date: initialData?.date || new Date().toISOString().split("T")[0]

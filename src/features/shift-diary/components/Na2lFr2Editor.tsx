@@ -2,22 +2,23 @@ import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 interface Na2lFr2EditorProps {
-    initialNa2l: number;
-    initialFr2s3r: number;
-    onSave: (na2l: number, fr2s3r: number) => Promise<void>;
+    initialTransfer: number;
+    initialPriceDiff: number;
+    onSave: (transfer: number, priceDiff: number) => Promise<void>;
 }
 
-export default function Na2lFr2Editor({ initialNa2l, initialFr2s3r, onSave }: Na2lFr2EditorProps) {
+export default function Na2lFr2Editor({ initialTransfer, initialPriceDiff, onSave }: Na2lFr2EditorProps) {
     const t = useTranslations("table.shiftDiary");
-    const [na2l, setNa2l] = useState(initialNa2l.toString());
-    const [fr2s3r, setFr2s3r] = useState(initialFr2s3r.toString());
+    const [transfer, setTransfer] = useState(initialTransfer.toString());
+    const [priceDiff, setPriceDiff] = useState(initialPriceDiff.toString());
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await onSave(parseFloat(na2l), parseFloat(fr2s3r));
+            await onSave(parseFloat(transfer), parseFloat(priceDiff));
         } catch (err) {
+
             console.error(err);
         } finally {
             setIsSaving(false);
@@ -29,8 +30,8 @@ export default function Na2lFr2Editor({ initialNa2l, initialFr2s3r, onSave }: Na
             <div className="flex flex-col">
                 <input
                     type="number"
-                    value={na2l}
-                    onChange={(e) => setNa2l(e.target.value)}
+                    value={transfer}
+                    onChange={(e) => setTransfer(e.target.value)}
                     className="w-20 px-2 py-1 rounded bg-slate-50 border border-slate-200 text-xs focus:ring-1 focus:ring-primary outline-none"
                     placeholder={t("transfer")}
                 />
@@ -38,12 +39,13 @@ export default function Na2lFr2Editor({ initialNa2l, initialFr2s3r, onSave }: Na
             <div className="flex flex-col">
                 <input
                     type="number"
-                    value={fr2s3r}
-                    onChange={(e) => setFr2s3r(e.target.value)}
+                    value={priceDiff}
+                    onChange={(e) => setPriceDiff(e.target.value)}
                     className="w-20 px-2 py-1 rounded bg-slate-50 border border-slate-200 text-xs focus:ring-1 focus:ring-primary outline-none"
                     placeholder={t("priceDiff")}
                 />
             </div>
+
             <button
                 onClick={handleSave}
                 disabled={isSaving}

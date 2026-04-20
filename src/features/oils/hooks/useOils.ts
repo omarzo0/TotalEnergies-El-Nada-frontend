@@ -1,48 +1,34 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Oil } from '../types/oils.types';
 import { oilsApi } from '../api/oils.api';
 
 export function useOils() {
-    const [oils, setOils] = useState<Oil[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
-    const fetchOils = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await oilsApi.getAllOils();
-            setOils(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch oils");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    // Fetch oils using TanStack Query
+    const {
+        data: oils,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['oils'],
+        queryFn: oilsApi.getAllOils,
+        staleTime: 1000 * 60 * 10, // Oils list changes rarely
+    });
+
+    // Add oil mutation
+    const addMutation = useMutation({
+        mutationFn: (data: { oilName: string; price: number; date: string }) => oilsApi.addOil(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['oils'] });
         }
-    }, []);
-
-    const addOil = async (data: { oilName: string; price: number; date: string }) => {
-        try {
-            const newOil = await oilsApi.addOil(data);
-            await fetchOils();
-            return newOil;
-        } catch (err: any) {
-            setError(err.message || "Failed to add oil");
-            throw err;
-        }
-    };
-
-    useEffect(() => {
-        fetchOils();
-    }, [fetchOils]);
+    });
 
     return {
-        oils,
+        oils: oils ?? [],
         isLoading,
-        error,
-        addOil,
-        refresh: fetchOils
+        error: error ? (error as any).message || "Failed to fetch oils" : null,
+        addOil: addMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['oils'] })
     };
 }

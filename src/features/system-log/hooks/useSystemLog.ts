@@ -1,13 +1,10 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
-import { SystemLogEntry, LogFilters, LogType } from '../types/system-log.types';
+import { useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { LogType } from '../types/system-log.types';
 import { systemLogApi } from '../api/system-log.api';
 
 export function useSystemLog() {
-    const [logs, setLogs] = useState<SystemLogEntry[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
     // Filter states
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -15,32 +12,25 @@ export function useSystemLog() {
     const [type, setType] = useState<LogType | 'ALL'>('ALL');
     const [category, setCategory] = useState("");
 
-    const fetchLogs = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await systemLogApi.getLogsByDate(date, {
-                email: email || undefined,
-                type: type === 'ALL' ? undefined : type,
-                category: category || undefined
-            });
-            setLogs(data || []);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch logs");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [date, email, type, category]);
-
-    useEffect(() => {
-        fetchLogs();
-    }, [fetchLogs]);
+    // Fetch Logs using Query
+    const {
+        data: logs,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['system-logs', date, { email, type, category }],
+        queryFn: () => systemLogApi.getLogsByDate(date, {
+            email: email || undefined,
+            type: type === 'ALL' ? undefined : type,
+            category: category || undefined
+        }),
+        enabled: !!date,
+    });
 
     return {
-        logs,
+        logs: logs || [],
         isLoading,
-        error,
+        error: error ? (error as any).message || "Failed to fetch logs" : null,
         filters: {
             date,
             email,
@@ -53,6 +43,6 @@ export function useSystemLog() {
             setType,
             setCategory
         },
-        refresh: fetchLogs
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['system-logs', date] })
     };
 }

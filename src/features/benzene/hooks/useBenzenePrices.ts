@@ -1,76 +1,48 @@
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BenzenePrices } from "../types/benzene.types";
 import { benzeneApi } from "../api/benzene.api";
 
 export function useBenzenePrices(selectedDate: string) {
-    const [prices, setPrices] = useState<BenzenePrices | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [isSaving, setIsSaving] = useState(false);
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
-    const fetchPrices = useCallback(async () => {
-        // Ensure date is YYYY-MM-DD
-        const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
+    // Fetch prices using TanStack Query
+    const {
+        data: prices,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ["benzene-prices", formattedDate],
+        queryFn: () => benzeneApi.getPrices(formattedDate),
+        enabled: !!formattedDate,
+    });
 
-        setIsLoading(true);
-        setError(null);
-        try {
-            const data = await benzeneApi.getPrices(formattedDate);
-            setPrices(data);
-        } catch (err: any) {
-            console.error(`useBenzenePrices: Error fetching prices for ${formattedDate}:`, err);
-            setError(err.message || "Failed to fetch prices");
-            setPrices(null);
-        } finally {
-            setIsLoading(false);
+    // Save prices mutation
+    const saveMutation = useMutation({
+        mutationFn: (data: BenzenePrices) => benzeneApi.updatePrices(formattedDate, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-prices", formattedDate] });
+            // Also invalidate shift diary as prices affect it
+            queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
         }
-    }, [selectedDate]);
+    });
 
-    useEffect(() => {
-        fetchPrices();
-    }, [fetchPrices]);
-
-    const savePrices = async (data: BenzenePrices) => {
-        const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
-        setIsSaving(true);
-        setError(null);
-        try {
-            const updated = await benzeneApi.updatePrices(formattedDate, data);
-            setPrices(updated);
-            return true;
-        } catch (err: any) {
-            setError(err.message || "Failed to save prices");
-            return false;
-        } finally {
-            setIsSaving(false);
+    // Delete prices mutation
+    const deleteMutation = useMutation({
+        mutationFn: () => benzeneApi.deletePrices(formattedDate),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-prices", formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
         }
-    };
-
-    const deletePrices = async () => {
-        const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
-        setIsSaving(true);
-        setError(null);
-        try {
-            await benzeneApi.deletePrices(formattedDate);
-            setPrices(null);
-            return true;
-        } catch (err: any) {
-            setError(err.message || "Failed to delete prices");
-            return false;
-        } finally {
-            setIsSaving(false);
-        }
-    };
+    });
 
     return {
-        prices,
+        prices: prices ?? null,
         isLoading,
-        isSaving,
-        error,
-        savePrices,
-        deletePrices,
-        refetch: fetchPrices
+        isSaving: saveMutation.isPending || deleteMutation.isPending,
+        error: error ? (error as any).message || "Failed to fetch prices" : null,
+        savePrices: saveMutation.mutateAsync,
+        deletePrices: deleteMutation.mutateAsync,
+        refetch: () => queryClient.invalidateQueries({ queryKey: ["benzene-prices", formattedDate] })
     };
 }

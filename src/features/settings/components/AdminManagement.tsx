@@ -10,15 +10,24 @@ import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { AdminManagementSkeleton } from "../ui/SettingsSkeleton";
 
+import { useAdmins } from "../hooks/useAdmins";
+
 export default function AdminManagement() {
     const t = useTranslations("settings.admins");
     const tButtons = useTranslations("buttons");
     const tModals = useTranslations("modals");
 
-    const [admins, setAdmins] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const {
+        admins,
+        isLoading,
+        error: fetchError,
+        createAdmin,
+        updateAdmin,
+        deleteAdmin
+    } = useAdmins();
+
     const [isSaving, setIsSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [localError, setLocalError] = useState<string | null>(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
@@ -26,6 +35,7 @@ export default function AdminManagement() {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     const [searchEmail, setSearchEmail] = useState("");
+    const [searchResults, setSearchResults] = useState<any[] | null>(null);
 
     const [formData, setFormData] = useState({
         email: "",
@@ -37,36 +47,20 @@ export default function AdminManagement() {
         nationalId: ""
     });
 
-    const fetchAdmins = async () => {
-        try {
-            setIsLoading(true);
-            const data = await adminsApi.getAll();
-            setAdmins(data);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchAdmins();
-    }, []);
+    const displayAdmins = searchResults || admins;
+    const error = localError || fetchError;
 
     const handleSearch = async () => {
         if (!searchEmail.trim()) {
-            fetchAdmins();
+            setSearchResults(null);
             return;
         }
         try {
-            setIsLoading(true);
             const data = await adminsApi.search(searchEmail);
-            setAdmins([data]);
+            setSearchResults([data]);
         } catch (err: any) {
-            setError(err.message);
-            setAdmins([]);
-        } finally {
-            setIsLoading(false);
+            setLocalError(err.message);
+            setSearchResults([]);
         }
     };
 
@@ -86,7 +80,7 @@ export default function AdminManagement() {
     };
 
     const handleOpenEdit = (id: string) => {
-        const admin = admins.find(a => a.id === id || a._id === id);
+        const admin = displayAdmins.find(a => (a.id || a._id) === id);
         if (!admin) return;
         setModalMode('edit');
         setSelectedAdmin(admin);
@@ -103,7 +97,7 @@ export default function AdminManagement() {
     };
 
     const handleOpenDelete = (id: string) => {
-        const admin = admins.find(a => a.id === id || a._id === id);
+        const admin = displayAdmins.find(a => (a.id || a._id) === id);
         if (!admin) return;
         setSelectedAdmin(admin);
         setIsDeleteOpen(true);
@@ -112,20 +106,19 @@ export default function AdminManagement() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSaving(true);
+        setLocalError(null);
         try {
             if (modalMode === 'create') {
-                await adminsApi.create(formData);
+                await createAdmin(formData);
             } else {
                 const id = selectedAdmin.id || selectedAdmin._id;
-                // If password is empty, don't send it to update
                 const updateData = { ...formData };
-                if (!updateData.password) delete updateData.password;
-                await adminsApi.update(id, updateData);
+                if (!updateData.password) delete (updateData as any).password;
+                await updateAdmin(id, updateData);
             }
             setIsModalOpen(false);
-            fetchAdmins();
         } catch (err: any) {
-            alert(err.message);
+            setLocalError(err.message);
         } finally {
             setIsSaving(false);
         }
@@ -133,13 +126,13 @@ export default function AdminManagement() {
 
     const confirmDelete = async () => {
         setIsSaving(true);
+        setLocalError(null);
         try {
             const id = selectedAdmin.id || selectedAdmin._id;
-            await adminsApi.delete(id);
+            await deleteAdmin(id);
             setIsDeleteOpen(false);
-            fetchAdmins();
         } catch (err: any) {
-            alert(err.message);
+            setLocalError(err.message);
         } finally {
             setIsSaving(false);
         }
@@ -152,7 +145,7 @@ export default function AdminManagement() {
         t("table.phoneNumber")
     ];
 
-    const rows: DataRow[] = admins.map(admin => ({
+    const rows: DataRow[] = displayAdmins.map(admin => ({
         cells: [
             `${admin.firstName} ${admin.lastName}`,
             admin.email,

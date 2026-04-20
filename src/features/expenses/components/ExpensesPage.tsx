@@ -30,7 +30,7 @@ export default function ExpensesPage() {
     const columns = [t("receiptName") || "Receipt Name", t("amount") || "Amount"];
 
     const rows: DataRow[] = expenses.map(expense => ({
-        cells: [expense.receiptName || (expense as any).sand, (expense.money || 0).toLocaleString()],
+        cells: [expense.receiptName, (expense.money || 0).toLocaleString()],
         editable: true,
         id: expense._id || expense.id
     }));
@@ -152,7 +152,7 @@ export default function ExpensesPage() {
                     <p className="text-slate-600 font-medium">{tModals("confirmDeleteMessage")}</p>
                     {selectedExpense && (
                         <p className="mt-2 font-bold text-slate-800">
-                            {selectedExpense.receiptName || (selectedExpense as any).sand} ({selectedExpense.money})
+                            {selectedExpense.receiptName} ({selectedExpense.money})
                         </p>
                     )}
                 </div>

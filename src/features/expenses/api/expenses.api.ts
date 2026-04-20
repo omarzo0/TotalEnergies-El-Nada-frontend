@@ -41,7 +41,7 @@ export const expensesApi = {
         return Array.isArray(result.data) ? result.data : [];
     },
 
-    addExpense: async (data: { date: string; sand: string; money: number }): Promise<Expense> => {
+    addExpense: async (data: { date: string; receiptName: string; money: number }): Promise<Expense> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         const response = await fetch(`${API_URL}/expenses`, {
@@ -55,7 +55,7 @@ export const expensesApi = {
         return result.data;
     },
 
-    updateExpense: async (id: string, data: { sand?: string; money?: number }): Promise<Expense> => {
+    updateExpense: async (id: string, data: { receiptName?: string; money?: number }): Promise<Expense> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         const response = await fetch(`${API_URL}/expenses/${id}`, {

@@ -1,16 +1,11 @@
-"use client";
-
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useMemo } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { BenzeneRecord, BenzeneRecordType } from "../types/benzene.types";
 import { benzeneApi } from "../api/benzene.api";
-import { useTranslations } from "next-intl";
 
-export function useBenzene(type: BenzeneRecordType, selectedDate: string) {
-    const [records, setRecords] = useState<BenzeneRecord[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    const tPrices = useTranslations("benzene.pricesTab");
+export function useBenzene(type: BenzeneRecordType, selectedDate: string, options: { fetchPrices?: boolean } = {}) {
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
     const typeToPriceKey: Record<string, string> = useMemo(() => {
         return {
@@ -21,107 +16,85 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string) {
         };
     }, []);
 
+    // 1. Fetch Pump Readings
+    const readingsQuery = useQuery({
+        queryKey: ["benzene-readings", formattedDate],
+        queryFn: () => benzeneApi.getPumpReadings(formattedDate),
+        enabled: !!formattedDate,
+    });
 
-    const fetchData = useCallback(async () => {
-        // Ensure date is YYYY-MM-DD
-        const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
+    // 2. Fetch Prices (Conditional: only when requested, e.g. when price tab is active)
+    const pricesQuery = useQuery({
+        queryKey: ["benzene-prices", formattedDate],
+        queryFn: () => benzeneApi.getPrices(formattedDate),
+        enabled: !!formattedDate && options.fetchPrices === true,
+    });
 
-        setIsLoading(true);
-        setError(null);
+    // 3. Map Data (Memoized derived state)
+    const records = useMemo(() => {
+        if (!readingsQuery.data) return [];
 
-        const token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-        if (!token || token === "undefined") {
-            setError("Authentication Error: Please log in again.");
-            setIsLoading(false);
-            return;
+        const readingsData = readingsQuery.data;
+        const pricesData = pricesQuery.data;
+
+        return readingsData.map((r: any, index: number) => {
+            const pumpType = (r.pumpType || r.trumbaType || (r as any).benzType || "").trim();
+            const pumpNumber = r.pumpNumber || r.trumbaNumber || 0;
+
+            const priceKey = typeToPriceKey[pumpType.toLowerCase()];
+            const apiPrice = priceKey && pricesData ? (pricesData as any)[priceKey] : 0;
+            const finalPrice = apiPrice > 0 ? apiPrice : (r.price || 0);
+
+            return {
+                id: r._id || `record-${index}`,
+                pumpType: pumpType,
+                pumpNumber: pumpNumber,
+                startBalance: r.start,
+                endBalance: r.end,
+                liters: r.liters,
+                price: finalPrice,
+                totalAmount: r.totalAmount || (r.liters * finalPrice),
+                date: r.date.split('T')[0]
+            } as BenzeneRecord;
+        });
+    }, [readingsQuery.data, pricesQuery.data, typeToPriceKey]);
+
+    // 4. Mutations
+    const addMutation = useMutation({
+        mutationFn: (data: any) => benzeneApi.createPumpReading(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-readings", formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
         }
+    });
 
-        try {
-            const [readingsData, pricesData] = await Promise.all([
-                benzeneApi.getPumpReadings(formattedDate),
-                benzeneApi.getPrices(formattedDate).catch(() => null)
-            ]);
-
-            const mapped: BenzeneRecord[] = readingsData.map((r, index) => {
-                const pumpType = (r.pumpType || r.trumbaType || (r as any).benzType || "").trim();
-                const pumpNumber = r.pumpNumber || r.trumbaNumber || 0;
-
-                // Try to find price using technical key, fallback to record price
-                const priceKey = typeToPriceKey[pumpType.toLowerCase()];
-                const apiPrice = priceKey && pricesData ? (pricesData as any)[priceKey] : 0;
-                const finalPrice = apiPrice > 0 ? apiPrice : (r.price || 0);
-
-                return {
-                    id: r._id || `record-${index}`,
-                    pumpType: pumpType,
-                    pumpNumber: pumpNumber,
-                    startBalance: r.start,
-                    endBalance: r.end,
-                    liters: r.liters,
-                    price: finalPrice,
-                    totalAmount: r.totalAmount || (r.liters * finalPrice),
-                    date: r.date.split('T')[0]
-                };
-            });
-
-            setRecords(mapped);
-        } catch (err: any) {
-            console.error("Failed to fetch pump readings:", err);
-            if (err.message.includes("Unauthorized") || err.message.includes("token")) {
-                setError("Unauthorized: Your session may have expired. Please log out and back in.");
-            } else {
-                setError(err.message || "Failed to fetch data");
-            }
-            setRecords([]);
-        } finally {
-            setIsLoading(false);
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }: { id: string, data: any }) =>
+            benzeneApi.updatePumpReading(id, { start: data.start, end: data.end }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-readings", formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
         }
-    }, [selectedDate, typeToPriceKey]);
+    });
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData, type]);
-
-    const addRecord = async (data: any) => {
-        try {
-            await benzeneApi.createPumpReading(data);
-            await fetchData();
-        } catch (err: any) {
-            console.error("Failed to add record:", err);
-            throw err;
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => benzeneApi.deletePumpReading(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-readings", formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
         }
-    };
-
-    const updateRecord = async (id: string, data: any) => {
-        try {
-            await benzeneApi.updatePumpReading(id, {
-                start: data.start,
-                end: data.end
-            });
-            await fetchData();
-        } catch (err: any) {
-            console.error("Update failed:", err);
-            throw err;
-        }
-    };
-
-    const removeRecord = async (id: string) => {
-        try {
-            await benzeneApi.deletePumpReading(id);
-            await fetchData();
-        } catch (err: any) {
-            console.error("Delete failed:", err);
-            throw err;
-        }
-    };
+    });
 
     return {
         records,
-        isLoading,
-        error,
-        addRecord,
-        updateRecord,
-        removeRecord,
-        refresh: fetchData
+        isLoading: readingsQuery.isLoading || pricesQuery.isLoading,
+        error: (readingsQuery.error || pricesQuery.error) ? "Failed to fetch data" : null,
+        addRecord: addMutation.mutateAsync,
+        updateRecord: (id: string, data: any) => updateMutation.mutateAsync({ id, data }),
+        removeRecord: removeMutation.mutateAsync,
+        refresh: () => {
+            queryClient.invalidateQueries({ queryKey: ["benzene-readings", formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ["benzene-prices", formattedDate] });
+        }
     };
 }

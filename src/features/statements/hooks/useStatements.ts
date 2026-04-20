@@ -1,78 +1,49 @@
-import { useState, useCallback, useEffect } from 'react';
-import { Statement } from '../types/statements.types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { statementsApi } from '../api/statements.api';
 
 export const useStatements = () => {
-    const [statements, setStatements] = useState<Statement[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
 
-    const fetchStatements = useCallback(async () => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const data = await statementsApi.getStatements();
-            setStatements(data);
-        } catch (err: any) {
-            setError(err.message || 'Failed to fetch statements');
-        } finally {
-            setIsLoading(false);
+    // Fetch Statements using Query
+    const {
+        data: statements = [],
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['statements'],
+        queryFn: statementsApi.getStatements,
+    });
+
+    // Mutations
+    const addMutation = useMutation({
+        mutationFn: (name: string) => statementsApi.createStatement(name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['statements'] });
         }
-    }, []);
+    });
 
-    const addStatement = async (name: string) => {
-        setIsLoading(true);
-        try {
-            await statementsApi.createStatement(name);
-            await fetchStatements();
-            return true;
-        } catch (err: any) {
-            setError(err.message || 'Failed to create statement');
-            return false;
-        } finally {
-            setIsLoading(false);
+    const updateMutation = useMutation({
+        mutationFn: (variables: { oldName: string, newName: string }) =>
+            statementsApi.updateStatement(variables.oldName, variables.newName),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['statements'] });
         }
-    };
+    });
 
-    const updateStatement = async (oldName: string, newName: string) => {
-        setIsLoading(true);
-        try {
-            await statementsApi.updateStatement(oldName, newName);
-            await fetchStatements();
-            return true;
-        } catch (err: any) {
-            setError(err.message || 'Failed to update statement');
-            return false;
-        } finally {
-            setIsLoading(false);
+    const removeMutation = useMutation({
+        mutationFn: (name: string) => statementsApi.deleteStatement(name),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['statements'] });
         }
-    };
-
-    const removeStatement = async (name: string) => {
-        setIsLoading(true);
-        try {
-            await statementsApi.deleteStatement(name);
-            await fetchStatements();
-            return true;
-        } catch (err: any) {
-            setError(err.message || 'Failed to delete statement');
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchStatements();
-    }, [fetchStatements]);
+    });
 
     return {
         statements,
         isLoading,
-        error,
-        addStatement,
-        updateStatement,
-        removeStatement,
-        refresh: fetchStatements
+        error: error ? (error as any).message || 'Failed to fetch statements' : null,
+        addStatement: addMutation.mutateAsync,
+        updateStatement: (oldName: string, newName: string) => updateMutation.mutateAsync({ oldName, newName }),
+        removeStatement: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['statements'] })
     };
 };

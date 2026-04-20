@@ -1,58 +1,45 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { OilStorage } from '../types/oils.types';
 import { oilsApi } from '../api/oils.api';
 
 export function useOilStorage(selectedDate: string) {
-    const [storage, setStorage] = useState<OilStorage[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
-    const fetchStorage = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await oilsApi.getStorage(selectedDate);
-            setStorage(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch storage records");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    // Fetch storage using TanStack Query
+    const {
+        data: storage,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['oil-storage', formattedDate],
+        queryFn: () => oilsApi.getStorage(formattedDate),
+        enabled: !!formattedDate,
+    });
+
+    // Update storage mutation
+    const updateMutation = useMutation({
+        mutationFn: (data: { oilName: string; startBalance: number; storageIncoming: number }) =>
+            oilsApi.updateStorage({ date: formattedDate, ...data }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['oil-storage', formattedDate] });
         }
-    }, [selectedDate]);
+    });
 
-    const updateStorage = async (data: { oilName: string; startBalance: number; storageIncoming: number }) => {
-        try {
-            await oilsApi.updateStorage({ date: selectedDate, ...data });
-            await fetchStorage();
-        } catch (err: any) {
-            setError(err.message || "Failed to update storage");
-            throw err;
+    // Remove storage mutation
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => oilsApi.deleteStorage(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['oil-storage', formattedDate] });
         }
-    };
-
-    const removeStorage = async (id: string) => {
-        try {
-            await oilsApi.deleteStorage(id);
-            await fetchStorage();
-        } catch (err: any) {
-            setError(err.message || "Failed to delete storage record");
-            throw err;
-        }
-    };
-
-    useEffect(() => {
-        fetchStorage();
-    }, [fetchStorage]);
+    });
 
     return {
-        storage,
+        storage: storage ?? [],
         isLoading,
-        error,
-        updateStorage,
-        removeStorage,
-        refresh: fetchStorage
+        error: error ? (error as any).message || "Failed to fetch storage records" : null,
+        updateStorage: updateMutation.mutateAsync,
+        removeStorage: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['oil-storage', formattedDate] })
     };
 }

@@ -1,16 +1,18 @@
 export interface StatementEntry {
-    sand: string;       // mapped from backend "receiptName"
+    receiptName: string;
     money: number;
 }
+
 
 export interface StatementSummary {
     statement: string;
     entries: StatementEntry[];
     total: number;
-    na2l: number;       // mapped from backend "transfer"
-    fr2s3r: number;     // mapped from backend "priceDiff"
+    transfer: number;
+    priceDiff: number;
     originalType?: string; // "مقبوضات" or "مدفوعات"
 }
+
 
 export interface BenzeneReading {
     trumbaNumber: number;   // mapped from backend "pumpNumber"

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
 import Image from "next/image";
-import { authApi } from "@/features/auth/api/auth.api";
+import { useAuthActions } from "@/features/auth/hooks/useAuthActions";
 
 type Step = "request" | "verify" | "success";
 
@@ -12,41 +12,43 @@ export default function ForgotPasswordPage() {
     const [email, setEmail] = useState<string>("");
     const [otp, setOtp] = useState<string>("");
     const [step, setStep] = useState<Step>("request");
-    const [error, setError] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [localError, setLocalError] = useState<string>("");
 
     const t = useTranslations("forgotPassword");
     const router = useRouter();
 
+    const {
+        forgotPassword,
+        isSendingOtp,
+        verifyOtp,
+        isVerifyingOtp
+    } = useAuthActions();
+
+    const isLoading = isSendingOtp || isVerifyingOtp;
+
     const handleRequestOtp = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
-        setIsLoading(true);
+        setLocalError("");
         try {
-            await authApi.forgotPassword(email);
+            await forgotPassword(email);
             setStep("verify");
         } catch (err: any) {
-            setError(t(err.message) || err.message || "Failed to send OTP");
-        } finally {
-            setIsLoading(false);
+            setLocalError(t(err.message) || err.message || "Failed to send OTP");
         }
     };
 
     const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
-        setIsLoading(true);
+        setLocalError("");
         try {
-            await authApi.verifyOtp(email, otp);
+            await verifyOtp({ email, otp });
             setStep("success");
             // Automatically redirect to reset-password after a short delay
             setTimeout(() => {
                 router.push(`/reset-password?email=${encodeURIComponent(email)}`);
             }, 1500);
         } catch (err: any) {
-            setError(t(err.message) || err.message || "Invalid OTP");
-        } finally {
-            setIsLoading(false);
+            setLocalError(t(err.message) || err.message || "Invalid OTP");
         }
     };
 
@@ -90,7 +92,7 @@ export default function ForgotPasswordPage() {
                                     />
                                 </div>
 
-                                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+                                {localError && <p className="text-red-300 text-xs text-center">{localError}</p>}
 
                                 <button
                                     type="submit"
@@ -123,7 +125,7 @@ export default function ForgotPasswordPage() {
                                     />
                                 </div>
 
-                                {error && <p className="text-red-300 text-xs text-center">{error}</p>}
+                                {localError && <p className="text-red-300 text-xs text-center">{localError}</p>}
 
                                 <button
                                     type="submit"

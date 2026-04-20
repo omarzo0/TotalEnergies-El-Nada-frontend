@@ -7,13 +7,16 @@ import Button from "@/ui/Button";
 import { authApi } from "../../auth/api/auth.api";
 import { AccountSettingsSkeleton } from "../ui/SettingsSkeleton";
 
+import { useProfile } from "../hooks/useProfile";
+
 export default function AccountSettings() {
     const t = useTranslations("settings.account");
     const tButtons = useTranslations("buttons");
 
-    const [loading, setLoading] = useState(true);
+    const { profile, isLoading, error: fetchError, updateProfile, isUpdating } = useProfile();
+
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [localError, setLocalError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
     const [formData, setFormData] = useState({
@@ -24,49 +27,44 @@ export default function AccountSettings() {
         language: "ar"
     });
 
+    // Sync local state when profile is loaded
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const data = await authApi.getMe();
-                setFormData({
-                    email: data.email || "",
-                    firstName: data.firstName || "",
-                    lastName: data.lastName || "",
-                    phoneNumber: data.phoneNumber || "",
-                    language: data.language || "ar"
-                });
-            } catch (err: any) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchProfile();
-    }, []);
+        if (profile) {
+            setFormData({
+                email: profile.email || "",
+                firstName: profile.firstName || "",
+                lastName: profile.lastName || "",
+                phoneNumber: profile.phoneNumber || "",
+                language: profile.language || "ar"
+            });
+        }
+    }, [profile]);
+
+    const error = localError || fetchError;
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
         setSuccess(false);
-        setError(null);
+        setLocalError(null);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-        setError(null);
+        setLocalError(null);
         setSuccess(false);
         try {
-            await authApi.updateProfile(formData);
+            await updateProfile(formData);
             setSuccess(true);
         } catch (err: any) {
-            setError(err.message);
+            setLocalError(err.message);
         } finally {
             setSaving(false);
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return <AccountSettingsSkeleton />;
     }
 

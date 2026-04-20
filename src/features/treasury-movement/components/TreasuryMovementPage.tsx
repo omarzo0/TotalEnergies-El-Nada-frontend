@@ -34,8 +34,14 @@ export default function TreasuryMovementPage() {
     const [accName, setAccName] = useState("");
 
     // Hooks
-    const movHook = useTreasuryMovement({ date, type: movType, statement: movStatement });
-    const accHook = useAccounts({ date, name: accName });
+    const movHook = useTreasuryMovement(
+        { date, type: movType, statement: movStatement },
+        { enabled: activeTab === 'movements' }
+    );
+    const accHook = useAccounts(
+        { date, name: accName },
+        { enabled: activeTab === 'accounts' }
+    );
 
     // Modals state
     const [isCreateOpen, setIsCreateOpen] = useState(false);

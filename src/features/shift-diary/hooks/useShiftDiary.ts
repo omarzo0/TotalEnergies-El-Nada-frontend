@@ -1,51 +1,40 @@
-import { useState, useEffect } from 'react';
-import { ShiftDiarySummary } from '../types/shift-diary.types';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { shiftDiaryApi } from '../api/shift-diary.api';
 
 export function useShiftDiary(initialDate: string) {
-    const [summary, setSummary] = useState<ShiftDiarySummary | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [date, setDate] = useState(initialDate);
+    const queryClient = useQueryClient();
 
-    const fetchSummary = async (targetDate: string) => {
-        try {
-            setIsLoading(true);
-            const data = await shiftDiaryApi.getByDate(targetDate);
-            setSummary(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch shift summary");
-            setSummary(null);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Fetch summary using TanStack Query
+    const {
+        data: summary,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['shift-diary', date],
+        queryFn: () => shiftDiaryApi.getByDate(date),
+        enabled: !!date,
+    });
 
-    const updateNa2lFr2 = async (type: string, statement: string, na2l: number, fr2s3r: number) => {
-        try {
-            await shiftDiaryApi.updateNa2lFr2({ date, type, statement, na2l, fr2s3r });
-            // Refresh summary after update
-            await fetchSummary(date);
-        } catch (err: any) {
-            setError(err.message || "Failed to update record");
-            throw err;
-        }
-    };
+    // Update transfer/priceDiff using TanStack Mutation
+    const mutation = useMutation({
+        mutationFn: (variables: { type: string, statement: string, transfer: number, priceDiff: number }) =>
+            shiftDiaryApi.updateNa2lFr2({ date, ...variables }),
 
-    useEffect(() => {
-        if (date) {
-            fetchSummary(date);
+        onSuccess: () => {
+            // Invalidate the cache for this date to trigger a refetch
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', date] });
         }
-    }, [date]);
+    });
 
     return {
-        summary,
+        summary: summary ?? null,
         isLoading,
-        error,
+        error: error ? (error as any).message || "Failed to fetch shift summary" : null,
         date,
         setDate,
-        updateNa2lFr2,
-        refresh: () => fetchSummary(date)
+        updateNa2lFr2: mutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['shift-diary', date] })
     };
 }

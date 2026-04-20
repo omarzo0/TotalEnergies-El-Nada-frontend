@@ -5,48 +5,25 @@ import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/routing";
 import Image from "next/image";
 
+import { useAuthActions } from "@/features/auth/hooks/useAuthActions";
+
 export default function LoginPage() {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
-    const [error, setError] = useState<string>("");
+    const [localError, setLocalError] = useState<string>("");
     const t = useTranslations("login");
     const router = useRouter();
 
+    const { login, isLoggingIn } = useAuthActions();
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError("");
+        setLocalError("");
 
         try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/login`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email: username, password }),
-            });
-
-            const result = await response.json();
-            console.log("Login result:", result);
-
-            if (result.success) {
-                // Determine if data is an array (returned by backend) or an object
-                const authData = Array.isArray(result.data) ? result.data[0] : result.data;
-                const token = authData?.token;
-                const admin = authData?.admin;
-
-                if (token) {
-                    console.log("Setting token:", token.substring(0, 10) + "...");
-                    localStorage.setItem("token", token);
-                    localStorage.setItem("auth_user", JSON.stringify(admin));
-                    router.push("/overview");
-                } else {
-                    setError("Login successful but no token received");
-                }
-            } else {
-                setError(t(result.message) || "Invalid credentials");
-            }
-        } catch (err) {
-            setError("Server connection failed");
+            await login({ email: username, password });
+        } catch (err: any) {
+            setLocalError(t(err.message) || err.message || "Invalid credentials");
         }
     };
 
@@ -84,6 +61,7 @@ export default function LoginPage() {
                                 onChange={(e) => setUsername(e.target.value)}
                                 className="w-full px-5 py-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/15 transition-all"
                                 required
+                                disabled={isLoggingIn}
                             />
                         </div>
                         <div>
@@ -94,6 +72,7 @@ export default function LoginPage() {
                                 onChange={(e) => setPassword(e.target.value)}
                                 className="w-full px-5 py-3.5 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white placeholder-white/60 text-sm focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/15 transition-all"
                                 required
+                                disabled={isLoggingIn}
                             />
                             <div className="flex justify-end mt-2">
                                 <Link
@@ -105,15 +84,23 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {error && (
-                            <p className="text-red-300 text-sm text-center">{error}</p>
+                        {localError && (
+                            <p className="text-red-300 text-sm text-center">{localError}</p>
                         )}
 
                         <button
                             type="submit"
-                            className="w-full py-3.5 bg-white text-primary font-semibold rounded-xl text-sm hover:bg-white/90 transition-all duration-200 hover:shadow-lg active:scale-[0.98]"
+                            disabled={isLoggingIn}
+                            className="w-full py-3.5 bg-white text-primary font-semibold rounded-xl text-sm hover:bg-white/90 transition-all duration-200 hover:shadow-lg active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {t("submit")}
+                            {isLoggingIn ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <i className="bx bx-loader-alt animate-spin text-lg"></i>
+                                    {t("submit")}...
+                                </div>
+                            ) : (
+                                t("submit")
+                            )}
                         </button>
                     </form>
                 </div>

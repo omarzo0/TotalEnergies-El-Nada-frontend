@@ -24,8 +24,10 @@ export default function BenzenePage() {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
     const [activeTab, setActiveTab] = useState<BenzeneTab>("readings");
 
-    // Pass global selectedDate to hook
-    const { records, isLoading, error, addRecord, updateRecord, removeRecord } = useBenzene('shift', selectedDate);
+    // Pass global selectedDate and tab state to hook
+    const { records, isLoading, error, addRecord, updateRecord, removeRecord } = useBenzene('shift', selectedDate, {
+        fetchPrices: activeTab === 'prices'
+    });
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);

@@ -20,14 +20,12 @@ export default function VoucherMatchingPage() {
     const pathname = usePathname();
 
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
-    const { matchingRecords, matchingTotal, isLoading, fetchMatching, error } = useVouchers(selectedDate);
     const [activeFilter, setActiveFilter] = useState<{ type: 'pumpType' | 'side', key: string } | null>(null);
 
+    // Construct filters object from activeFilter state
+    const filters = activeFilter ? { [activeFilter.type]: activeFilter.key } : {};
 
-    useEffect(() => {
-        const filters = activeFilter ? { [activeFilter.type]: activeFilter.key } : {};
-        fetchMatching(selectedDate, filters);
-    }, [selectedDate, activeFilter, fetchMatching]);
+    const { matchingRecords, matchingTotal, isLoading, error } = useVouchers(selectedDate, undefined, filters, { fetchVouchers: false, fetchMatching: true });
 
     const tabs: TabItem[] = [
         { href: "/vouchers/list", labelKey: "vouchers", active: false },

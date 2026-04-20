@@ -1,71 +1,56 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { SupplyBookRecord } from '../types/supply-book.types';
 import { supplyBookApi } from '../api/supply-book.api';
 
 export function useSupplyBookRecords(selectedDate: string, benzTypeFilter?: string) {
-    const [records, setRecords] = useState<SupplyBookRecord[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
-    const fetchRecords = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const data = await supplyBookApi.getRecordsByDate(selectedDate, benzTypeFilter);
-            setRecords(data);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch records");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    // Fetch records using Query
+    const {
+        data: records,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['supply-book-records', formattedDate, benzTypeFilter],
+        queryFn: () => supplyBookApi.getRecordsByDate(formattedDate, benzTypeFilter),
+        enabled: !!formattedDate,
+    });
+
+    // Mutations
+    const addMutation = useMutation({
+        mutationFn: (data: Partial<SupplyBookRecord>) =>
+            supplyBookApi.createRecord({ date: formattedDate, ...data }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['supply-book-records', formattedDate] });
+            // Supply book records appear in the shift diary
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    }, [selectedDate, benzTypeFilter]);
+    });
 
-    const addRecord = async (data: Partial<SupplyBookRecord>) => {
-        try {
-            const newRecord = await supplyBookApi.createRecord({ date: selectedDate, ...data });
-            await fetchRecords();
-            return newRecord;
-        } catch (err: any) {
-            setError(err.message || "Failed to add record");
-            throw err;
+    const updateMutation = useMutation({
+        mutationFn: (data: Partial<SupplyBookRecord>) => supplyBookApi.updateRecord(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['supply-book-records', formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    };
+    });
 
-    const updateRecord = async (data: Partial<SupplyBookRecord>) => {
-        try {
-            const updated = await supplyBookApi.updateRecord(data);
-            await fetchRecords();
-            return updated;
-        } catch (err: any) {
-            setError(err.message || "Failed to update record");
-            throw err;
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => supplyBookApi.deleteRecord(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['supply-book-records', formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    };
-
-    const removeRecord = async (id: string) => {
-        try {
-            await supplyBookApi.deleteRecord(id);
-            await fetchRecords();
-        } catch (err: any) {
-            setError(err.message || "Failed to delete record");
-            throw err;
-        }
-    };
-
-    useEffect(() => {
-        fetchRecords();
-    }, [fetchRecords]);
+    });
 
     return {
-        records,
+        records: records ?? [],
         isLoading,
-        error,
-        addRecord,
-        updateRecord,
-        removeRecord,
-        refresh: fetchRecords
+        error: error ? (error as any).message || "Failed to fetch records" : null,
+        addRecord: addMutation.mutateAsync,
+        updateRecord: updateMutation.mutateAsync,
+        removeRecord: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['supply-book-records', formattedDate] })
     };
 }

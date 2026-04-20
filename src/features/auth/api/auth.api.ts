@@ -19,6 +19,20 @@ const getHeaders = () => {
 };
 
 export const authApi = {
+    login: async (email: string, password: string) => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+        const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+        });
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message || "Invalid credentials");
+        return result.data;
+    },
+
     forgotPassword: async (email: string) => {
         if (!API_URL) throw new Error("API URL is not defined.");
         const response = await fetch(`${API_URL}/auth/forgotpassword`, {

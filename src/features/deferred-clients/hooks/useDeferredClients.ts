@@ -1,74 +1,60 @@
-"use client";
-
-import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DeferredClientPayment } from '../types/deferred-clients.types';
 import { deferredClientsApi } from '../api/deferred-clients.api';
 
 export function useDeferredClients(selectedDate: string) {
-    const [payments, setPayments] = useState<DeferredClientPayment[]>([]);
-    const [dailyTotal, setDailyTotal] = useState(0);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const queryClient = useQueryClient();
+    const formattedDate = selectedDate.includes('T') ? selectedDate.split('T')[0] : selectedDate;
 
-    const fetchPayments = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            const response = await deferredClientsApi.getPaymentsByDate(selectedDate);
-            setPayments(response.data);
-            setDailyTotal(response.total);
-            setError(null);
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch deferred clients");
-            console.error(err);
-        } finally {
-            setIsLoading(false);
+    // Fetch payments using TanStack Query
+    const {
+        data,
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ['deferred-clients', formattedDate],
+        queryFn: () => deferredClientsApi.getPaymentsByDate(formattedDate),
+        enabled: !!formattedDate,
+    });
+
+    // Add payment mutation
+    const addMutation = useMutation({
+        mutationFn: (data: Partial<DeferredClientPayment>) =>
+            deferredClientsApi.addPayment({ date: formattedDate, ...data }),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['deferred-clients', formattedDate] });
+            // Deferred payments affect the shift diary total
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    }, [selectedDate]);
+    });
 
-    const addPayment = async (data: Partial<DeferredClientPayment>) => {
-        try {
-            const newPayment = await deferredClientsApi.addPayment({ date: selectedDate, ...data });
-            await fetchPayments();
-            return newPayment;
-        } catch (err: any) {
-            setError(err.message || "Failed to add payment");
-            throw err;
+    // Update payment mutation
+    const updateMutation = useMutation({
+        mutationFn: (variables: { id: string, data: Partial<DeferredClientPayment> }) =>
+            deferredClientsApi.updatePayment(variables.id, variables.data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['deferred-clients', formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    };
+    });
 
-    const updatePayment = async (id: string, data: Partial<DeferredClientPayment>) => {
-        try {
-            const updated = await deferredClientsApi.updatePayment(id, data);
-            await fetchPayments();
-            return updated;
-        } catch (err: any) {
-            setError(err.message || "Failed to update payment");
-            throw err;
+    // Remove payment mutation
+    const removeMutation = useMutation({
+        mutationFn: (id: string) => deferredClientsApi.deletePayment(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['deferred-clients', formattedDate] });
+            queryClient.invalidateQueries({ queryKey: ['shift-diary', formattedDate] });
         }
-    };
-
-    const removePayment = async (id: string) => {
-        try {
-            await deferredClientsApi.deletePayment(id);
-            await fetchPayments();
-        } catch (err: any) {
-            setError(err.message || "Failed to delete payment");
-            throw err;
-        }
-    };
-
-    useEffect(() => {
-        fetchPayments();
-    }, [fetchPayments]);
+    });
 
     return {
-        payments,
-        dailyTotal,
+        payments: data?.data ?? [],
+        dailyTotal: data?.total ?? 0,
         isLoading,
-        error,
-        addPayment,
-        updatePayment,
-        removePayment,
-        refresh: fetchPayments
+        error: error ? (error as any).message || "Failed to fetch deferred clients" : null,
+        addPayment: addMutation.mutateAsync,
+        updatePayment: (id: string, data: Partial<DeferredClientPayment>) => updateMutation.mutateAsync({ id, data }),
+        removePayment: removeMutation.mutateAsync,
+        refresh: () => queryClient.invalidateQueries({ queryKey: ['deferred-clients', formattedDate] })
     };
 }
