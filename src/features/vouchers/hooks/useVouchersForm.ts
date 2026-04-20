@@ -9,10 +9,12 @@ export function useVouchersForm(initialData?: VoucherRecord) {
         side: initialData?.side || 'police',
         voucherSerial: initialData?.voucherSerial || '',
         total: initialData?.total,
-        category: initialData?.category || 0,
+        liters: initialData?.liters || 0,
         price: initialData?.price,
-        benzType: initialData?.benzType || 'بنزين 92',
+        pumpType: initialData?.pumpType || 'ben92',
+
     });
+
 
     const [errors, setErrors] = useState<Partial<Record<keyof VoucherFormData, string>>>({});
 
@@ -30,12 +32,13 @@ export function useVouchersForm(initialData?: VoucherRecord) {
     const validate = () => {
         const newErrors: Partial<Record<keyof VoucherFormData, string>> = {};
         if (!formData.voucherSerial) newErrors.voucherSerial = "Serial is required";
-        if (!formData.category) newErrors.category = "Category is required";
+        if (!formData.liters) newErrors.liters = "Quantity is required";
         if (!formData.date) newErrors.date = "Date is required";
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
+
 
     return {
         formData,
@@ -47,10 +50,12 @@ export function useVouchersForm(initialData?: VoucherRecord) {
             side: 'police',
             voucherSerial: '',
             total: undefined,
-            category: 0,
+            liters: 0,
             price: undefined,
-            benzType: 'بنزين 92',
+            pumpType: 'ben92',
+
         })
+
     };
 }
 

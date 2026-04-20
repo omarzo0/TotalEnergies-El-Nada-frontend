@@ -8,6 +8,7 @@ import Modal from "@/components/shared/Modal";
 import { useDailyTreasury } from "../hooks/useDailyTreasury";
 import DailyTreasuryForm from "./forms/DailyTreasuryForm";
 import { DataRow } from "@/types";
+import { DailyTreasurySkeleton } from "../ui/DailyTreasurySkeleton";
 
 export default function DailyTreasuryPage() {
     const t = useTranslations("dailyTreasury");
@@ -75,9 +76,8 @@ export default function DailyTreasuryPage() {
             (entry.quantity || 0).toString(),
             (entry.price || 0).toLocaleString(),
             (entry.money || 0).toLocaleString()
-
         ],
-        id: entry.id || (entry as any)._id
+        id: entry.id || entry._id || (entry as any).id
     }));
 
     return (
@@ -112,9 +112,7 @@ export default function DailyTreasuryPage() {
             )}
 
             {isLoading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                </div>
+                <DailyTreasurySkeleton />
             ) : summary && (
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -231,8 +229,7 @@ export default function DailyTreasuryPage() {
                                     <div className="flex justify-between items-center font-bold text-slate-800">
                                         <span>{t("totalDeductions")}</span>
                                         <span className="text-red-600">
-                                            -{((summary.deductions?.expenses?.total ?? 0) + (summary.deductions?.vouchers?.total ?? 0) + (summary.deductions?.termClients?.total ?? 0)).toLocaleString()}
-
+                                            -{(summary.totalDeductions || 0).toLocaleString()}
                                         </span>
                                     </div>
                                 </div>

@@ -8,6 +8,7 @@ import Modal from "@/components/shared/Modal";
 import { useBenzene } from "../hooks/useBenzene";
 import BenzeneForm from "./forms/BenzeneForm";
 import BenzenePricesTab from "./BenzenePricesTab";
+import { BenzeneTableSkeleton } from "../ui/BenzeneSkeleton";
 import { BenzeneRecord, BenzeneTab } from "../types/benzene.types";
 import { DataRow } from "@/types";
 
@@ -36,27 +37,37 @@ export default function BenzenePage() {
         tTable("type"),
         tTable("startBalance"),
         tTable("endBalance"),
-        tTable("incoming"),
         tTable("sold"),
         tTable("price"),
         tTable("total")
     ];
 
+    const fuelTypeDisplay: Record<string, string> = {
+        "solar": tPrices("solar"),
+        "ben80": tPrices("ben80"),
+        "ben92": tPrices("ben92"),
+        "ben95": tPrices("ben95"),
+        "سولار": tPrices("solar"),
+        "بنزين 80": tPrices("ben80"),
+        "بنزين 92": tPrices("ben92"),
+        "بنزين 95": tPrices("ben95")
+    };
+
+
     const rows: DataRow[] = records.map(record => ({
         cells: [
-            record.trumbaNumber.toString(),
-            record.type,
-            record.startBalance.toString(),
-            record.endBalance.toString(),
-            record.incoming.toString(),
-            record.sold.toString(),
-            (record.price ?? 0).toLocaleString(),
-            (record.total ?? 0).toLocaleString()
-
+            record.pumpNumber.toString(),
+            fuelTypeDisplay[record.pumpType] || record.pumpType,
+            (record.startBalance || 0).toLocaleString(),
+            (record.endBalance || 0).toLocaleString(),
+            (record.liters || 0).toLocaleString(),
+            (record.price || 0).toLocaleString(),
+            (record.totalAmount || 0).toLocaleString()
         ],
         editable: true,
         id: record.id
     }));
+
 
     const handleEdit = (index: number) => {
         setSelectedRecord(records[index]);
@@ -77,8 +88,7 @@ export default function BenzenePage() {
         if (selectedRecord) {
             await updateRecord(selectedRecord.id, {
                 start: data.start,
-                end: data.end,
-                incoming: data.incoming
+                end: data.end
             });
             setIsEditOpen(false);
         }
@@ -163,9 +173,7 @@ export default function BenzenePage() {
 
                     <div className="page-card">
                         {isLoading ? (
-                            <div className="flex justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                            </div>
+                            <BenzeneTableSkeleton />
                         ) : (
                             <DataTable
                                 columns={columns}
@@ -234,7 +242,7 @@ export default function BenzenePage() {
                             </p>
                             {selectedRecord && (
                                 <p className="mt-2 font-bold text-slate-800">
-                                    {selectedRecord.type} - {new Date(selectedRecord.date).toLocaleDateString()}
+                                    {selectedRecord.pumpType} - {new Date(selectedRecord.date).toLocaleDateString()}
                                 </p>
                             )}
                         </div>

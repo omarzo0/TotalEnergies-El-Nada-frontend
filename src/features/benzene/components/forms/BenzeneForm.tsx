@@ -24,59 +24,60 @@ export default function BenzeneForm({ initialData, onSubmit, onCancel, isEditing
 
     // Dynamic fuel types and prices from API
     const fuelMapping = useMemo(() => [
-        { key: "solarPrice", label: (tPrices("solar") || "Solar").trim() },
-        { key: "ben80Price", label: (tPrices("ben80") || "Benzene 80").trim() },
-        { key: "ben92Price", label: (tPrices("ben92") || "Benzene 92").trim() },
-        { key: "ben95Price", label: (tPrices("ben95") || "Benzene 95").trim() }
+        { key: "solarPrice", value: "solar", label: (tPrices("solar") || "Solar").trim() },
+        { key: "ben80Price", value: "ben80", label: (tPrices("ben80") || "Benzene 80").trim() },
+        { key: "ben92Price", value: "ben92", label: (tPrices("ben92") || "Benzene 92").trim() },
+        { key: "ben95Price", value: "ben95", label: (tPrices("ben95") || "Benzene 95").trim() }
     ], [tPrices]);
 
     const fuelOptions = useMemo(() => {
         return fuelMapping.map(f => ({
-            value: f.label,
+            value: f.value,
             label: f.label
         }));
     }, [fuelMapping]);
 
+
     const [formData, setFormData] = useState({
-        type: initialData?.type || fuelMapping[0].label,
-        trumbaNumber: initialData?.trumbaNumber || 1,
+        pumpType: initialData?.pumpType || fuelMapping[0].value,
+        pumpNumber: initialData?.pumpNumber || 1,
         startBalance: initialData?.startBalance || 0,
         endBalance: initialData?.endBalance || 0,
-        incoming: initialData?.incoming || 0,
     });
+
 
     const currentPrice = useMemo(() => {
         if (!prices) {
             console.log("BenzeneForm: prices data is null/undefined during price lookup");
             return 0;
         }
-        const typeStr = formData.type || "";
-        const mapping = fuelMapping.find(f => f.label === typeStr.trim());
+        const typeStr = formData.pumpType || "";
+        const mapping = fuelMapping.find(f => f.value === typeStr.trim());
         if (!mapping) {
-            console.warn(`BenzeneForm: Could not find mapping for fuel type "${formData.type}"`);
+            console.warn(`BenzeneForm: Could not find mapping for fuel type "${formData.pumpType}"`);
             return 0;
         }
         const price = (prices as any)[mapping.key] || 0;
-        console.log(`BenzeneForm: Price for "${formData.type}" (key: ${mapping.key}):`, price);
+        console.log(`BenzeneForm: Price for "${formData.pumpType}" (key: ${mapping.key}):`, price);
         return price;
-    }, [formData.type, prices, fuelMapping]);
+    }, [formData.pumpType, prices, fuelMapping]);
+
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
-            [name]: name === "type" ? value : Number(value)
+            [name]: name === "pumpType" ? value : Number(value)
         }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         onSubmit({
-            trumbaType: formData.type,
-            trumbaNumber: formData.trumbaNumber,
+            pumpType: formData.pumpType,
+            pumpNumber: formData.pumpNumber,
             start: formData.startBalance,
             end: formData.endBalance,
-            incoming: formData.incoming,
             date: initialData?.date || new Date().toISOString().split('T')[0]
         });
     };
@@ -99,24 +100,24 @@ export default function BenzeneForm({ initialData, onSubmit, onCancel, isEditing
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Select
-                            label={t("type")}
-                            name="type"
-                            value={formData.type}
+                            label={t("pumpType")}
+                            name="pumpType"
+                            value={formData.pumpType}
                             onChange={handleChange}
                             options={fuelOptions}
                             required
                         />
                         <Input
-                            label={t("trumbaNumber")}
-                            name="trumbaNumber"
+                            label={t("pumpNumber")}
+                            name="pumpNumber"
                             type="number"
-                            value={formData.trumbaNumber}
+                            value={formData.pumpNumber}
                             onChange={handleChange}
                             required
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <Input
                             label={t("startBalance")}
                             name="startBalance"
@@ -130,14 +131,6 @@ export default function BenzeneForm({ initialData, onSubmit, onCancel, isEditing
                             name="endBalance"
                             type="number"
                             value={formData.endBalance}
-                            onChange={handleChange}
-                            required
-                        />
-                        <Input
-                            label={t("incoming")}
-                            name="incoming"
-                            type="number"
-                            value={formData.incoming}
                             onChange={handleChange}
                             required
                         />

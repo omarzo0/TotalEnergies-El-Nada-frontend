@@ -23,11 +23,13 @@ export default function VoucherForm({ initialData, onSubmit, onCancel, isEditing
     const { formData, errors, handleChange, validate } = useVouchersForm(initialData);
 
     const fuelOptions = [
-        { value: "سولار", label: tFuel("diesel") },
-        { value: "بنزين 95", label: tFuel("gasoline95") },
-        { value: "بنزين 92", label: tFuel("gasoline92") },
-        { value: "بنزين 80", label: tFuel("gasoline80") },
+        { value: "solar", label: tFuel("diesel") },
+        { value: "ben95", label: tFuel("gasoline95") },
+        { value: "ben92", label: tFuel("gasoline92") },
+        { value: "ben80", label: tFuel("gasoline80") },
     ];
+
+
 
     const entityOptions = [
         { value: "police", label: tEntities("police") },
@@ -44,13 +46,15 @@ export default function VoucherForm({ initialData, onSubmit, onCancel, isEditing
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Input
-                    label={tLabels("date") || t("date")}
-                    type="date"
-                    value={formData.date}
-                    onChange={(e) => handleChange("date", e.target.value)}
-                    error={errors.date}
-                />
+                {isEditing && (
+                    <Input
+                        label={tLabels("date") || t("date")}
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => handleChange("date", e.target.value)}
+                        error={errors.date}
+                    />
+                )}
                 <Select
                     label={tLabels("entity") || t("entity")}
                     options={entityOptions}
@@ -65,20 +69,22 @@ export default function VoucherForm({ initialData, onSubmit, onCancel, isEditing
                     error={errors.voucherSerial}
                 />
                 <Input
-                    label={tLabels("enterCategory") || t("category")}
+                    label={tLabels("enterLiters") || t("liters")}
                     type="number"
-                    value={formData.category}
-                    onChange={(e) => handleChange("category", Number(e.target.value))}
-                    error={errors.category}
+                    value={formData.liters}
+                    onChange={(e) => handleChange("liters", Number(e.target.value))}
+                    error={errors.liters}
                 />
+
 
                 <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Select
-                        label={tLabels("selectFuelType") || t("benzType")}
+                        label={tLabels("selectFuelType") || t("pumpType")}
                         options={fuelOptions}
-                        value={formData.benzType}
-                        onChange={(e) => handleChange("benzType", e.target.value)}
+                        value={formData.pumpType}
+                        onChange={(e) => handleChange("pumpType", e.target.value)}
                     />
+
                     {isEditing && (
                         <>
                             <Input

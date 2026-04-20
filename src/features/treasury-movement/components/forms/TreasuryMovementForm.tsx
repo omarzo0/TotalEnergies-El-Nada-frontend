@@ -1,30 +1,45 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Input, Select } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { TreasuryMovement, TreasuryMovementFormData } from "../../types/treasury-movement.types";
+import { useStatements } from "@/features/statements/hooks/useStatements";
 
 interface TreasuryMovementFormProps {
     initialData?: TreasuryMovement;
+    selectedDate?: string;
     onSubmit: (data: TreasuryMovementFormData) => void;
     onCancel: () => void;
     isEditing?: boolean;
 }
 
-export default function TreasuryMovementForm({ initialData, onSubmit, onCancel, isEditing }: TreasuryMovementFormProps) {
+export default function TreasuryMovementForm({ initialData, selectedDate, onSubmit, onCancel, isEditing }: TreasuryMovementFormProps) {
     const t = useTranslations("treasuryMovement");
     const tButtons = useTranslations("buttons");
+    const { statements, isLoading: isLoadingStatements } = useStatements();
 
     const [formData, setFormData] = useState<TreasuryMovementFormData>({
-        date: initialData?.date || new Date().toISOString().split("T")[0],
+        date: initialData?.date || selectedDate || new Date().toISOString().split("T")[0],
         type: initialData?.type || "مقبوضات",
         statement: initialData?.statement || "",
         receiptName: initialData?.receiptName || "",
         money: initialData?.money || 0,
         description: initialData?.description || "",
     });
+
+    const statementOptions = statements.map(s => ({
+        value: s.name,
+        label: s.name
+    }));
+
+    // Auto-select first statement if none is selected
+    useEffect(() => {
+        if (!isEditing && statements.length > 0 && formData.statement === "") {
+            setFormData(prev => ({ ...prev, statement: statements[0].name }));
+        }
+    }, [statements, isEditing, formData.statement]);
 
     const typeOptions = [
         { value: "مقبوضات", label: t("income") },
@@ -47,14 +62,18 @@ export default function TreasuryMovementForm({ initialData, onSubmit, onCancel, 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
-                    label={t("date")}
-                    name="date"
-                    type="date"
-                    value={formData.date}
-                    onChange={handleChange}
-                    required
-                />
+                {isEditing ? (
+                    <Input
+                        label={t("date")}
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleChange}
+                        required
+                    />
+                ) : (
+                    <div className="hidden md:block"></div>
+                )}
                 <Select
                     label={t("type")}
                     name="type"
@@ -66,12 +85,12 @@ export default function TreasuryMovementForm({ initialData, onSubmit, onCancel, 
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Input
+                <Select
                     label={t("statement")}
                     name="statement"
                     value={formData.statement}
                     onChange={handleChange}
-                    placeholder="مثال: ح/العملاء"
+                    options={statementOptions}
                     required
                 />
                 <Input
@@ -113,6 +132,6 @@ export default function TreasuryMovementForm({ initialData, onSubmit, onCancel, 
                     {isEditing ? tButtons("save") : tButtons("add")}
                 </Button>
             </div>
-        </form>
+        </form >
     );
 }

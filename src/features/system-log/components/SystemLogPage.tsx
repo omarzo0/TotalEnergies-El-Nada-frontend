@@ -8,6 +8,7 @@ import { useSystemLog } from "../hooks/useSystemLog";
 import { DataRow } from "@/types";
 import { Input, Select } from "@/ui/Input";
 import { LogType } from "../types/system-log.types";
+import { SystemLogTableSkeleton } from "../ui/SystemLogSkeleton";
 
 export default function SystemLogPage() {
     const t = useTranslations("systemLog");
@@ -108,9 +109,7 @@ export default function SystemLogPage() {
                 )}
 
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <SystemLogTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columns}

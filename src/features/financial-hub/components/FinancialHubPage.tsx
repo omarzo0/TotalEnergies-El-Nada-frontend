@@ -7,6 +7,7 @@ import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { financialHubApi } from "../api/financial-hub.api";
 import { DailyFinancialSummary, PeriodicFinancialReport } from "../types/financial-hub.types";
+import { FinancialHubSummarySkeleton, FinancialHubReportSkeleton } from "../ui/FinancialHubSkeleton";
 
 export default function FinancialHubPage() {
     const t = useTranslations("financialHub");
@@ -108,21 +109,32 @@ export default function FinancialHubPage() {
                         </div>
 
                         {loading ? (
-                            <div className="flex justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                            </div>
+                            <FinancialHubSummarySkeleton />
                         ) : summary ? (
                             <div className="space-y-6">
-                                {/* Profit Highlight */}
+                                {/* Profit & Global Balance Highlight */}
                                 <div className="page-card bg-primary text-white shadow-card p-8 flex flex-col md:flex-row justify-between items-center transform hover:scale-[1.01] transition-all">
-                                    <div className="text-center md:text-left">
-                                        <h3 className="text-2xl font-black">{t("metrics.netProfit")}</h3>
-                                        <p className="text-primary-foreground/70">{t("dailySummary")} - {summaryDate}</p>
+                                    <div className="text-center md:text-left mb-6 md:mb-0">
+                                        <h3 className="text-2xl font-black">{t("dailySummary")}</h3>
+                                        <p className="text-primary-foreground/70">{summaryDate}</p>
                                     </div>
-                                    <div className="text-5xl font-black tracking-tight mt-4 md:mt-0">
-                                        {formatNumber(summary.overview?.netProfit)} <span className="text-xl font-normal opacity-70">EGP</span>
+                                    <div className="flex flex-col md:flex-row gap-8 w-full md:w-auto">
+                                        <div className="text-center md:text-right border-b md:border-b-0 md:border-r border-white/10 pb-4 md:pb-0 md:pr-8">
+                                            <p className="text-primary-foreground/70 text-xs uppercase tracking-wider font-bold mb-1">{t("metrics.netProfit")}</p>
+                                            <div className="text-4xl font-black">
+                                                {formatNumber(summary.overview?.netProfit)} <span className="text-sm font-normal opacity-60">EGP</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-center md:text-right">
+                                            <p className="text-primary-foreground/70 text-xs uppercase tracking-wider font-bold mb-1">{t("metrics.globalSafeBalance")}</p>
+                                            <div className="text-4xl font-black">
+                                                {formatNumber(summary.globalBalance)} <span className="text-sm font-normal opacity-60">EGP</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
+
+
 
                                 {/* Main Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -150,6 +162,24 @@ export default function FinancialHubPage() {
                                     />
                                 </div>
 
+                                {/* Persistent Safe Metrics */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <MetricCard
+                                        title={t("metrics.openingBalance")}
+                                        value={summary.openingBalance}
+                                        icon="bx-lock-open"
+                                        variant="default"
+                                    />
+                                    <MetricCard
+                                        title={t("metrics.closingBalance")}
+                                        value={summary.closingBalance}
+                                        icon="bx-lock"
+                                        variant="primary"
+                                        subtext={t("metrics.runningSafe")}
+                                    />
+                                </div>
+
+
                                 {/* Secondary Grid: Vouchers, Clients, Island */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     <MetricCard
@@ -159,16 +189,14 @@ export default function FinancialHubPage() {
                                         icon="bx-receipt"
                                     />
                                     <MetricCard
-                                        title={t("metrics.clientPayments")}
-                                        value={summary.clients?.payments}
-                                        subtext={t("metrics.clientPayments")}
-                                        icon="bx-user-check"
+                                        title={t("metrics.clientDebts")}
+                                        value={summary.clients?.total}
+                                        icon="bx-user-minus"
                                     />
                                     <MetricCard
-                                        title={t("metrics.clientDebts")}
-                                        value={summary.clients?.debts}
-                                        subtext={t("metrics.clientDebts")}
-                                        icon="bx-user-minus"
+                                        title={t("metrics.accountsMovement")}
+                                        value={summary.accounts?.netMovement}
+                                        icon="bx-transfer-alt"
                                     />
                                     <MetricCard
                                         title={t("metrics.islandCash")}
@@ -235,9 +263,7 @@ export default function FinancialHubPage() {
                         </div>
 
                         {loading ? (
-                            <div className="flex justify-center py-20">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                            </div>
+                            <FinancialHubReportSkeleton />
                         ) : report ? (
                             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 {/* Periodic Profit Highlight */}
@@ -270,7 +296,7 @@ export default function FinancialHubPage() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                                     <div className="page-card shadow-glass p-8 border-l-4 border-l-emerald-500">
                                         <h4 className="text-text-muted text-sm font-bold uppercase tracking-widest mb-4">{t("metrics.totalIn")}</h4>
                                         <div className="text-4xl font-black text-emerald-600">{formatNumber(report.totalIn)} <span className="text-sm font-medium opacity-40">EGP</span></div>
@@ -280,10 +306,15 @@ export default function FinancialHubPage() {
                                         <div className="text-4xl font-black text-red-600">{formatNumber(report.totalOut)} <span className="text-sm font-medium opacity-40">EGP</span></div>
                                     </div>
                                     <div className="page-card shadow-glass p-8 border-l-4 border-l-blue-500">
-                                        <h4 className="text-text-muted text-sm font-bold uppercase tracking-widest mb-4">{t("metrics.salaries")}</h4>
-                                        <div className="text-4xl font-black text-blue-600">{formatNumber(report.salaries)} <span className="text-sm font-medium opacity-40">EGP</span></div>
+                                        <h4 className="text-text-muted text-sm font-bold uppercase tracking-widest mb-4">{t("metrics.openingBalance")}</h4>
+                                        <div className="text-4xl font-black text-blue-600">{formatNumber(report.openingBalance)} <span className="text-sm font-medium opacity-40">EGP</span></div>
+                                    </div>
+                                    <div className="page-card shadow-glass p-8 border-l-4 border-l-indigo-500">
+                                        <h4 className="text-text-muted text-sm font-bold uppercase tracking-widest mb-4">{t("metrics.closingBalance")}</h4>
+                                        <div className="text-4xl font-black text-indigo-600">{formatNumber(report.closingBalance)} <span className="text-sm font-medium opacity-40">EGP</span></div>
                                     </div>
                                 </div>
+
                             </div>
                         ) : error ? (
                             <div className="bg-red-50 text-red-600 p-8 rounded-3xl text-center border border-red-100">
@@ -298,6 +329,6 @@ export default function FinancialHubPage() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }

@@ -12,9 +12,25 @@ export function useDailyTreasuryForm(initialData?: Partial<TreasuryManualEntry>)
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isMoneyManual, setIsMoneyManual] = useState(initialData?.money !== undefined);
 
     const handleChange = (name: string, value: string) => {
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        setFormData((prev) => {
+            const newData = { ...prev, [name]: value };
+
+            // Auto-calculate money if quantity or price changes and money isn't manual
+            if ((name === "quantity" || name === "price") && !isMoneyManual) {
+                const q = name === "quantity" ? Number(value) : Number(prev.quantity);
+                const p = name === "price" ? Number(value) : Number(prev.price);
+                newData.money = (q * p).toString();
+            }
+
+            if (name === "money") {
+                setIsMoneyManual(true);
+            }
+
+            return newData;
+        });
         if (errors[name]) {
             setErrors((prev) => {
                 const newErrors = { ...prev };

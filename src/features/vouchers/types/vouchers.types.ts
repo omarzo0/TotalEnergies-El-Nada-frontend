@@ -1,35 +1,36 @@
-export type VoucherEntity = 'police' | 'association';
-export type FuelType = 'سولار' | 'بنزين 80' | 'بنزين 92' | 'بنزين 95';
+export type FuelType = 'solar' | 'ben80' | 'ben92' | 'ben95';
+
 
 export interface VoucherRecord {
     id?: string;
     date: string;
-    side: VoucherEntity;
+    side: string;
     voucherSerial: string;
     total: number;
-    category: number;
+    liters: number;
     price: number;
-    benzType: FuelType;
+    pumpType: FuelType;
 }
 
 export interface VoucherFormData {
     date: string;
-    side: VoucherEntity;
+    side: string;
     voucherSerial: string;
     total?: number;
-    category: number;
+    liters: number;
     price?: number;
-    benzType: FuelType;
+    pumpType: FuelType;
 }
 
 export interface VoucherMatchingRecord {
     date: string;
     number: number;
-    category: number;
-    benzType: FuelType;
-    side: VoucherEntity;
+    liters: number;
+    pumpType: FuelType;
+    side: string;
     price: number;
     total: number;
 }
+
 
 

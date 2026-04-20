@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import DataTable from '@/components/shared/DataTable';
 import Modal from '@/components/shared/Modal';
-import { useStatements } from '../hooks/useStatements';
-import { Statement } from '../types/statements.types';
+import { useStatements } from "../hooks/useStatements";
+import { Statement } from "../types/statements.types";
+import { StatementsTableSkeleton } from "../ui/StatementsSkeleton";
 
 export default function StatementsPage() {
     const t = useTranslations('pages');
@@ -94,9 +95,7 @@ export default function StatementsPage() {
 
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <StatementsTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columnLabels}

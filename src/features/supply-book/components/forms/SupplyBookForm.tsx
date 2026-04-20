@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Input, Select } from "@/ui/Input";
 import { SupplyBookRecord, SupplyBookFormData, FUEL_TYPES } from "../../types/supply-book.types";
+import { benzeneApi } from "@/features/benzene/api/benzene.api";
 import Button from "@/ui/Button";
+
 
 interface SupplyBookFormProps {
     initialData?: SupplyBookRecord;
@@ -27,6 +29,36 @@ export default function SupplyBookForm({ initialData, onSubmit, onCancel, isEdit
         standard: initialData?.standard || 0,
     });
 
+    const [isFetchingPumps, setIsFetchingPumps] = useState(false);
+
+    // Auto-fetch pump numbers when date or fuel type changes
+    useEffect(() => {
+        const fetchPumps = async () => {
+            if (!formData.date || !formData.benzType || isEditing) return;
+
+            try {
+                setIsFetchingPumps(true);
+                const readings = await benzeneApi.getPumpReadingsByType(formData.date, formData.benzType);
+                if (readings.length > 0) {
+                    const pumpNumbers = readings
+                        .map(r => r.pumpNumber)
+                        .sort((a, b) => a - b)
+                        .join(", ");
+                    setFormData(prev => ({ ...prev, pumps: pumpNumbers }));
+                } else if (formData.pumps === "") {
+                    // Only clear if it was already empty or auto-filled
+                    setFormData(prev => ({ ...prev, pumps: "" }));
+                }
+            } catch (error) {
+                console.error("Failed to fetch pump numbers:", error);
+            } finally {
+                setIsFetchingPumps(false);
+            }
+        };
+
+        fetchPumps();
+    }, [formData.date, formData.benzType, isEditing]);
+
     const fuelOptions = [
         { value: FUEL_TYPES.SOLAR, label: tFuel("diesel") },
         { value: FUEL_TYPES.B80, label: tFuel("gasoline80") },
@@ -41,6 +73,13 @@ export default function SupplyBookForm({ initialData, onSubmit, onCancel, isEdit
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+                label={tSupply("date")}
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            />
+
             <Select
                 label={tSupply("benzType") || "Fuel Type"}
                 options={fuelOptions}
@@ -70,7 +109,7 @@ export default function SupplyBookForm({ initialData, onSubmit, onCancel, isEdit
                     label={tSupply("pumps")}
                     value={formData.pumps}
                     onChange={(e) => setFormData({ ...formData, pumps: e.target.value })}
-                    placeholder=""
+                    placeholder={isFetchingPumps ? "Loading..." : (tSupply("pumpsPlaceholder") || "Leave blank to auto-sync from benzene records")}
                 />
                 <Input
                     label={tSupply("standard")}
@@ -83,9 +122,14 @@ export default function SupplyBookForm({ initialData, onSubmit, onCancel, isEdit
 
             {/* Auto-calculated fields info */}
             {isEditing && (
-                <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs text-blue-600">
-                    <i className="bx bx-info-circle me-1"></i>
-                    dispensed & end are auto-calculated by the system.
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-sm text-primary flex items-start gap-3">
+                    <i className="bx bx-info-circle text-xl mt-0.5"></i>
+                    <div>
+                        <p className="font-bold mb-1">Smart Re-calculation</p>
+                        <p className="opacity-80 leading-relaxed">
+                            The system will automatically re-calculate <span className="font-bold underline">dispensed</span>, <span className="font-bold underline">end balance</span>, and <span className="font-bold underline">pump numbers</span> based on the benzene readings for this date and fuel type.
+                        </p>
+                    </div>
                 </div>
             )}
 

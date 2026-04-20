@@ -8,7 +8,9 @@ import DataTable from "@/components/shared/DataTable";
 import Button from "@/ui/Button";
 import { useVouchers } from "../hooks/useVouchers";
 import { DataRow, TabItem } from "@/types";
-import { FuelType, VoucherEntity } from "../types/vouchers.types";
+import { FuelType } from "../types/vouchers.types";
+
+import { VoucherMatchingSkeleton } from "../ui/VoucherSkeleton";
 
 export default function VoucherMatchingPage() {
     const t = useTranslations("table.voucherMatching");
@@ -19,7 +21,8 @@ export default function VoucherMatchingPage() {
 
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
     const { matchingRecords, matchingTotal, isLoading, fetchMatching, error } = useVouchers(selectedDate);
-    const [activeFilter, setActiveFilter] = useState<{ type: 'benzType' | 'side', key: string } | null>(null);
+    const [activeFilter, setActiveFilter] = useState<{ type: 'pumpType' | 'side', key: string } | null>(null);
+
 
     useEffect(() => {
         const filters = activeFilter ? { [activeFilter.type]: activeFilter.key } : {};
@@ -32,22 +35,24 @@ export default function VoucherMatchingPage() {
     ];
 
     const filterButtons = [
-        { key: "سولار", label: tFuel("diesel"), type: 'benzType' as const },
-        { key: "بنزين 80", label: tFuel("gasoline80"), type: 'benzType' as const },
-        { key: "بنزين 92", label: tFuel("gasoline92"), type: 'benzType' as const },
-        { key: "بنزين 95", label: tFuel("gasoline95"), type: 'benzType' as const },
+        { key: "solar", label: tFuel("diesel"), type: 'pumpType' as const },
+        { key: "ben80", label: tFuel("gasoline80"), type: 'pumpType' as const },
+        { key: "ben92", label: tFuel("gasoline92"), type: 'pumpType' as const },
+        { key: "ben95", label: tFuel("gasoline95"), type: 'pumpType' as const },
         { key: "police", label: tEntities("police"), type: 'side' as const },
         { key: "association", label: tEntities("association"), type: 'side' as const },
     ];
+
+
 
     const handleFilter = (filter: any) => {
         setActiveFilter(filter.key === activeFilter?.key ? null : { type: filter.type, key: filter.key });
     };
 
-    const columns = [t("category"), t("count") || "العدد", t("total"), t("price") || "السعر", tEntities("police") ? "الجهة" : "Entity"];
+    const columns = [t("liters"), t("count") || "العدد", t("total"), t("price") || "السعر", tEntities("police") ? "الجهة" : "Entity"];
     const rows: DataRow[] = (matchingRecords || []).map(record => ({
         cells: [
-            (record?.category ?? 0).toString(),
+            (record?.liters ?? 0).toString(),
             (record?.number ?? 0).toString(),
             (record?.total ?? 0).toLocaleString(),
             (record?.price ?? 0).toLocaleString(),
@@ -55,6 +60,7 @@ export default function VoucherMatchingPage() {
         ],
         editable: false
     }));
+
 
 
     return (
@@ -104,9 +110,7 @@ export default function VoucherMatchingPage() {
                 </div>
 
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <VoucherMatchingSkeleton />
                 ) : (
                     <>
                         <DataTable columns={columns} rows={rows} />

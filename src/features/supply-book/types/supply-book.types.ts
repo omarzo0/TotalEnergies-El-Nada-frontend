@@ -46,10 +46,11 @@ export interface StandardUpdatePayload {
 
 // Fuel type constants matching backend Arabic values
 export const FUEL_TYPES = {
-    SOLAR: "سولار",
-    B80: "بنزين 80",
-    B92: "بنزين 92",
-    B95: "بنزين 95"
+    SOLAR: "solar",
+    B80: "ben80",
+    B92: "ben92",
+    B95: "ben95"
 } as const;
+
 
 export type FuelType = typeof FUEL_TYPES[keyof typeof FUEL_TYPES];

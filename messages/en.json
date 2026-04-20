@@ -9,7 +9,9 @@
         "username": "Enter username",
         "password": "Enter password",
         "submit": "Login",
-        "Invalid email or password": "Invalid email or password"
+        "Invalid email or password": "Invalid email or password",
+        "account_locked_max_attempts": "Account locked due to too many failed attempts. Try again in 1 hour.",
+        "too_many_login_attempts_try_later": "Too many login attempts. Please try again in 15 minutes."
     },
     "overview": {
         "totalSales": "Total Sales",
@@ -99,7 +101,12 @@
             "transfer": "Transfer",
             "description": "Description",
             "creditor": "Creditor",
-            "debtor": "Debtor"
+            "debtor": "Debtor",
+            "benzType": "Fuel Type",
+            "standard": "Standard",
+            "incoming": "Incoming",
+            "pumps": "Pump End",
+            "dispensed": "Dispensed"
         },
         "oils": {
             "oilType": "Oil Type",
@@ -129,14 +136,14 @@
             "entity": "Entity",
             "serial": "Voucher Serial",
             "total": "Total",
-            "category": "Category",
+            "liters": "Liters",
             "price": "Price",
-            "benzType": "Fuel Type"
+            "pumpType": "Pump Type"
         },
         "voucherMatching": {
             "voucherMatching": "Voucher Matching Summary",
             "total": "Total",
-            "category": "Category",
+            "liters": "Liters",
             "count": "Count",
             "price": "Price"
         },
@@ -156,7 +163,8 @@
             "dispensed": "Dispensed",
             "incoming": "Incoming",
             "start": "Start",
-            "date": "Date"
+            "date": "Date",
+            "pumpsPlaceholder": "Leave blank to auto-sync from benzene records"
         },
         "balanceMatching": {
             "gasoline95": "Gasoline 95",
@@ -238,13 +246,30 @@
         "shiftNumber": "Shift Diary Number",
         "shiftDate": "Shift Date",
         "pumpReadings": "Pump Readings (Benzene)",
+        "expenses": "Expenses",
+        "totalExpenses": "Total Expenses",
         "receipts": "Receipts",
         "payments": "Payments",
+        "accounts": "Accounts",
         "noEntries": "No entries",
         "totalOf": "Total of",
         "currency": "EGP",
+        "supplyBook": "Inventory Storage (Gauges)",
         "noDataTitle": "No data available for this date",
         "noDataSubtitle": "Please select another date from above."
+    },
+    "shiftDiaryStatements": {
+        "cashSales": "Cash Sales",
+        "expenses": "Expenses",
+        "suppliers": "Suppliers",
+        "bankDeposit": "Bank Deposit",
+        "clientAccounts": "Client Accounts",
+        "accountantAccount": "Accountant Account",
+        "hajSayedAccount": "Haj Sayed Account",
+        "generalExpenses": "General Expenses",
+        "vouchers": "Vouchers",
+        "deferredClients": "Deferred Clients",
+        "omar": "Omar"
     },
     "systemLog": {
         "adminName": "Admin",
@@ -268,11 +293,12 @@
         "endBalanceShort": "End Balance",
         "receipt": "Receipt",
         "receiptName": "Receipt Name",
+        "receiptNumber": "Receipt Number",
         "enterAmount": "Enter Amount",
-        "enterCategory": "Enter Category",
+        "enterLiters": "Enter Liters",
         "enterSerial": "Enter Voucher Serial",
         "entity": "Entity",
-        "selectFuelType": "Select Fuel Type",
+        "selectFuelType": "Select Pump Type",
         "client": "Client",
         "amount": "Amount",
         "description": "Description",
@@ -371,8 +397,8 @@
     "benzene": {
         "title": "Benzene Management",
         "form": {
-            "type": "Benzene Type",
-            "trumbaNumber": "Pump Number",
+            "pumpType": "Benzene Type",
+            "pumpNumber": "Pump Number",
             "startBalance": "Opening Balance",
             "endBalance": "Closing Balance",
             "incoming": "Incoming",
@@ -454,22 +480,27 @@
             "report": "Periodic Report"
         },
         "metrics": {
+            "netProfit": "Net Profit",
             "fuelRevenue": "Fuel Revenue",
             "oilRevenue": "Oil Revenue",
-            "receipts": "Safe Receipts",
-            "payments": "Safe Payments",
-            "expenses": "Operational Expenses",
-            "netProfit": "Net Profit",
-            "totalIn": "Total Inflow",
-            "totalOut": "Total Outflow",
-            "liters": "Liters Sold",
-            "transactionCount": "Transactions",
-            "salaries": "Salary Liability",
+            "expenses": "Expenses",
+            "receipts": "Receipts",
+            "payments": "Payments",
+            "salaries": "Salaries",
+            "liters": "Liters",
+            "transactionCount": "Transaction Count",
             "employees": "Employees",
+            "totalIn": "Total IN",
+            "totalOut": "Total OUT",
             "clientPayments": "Client Payments",
             "clientDebts": "Client Debts",
             "islandCash": "Island Cash",
-            "vouchers": "Voucher Total"
+            "vouchers": "Voucher Total",
+            "openingBalance": "Opening Balance (Daily)",
+            "closingBalance": "Closing Balance (Daily)",
+            "runningSafe": "Running Safe",
+            "globalSafeBalance": "Global Safe Balance (Total)",
+            "accountsMovement": "Accounts Movement"
         },
         "form": {
             "selectDate": "Select Date",

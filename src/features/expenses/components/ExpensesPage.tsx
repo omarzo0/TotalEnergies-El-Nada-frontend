@@ -9,6 +9,7 @@ import { useExpenses } from "../hooks/useExpenses";
 import ExpenseForm from "./forms/ExpenseForm";
 import { Expense } from "../types/expenses.types";
 import { DataRow } from "@/types";
+import { ExpensesTableSkeleton } from "../ui/ExpensesSkeleton";
 import Button from "@/ui/Button";
 
 export default function ExpensesPage() {
@@ -91,9 +92,7 @@ export default function ExpensesPage() {
 
             <div className="page-card shadow-glass">
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <ExpensesTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columns}

@@ -6,6 +6,7 @@ import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import Modal from "@/components/shared/Modal";
 import { useBenzenePrices } from "../hooks/useBenzenePrices";
+import { BenzenePricesSkeleton } from "../ui/BenzeneSkeleton";
 
 interface BenzenePricesTabProps {
     date: string;
@@ -115,9 +116,7 @@ export default function BenzenePricesTab({ date }: BenzenePricesTabProps) {
 
             {/* Loading */}
             {isLoading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                </div>
+                <BenzenePricesSkeleton />
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {priceCards.map((card) => {

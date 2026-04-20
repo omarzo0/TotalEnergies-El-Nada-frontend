@@ -10,6 +10,7 @@ import EmployeeForm from "./forms/EmployeeForm";
 import { Employee } from "../types/employees.types";
 import { DataRow } from "@/types";
 import { Input } from "@/ui/Input";
+import { EmployeesTableSkeleton } from "../ui/EmployeesSkeleton";
 
 export default function EmployeesPage() {
     const t = useTranslations("employees");
@@ -128,9 +129,7 @@ export default function EmployeesPage() {
                 )}
 
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <EmployeesTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columns}

@@ -8,6 +8,7 @@ import { DataRow } from "@/types";
 import { adminsApi } from "../api/admins.api";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
+import { AdminManagementSkeleton } from "../ui/SettingsSkeleton";
 
 export default function AdminManagement() {
     const t = useTranslations("settings.admins");
@@ -198,19 +199,22 @@ export default function AdminManagement() {
                 </div>
             )}
 
-            <DataTable
-                columns={columns}
-                rows={rows}
-                loading={isLoading}
-                onEdit={(index) => {
-                    const admin = admins[index];
-                    if (admin) handleOpenEdit(admin.id || admin._id);
-                }}
-                onDelete={(index) => {
-                    const admin = admins[index];
-                    if (admin) handleOpenDelete(admin.id || admin._id);
-                }}
-            />
+            {isLoading ? (
+                <AdminManagementSkeleton />
+            ) : (
+                <DataTable
+                    columns={columns}
+                    rows={rows}
+                    onEdit={(index) => {
+                        const admin = admins[index];
+                        if (admin) handleOpenEdit(admin.id || admin._id);
+                    }}
+                    onDelete={(index) => {
+                        const admin = admins[index];
+                        if (admin) handleOpenDelete(admin.id || admin._id);
+                    }}
+                />
+            )}
 
             {/* Create/Edit Modal */}
             <Modal

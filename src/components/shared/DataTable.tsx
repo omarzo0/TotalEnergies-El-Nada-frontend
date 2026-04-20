@@ -8,12 +8,13 @@ interface DataTableProps {
     rows: DataRow[];
     onEdit?: (index: number) => void;
     onDelete?: (index: number) => void;
+    onSync?: (index: number) => void;
     onImageClick?: (url: string) => void;
     loading?: boolean;
 }
 
-export default function DataTable({ columns, rows, onEdit, onDelete, onImageClick, loading }: DataTableProps) {
-    const hasActions = onEdit || onDelete;
+export default function DataTable({ columns, rows, onEdit, onDelete, onSync, onImageClick, loading }: DataTableProps) {
+    const hasActions = onEdit || onDelete || onSync;
 
     const isImage = (value: string) => {
         return typeof value === 'string' && (
@@ -87,6 +88,15 @@ export default function DataTable({ columns, rows, onEdit, onDelete, onImageClic
                                                     title="Edit"
                                                 >
                                                     <i className="bx bx-edit-alt text-lg"></i>
+                                                </button>
+                                            )}
+                                            {onSync && row.editable !== false && (
+                                                <button
+                                                    onClick={() => onSync(rowIdx)}
+                                                    className="p-2 rounded-lg text-blue-500 hover:bg-blue-50 transition-all active:scale-95"
+                                                    title="Sync with records"
+                                                >
+                                                    <i className="bx bx-refresh text-xl"></i>
                                                 </button>
                                             )}
                                             {onDelete && (

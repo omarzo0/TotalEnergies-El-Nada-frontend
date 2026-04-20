@@ -66,11 +66,13 @@ export const supplyBookApi = {
     updateRecord: async (data: Partial<SupplyBookRecord>): Promise<SupplyBookRecord> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
-        const response = await fetch(`${API_URL}/supply-book`, {
+        const id = data._id || data.id;
+        const response = await fetch(`${API_URL}/supply-book/${id}`, {
             method: 'PUT',
             headers: getHeaders(),
             body: JSON.stringify(data)
         });
+
 
         const result = await response.json();
         if (!result.success) throw new Error(result.message);

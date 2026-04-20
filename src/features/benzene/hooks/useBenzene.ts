@@ -13,14 +13,14 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string) {
     const tPrices = useTranslations("benzene.pricesTab");
 
     const typeToPriceKey: Record<string, string> = useMemo(() => {
-        const mapping = {
-            [(tPrices("solar") || "Solar").trim()]: "solarPrice",
-            [(tPrices("ben80") || "Benzene 80").trim()]: "ben80Price",
-            [(tPrices("ben92") || "Benzene 92").trim()]: "ben92Price",
-            [(tPrices("ben95") || "Benzene 95").trim()]: "ben95Price"
+        return {
+            "solar": "solarPrice",
+            "ben80": "ben80Price",
+            "ben92": "ben92Price",
+            "ben95": "ben95Price"
         };
-        return mapping;
-    }, [tPrices]);
+    }, []);
+
 
     const fetchData = useCallback(async () => {
         // Ensure date is YYYY-MM-DD
@@ -43,26 +43,27 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string) {
             ]);
 
             const mapped: BenzeneRecord[] = readingsData.map((r, index) => {
-                const trumbaType = r.pumpType || r.trumbaType || (r as any).benzType || "";
-                const trumbaNumber = r.pumpNumber || r.trumbaNumber || 0;
-                const trimmedType = trumbaType.trim();
-                const priceKey = typeToPriceKey[trimmedType];
+                const pumpType = (r.pumpType || r.trumbaType || (r as any).benzType || "").trim();
+                const pumpNumber = r.pumpNumber || r.trumbaNumber || 0;
+
+                // Try to find price using technical key, fallback to record price
+                const priceKey = typeToPriceKey[pumpType.toLowerCase()];
                 const apiPrice = priceKey && pricesData ? (pricesData as any)[priceKey] : 0;
                 const finalPrice = apiPrice > 0 ? apiPrice : (r.price || 0);
 
                 return {
                     id: r._id || `record-${index}`,
-                    type: trumbaType,
-                    trumbaNumber: trumbaNumber,
+                    pumpType: pumpType,
+                    pumpNumber: pumpNumber,
                     startBalance: r.start,
                     endBalance: r.end,
-                    incoming: r.incoming,
-                    sold: r.total,
+                    liters: r.liters,
                     price: finalPrice,
-                    total: r.sold || (r.total * finalPrice),
-                    date: r.date.split('T')[0] // Ensure record date is also YYYY-MM-DD
+                    totalAmount: r.totalAmount || (r.liters * finalPrice),
+                    date: r.date.split('T')[0]
                 };
             });
+
             setRecords(mapped);
         } catch (err: any) {
             console.error("Failed to fetch pump readings:", err);
@@ -95,8 +96,7 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string) {
         try {
             await benzeneApi.updatePumpReading(id, {
                 start: data.start,
-                end: data.end,
-                incoming: data.incoming
+                end: data.end
             });
             await fetchData();
         } catch (err: any) {

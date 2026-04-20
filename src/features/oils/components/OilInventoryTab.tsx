@@ -9,6 +9,7 @@ import { useOils } from "../hooks/useOils";
 import Button from "@/ui/Button";
 import { Input } from "@/ui/Input";
 import { DataRow } from "@/types";
+import { OilInventorySkeleton } from "../ui/OilsSkeleton";
 
 interface OilInventoryTabProps {
     date: string;
@@ -28,6 +29,7 @@ export default function OilInventoryTab({ date, oils }: OilInventoryTabProps) {
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedOil, setSelectedOil] = useState<any>(null);
     const [formData, setFormData] = useState({
+        oilName: "",
         startBalance: 0,
         storageIncoming: 0
     });
@@ -37,6 +39,7 @@ export default function OilInventoryTab({ date, oils }: OilInventoryTabProps) {
         return {
             cells: [
                 oil.oilName,
+                (oil.price || 0).toLocaleString(),
                 (record?.startBalance ?? 0).toString(),
                 (record?.storageIncoming ?? 0).toString(),
                 (record?.endBalance ?? 0).toString(),
@@ -49,6 +52,7 @@ export default function OilInventoryTab({ date, oils }: OilInventoryTabProps) {
 
     const columns = [
         t("oilType"),
+        t("price"),
         t("startBalance"),
         tStorage("storageIncoming"),
         t("endBalance")
@@ -59,6 +63,7 @@ export default function OilInventoryTab({ date, oils }: OilInventoryTabProps) {
         const record = storage.find(s => s.oilName === oil.oilName);
         setSelectedOil(oil);
         setFormData({
+            oilName: oil.oilName,
             startBalance: record?.startBalance ?? 0,
             storageIncoming: record?.storageIncoming ?? 0
         });
@@ -95,9 +100,7 @@ export default function OilInventoryTab({ date, oils }: OilInventoryTabProps) {
     return (
         <div>
             {isLoading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                </div>
+                <OilInventorySkeleton />
             ) : (
                 <DataTable
                     columns={columns}

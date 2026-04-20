@@ -8,10 +8,10 @@ export function useDeferredClientsForm(initialData?: DeferredClientPayment) {
         clientName: initialData?.clientName || '',
         receiptName: initialData?.receiptName || (initialData as any)?.sand || '',
         money: initialData?.money || 0,
-        amount: initialData?.amount || 0,
         receiptNumber: initialData?.receiptNumber || '',
         date: initialData?.date || new Date().toISOString().split("T")[0]
     });
+
 
     const [errors, setErrors] = useState<Partial<Record<keyof DeferredClientFormData, string>>>({});
 
@@ -31,8 +31,8 @@ export function useDeferredClientsForm(initialData?: DeferredClientPayment) {
         if (!formData.clientName) newErrors.clientName = "Client name is required";
         if (!formData.receiptName) newErrors.receiptName = "Receipt name is required";
         if (formData.money === undefined || formData.money < 0) newErrors.money = "Valid money is required";
-        if (formData.amount === undefined || formData.amount < 0) newErrors.amount = "Valid amount is required";
         if (!formData.receiptNumber) newErrors.receiptNumber = "Receipt number is required";
+
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -47,9 +47,9 @@ export function useDeferredClientsForm(initialData?: DeferredClientPayment) {
             clientName: '',
             receiptName: '',
             money: 0,
-            amount: 0,
             receiptNumber: '',
             date: new Date().toISOString().split("T")[0]
         })
+
     };
 }

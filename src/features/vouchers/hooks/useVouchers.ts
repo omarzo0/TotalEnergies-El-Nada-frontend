@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from 'react';
-import { VoucherRecord, VoucherMatchingRecord, FuelType, VoucherEntity } from '../types/vouchers.types';
+import { VoucherRecord, VoucherMatchingRecord, FuelType } from '../types/vouchers.types';
+
 import { vouchersApi } from '../api/vouchers.api';
 
 export function useVouchers(date?: string) {
@@ -11,13 +12,13 @@ export function useVouchers(date?: string) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchVouchers = useCallback(async (currentDate?: string, benzType?: FuelType) => {
+    const fetchVouchers = useCallback(async (currentDate?: string, pumpType?: FuelType) => {
         const targetDate = currentDate || date;
         if (!targetDate) return;
 
         try {
             setIsLoading(true);
-            const data = await vouchersApi.getVouchers(targetDate, benzType);
+            const data = await vouchersApi.getVouchers(targetDate, pumpType);
             setVouchers(data);
             setError(null);
         } catch (err: any) {
@@ -28,7 +29,8 @@ export function useVouchers(date?: string) {
         }
     }, [date]);
 
-    const fetchMatching = useCallback(async (currentDate?: string, filters?: { benzType?: FuelType, side?: VoucherEntity }) => {
+
+    const fetchMatching = useCallback(async (currentDate?: string, filters?: { pumpType?: FuelType, side?: string }) => {
         const targetDate = currentDate || date;
         if (!targetDate) return;
 
@@ -46,6 +48,7 @@ export function useVouchers(date?: string) {
             setIsLoading(false);
         }
     }, [date]);
+
 
     const addVoucher = async (data: Partial<VoucherRecord>) => {
         try {

@@ -100,7 +100,20 @@ export const benzeneApi = {
         return Array.isArray(result.data) ? result.data : [];
     },
 
-    createPumpReading: async (data: { date: string, trumbaNumber: number, trumbaType: string, start: number, end: number, incoming: number }): Promise<BenzenePumpReading> => {
+    getPumpReadingsByType: async (date: string, type: string): Promise<BenzenePumpReading[]> => {
+        if (!API_URL) throw new Error("API URL is not defined.");
+
+        const response = await fetch(`${API_URL}/benzene/${date}/${type}`, {
+            headers: getHeaders()
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.message);
+        return Array.isArray(result.data) ? result.data : [];
+    },
+
+
+    createPumpReading: async (data: { date: string, pumpNumber: number, pumpType: string, start: number, end: number }): Promise<BenzenePumpReading> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         const response = await fetch(`${API_URL}/benzene`, {
@@ -126,7 +139,7 @@ export const benzeneApi = {
         return result.data;
     },
 
-    updatePumpReading: async (id: string, data: { start: number; end: number; incoming: number }): Promise<BenzenePumpReading> => {
+    updatePumpReading: async (id: string, data: { start: number; end: number }): Promise<BenzenePumpReading> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         const response = await fetch(`${API_URL}/benzene/${id}`, {

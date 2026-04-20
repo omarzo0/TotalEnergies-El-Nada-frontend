@@ -9,6 +9,7 @@ export interface StatementSummary {
     total: number;
     na2l: number;       // mapped from backend "transfer"
     fr2s3r: number;     // mapped from backend "priceDiff"
+    originalType?: string; // "مقبوضات" or "مدفوعات"
 }
 
 export interface BenzeneReading {
@@ -18,13 +19,30 @@ export interface BenzeneReading {
     end: number;
     total: number;
 }
+export interface ExpenseReading {
+    receiptName: string;
+    money: number;
+}
+
+export interface SupplyBookEntry {
+    benzType: string;
+    start: number;
+    incoming: number;
+    dispensed: number;
+    pumps: string;
+    end: number;
+    standard: number;
+}
 
 export interface ShiftDiarySummary {
     number: string;
     date: string;
     mkbodat: StatementSummary[];    // mapped from backend "receipts"
     mdfo3at: StatementSummary[];    // mapped from backend "payments"
+    accounts: StatementSummary[];   // extracted from receipts/payments
     benzene: BenzeneReading[];
+    expenses: ExpenseReading[];
+    supplyBook: SupplyBookEntry[];
 }
 
 export interface ShiftRecord {

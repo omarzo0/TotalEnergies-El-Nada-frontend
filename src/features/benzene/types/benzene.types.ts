@@ -1,13 +1,12 @@
 export interface BenzeneRecord {
     id: string;
-    type: string; // trumbaType
-    trumbaNumber: number;
+    pumpType: string;
+    pumpNumber: number;
     startBalance: number;
     endBalance: number;
-    incoming: number;
-    sold: number; // total liters
+    liters: number; // total liters
     price: number;
-    total: number; // monetary value (sold in backend)
+    totalAmount: number; // monetary value
     date: string;
 }
 
@@ -30,16 +29,15 @@ export interface BenzenePricesResponse {
 export interface BenzenePumpReading {
     _id?: string;
     date: string;
-    trumbaNumber?: number;
-    pumpNumber?: number; // Backend alias
-    trumbaType?: string;
-    pumpType?: string; // Backend alias
+    pumpNumber: number;
+    pumpType: string;
     start: number;
     end: number;
-    total: number; // liters
-    incoming: number;
+    liters: number; // liters
     price: number;
-    sold: number; // monetary value
+    totalAmount: number; // monetary value
+    trumbaNumber?: number; // Legacy fallback
+    trumbaType?: string; // Legacy fallback
 }
 
 export interface BenzeneTotals {

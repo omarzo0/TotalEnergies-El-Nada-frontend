@@ -10,6 +10,7 @@ import { useSupplyBookRecords } from "../hooks/useSupplyBookRecords";
 import SupplyBookForm from "./forms/SupplyBookForm";
 import { SupplyBookRecord, FUEL_TYPES } from "../types/supply-book.types";
 import { DataRow, TabItem } from "@/types";
+import { SupplyBookTableSkeleton } from "../ui/SupplyBookSkeleton";
 import Button from "@/ui/Button";
 
 export default function SupplyBookRecordsPage() {
@@ -48,9 +49,21 @@ export default function SupplyBookRecordsPage() {
         t("standard")
     ];
 
+    const fuelTypeDisplay: Record<string, string> = {
+        "solar": tFuel("diesel"),
+        "ben80": tFuel("gasoline80"),
+        "ben92": tFuel("gasoline92"),
+        "ben95": tFuel("gasoline95"),
+        "سولار": tFuel("diesel"),
+        "بنزين 80": tFuel("gasoline80"),
+        "بنزين 92": tFuel("gasoline92"),
+        "بنزين 95": tFuel("gasoline95")
+    };
+
+
     const rows: DataRow[] = records.map(record => ({
         cells: [
-            record.benzType,
+            fuelTypeDisplay[record.benzType] || record.benzType,
             (record.start || 0).toLocaleString(),
             (record.incoming || 0).toLocaleString(),
             (record.dispensed || 0).toLocaleString(),
@@ -61,6 +74,7 @@ export default function SupplyBookRecordsPage() {
         editable: true,
         id: record._id || record.id
     }));
+
 
     const fuelFilterOptions = [
         { value: "", label: tFuel("all") || "All Types" },
@@ -87,12 +101,26 @@ export default function SupplyBookRecordsPage() {
 
     const handleEditSubmit = async (data: any) => {
         if (selectedRecord) {
-            await updateRecord({
+            // If pumps is an empty string, send undefined to trigger backend auto-calculation
+            const payload = {
                 ...selectedRecord,
                 ...data,
+                pumps: data.pumps?.trim() === "" ? undefined : data.pumps,
                 date: selectedRecord.date || selectedDate
-            });
+            };
+            await updateRecord(payload);
             setIsEditOpen(false);
+        }
+    };
+
+    const handleSync = async (index: number) => {
+        const record = records[index];
+        if (record) {
+            await updateRecord({
+                ...record,
+                // Sending undefined pumps triggers the backend re-calculation from benzene records
+                pumps: undefined
+            });
         }
     };
 
@@ -145,15 +173,14 @@ export default function SupplyBookRecordsPage() {
 
             <div className="page-card shadow-glass overflow-hidden">
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <SupplyBookTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columns}
                         rows={rows}
                         onEdit={handleEdit}
                         onDelete={onDelete}
+                        onSync={handleSync}
                     />
                 )}
             </div>
@@ -199,8 +226,9 @@ export default function SupplyBookRecordsPage() {
                     <p className="text-slate-600 font-medium">{tModals("confirmDeleteMessage")}</p>
                     {selectedRecord && (
                         <p className="mt-2 font-bold text-slate-800">
-                            {selectedRecord.benzType} — {selectedRecord.date}
+                            {fuelTypeDisplay[selectedRecord.benzType] || selectedRecord.benzType} — {selectedRecord.date}
                         </p>
+
                     )}
                 </div>
             </Modal>

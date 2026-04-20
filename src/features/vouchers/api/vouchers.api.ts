@@ -1,4 +1,5 @@
-import { VoucherRecord, VoucherMatchingRecord, FuelType, VoucherEntity } from '../types/vouchers.types';
+import { VoucherRecord, VoucherMatchingRecord, FuelType } from '../types/vouchers.types';
+
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -22,13 +23,14 @@ const getHeaders = () => {
 };
 
 export const vouchersApi = {
-    getVouchers: async (date: string, benzType?: FuelType): Promise<VoucherRecord[]> => {
+    getVouchers: async (date: string, pumpType?: FuelType): Promise<VoucherRecord[]> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         let url = `${API_URL}/vouchers/${date}`;
-        if (benzType) {
-            url += `?benzType=${encodeURIComponent(benzType)}`;
+        if (pumpType) {
+            url += `?pumpType=${encodeURIComponent(pumpType)}`;
         }
+
 
         const response = await fetch(url, {
             headers: getHeaders()
@@ -39,14 +41,15 @@ export const vouchersApi = {
         return Array.isArray(result.data) ? result.data : [];
     },
 
-    getMatchingRecords: async (date: string, filters?: { benzType?: FuelType, side?: VoucherEntity }): Promise<VoucherMatchingRecord[]> => {
+    getMatchingRecords: async (date: string, filters?: { pumpType?: FuelType, side?: string }): Promise<VoucherMatchingRecord[]> => {
         if (!API_URL) throw new Error("API URL is not defined.");
         const headers = getHeaders();
 
         let url = `${API_URL}/matching-vouchers/${date}`;
         const queryParts: string[] = [];
-        if (filters?.benzType) queryParts.push(`benzType=${encodeURIComponent(filters.benzType)}`);
+        if (filters?.pumpType) queryParts.push(`pumpType=${encodeURIComponent(filters.pumpType)}`);
         if (filters?.side) queryParts.push(`side=${encodeURIComponent(filters.side)}`);
+
 
         if (queryParts.length > 0) {
             url += `?${queryParts.join('&')}`;
@@ -65,14 +68,15 @@ export const vouchersApi = {
         return Array.isArray(result.data) ? result.data : [];
     },
 
-    getMatchingTotal: async (date: string, filters?: { benzType?: FuelType, side?: VoucherEntity }): Promise<number> => {
+    getMatchingTotal: async (date: string, filters?: { pumpType?: FuelType, side?: string }): Promise<number> => {
         if (!API_URL) throw new Error("API URL is not defined.");
         const headers = getHeaders();
 
         let url = `${API_URL}/matching-vouchers/${date}`;
         const queryParts: string[] = [];
-        if (filters?.benzType) queryParts.push(`benzType=${encodeURIComponent(filters.benzType)}`);
+        if (filters?.pumpType) queryParts.push(`pumpType=${encodeURIComponent(filters.pumpType)}`);
         if (filters?.side) queryParts.push(`side=${encodeURIComponent(filters.side)}`);
+
 
         if (queryParts.length > 0) {
             url += `?${queryParts.join('&')}`;

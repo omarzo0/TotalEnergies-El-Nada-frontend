@@ -7,8 +7,9 @@ import Modal from "@/components/shared/Modal";
 import { useOilShift } from "../hooks/useOilShift";
 import { useOils } from "../hooks/useOils";
 import Button from "@/ui/Button";
-import { Input } from "@/ui/Input";
+import { Input, Select } from "@/ui/Input";
 import { DataRow } from "@/types";
+import { OilSalesSkeleton } from "../ui/OilsSkeleton";
 
 interface OilSalesTabProps {
     date: string;
@@ -23,31 +24,32 @@ export default function OilSalesTab({ date, oils }: OilSalesTabProps) {
 
     const { shiftSales, isLoading, updateShiftSales, removeShiftSale } = useOilShift(date);
 
+    const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [selectedOil, setSelectedOil] = useState<any>(null);
     const [formData, setFormData] = useState({
+        oilName: "",
         firstTermBalance: 0,
         endTermBalance: 0,
         incoming: 0
     });
 
-    const rows: DataRow[] = oils.map(oil => {
-        const record = shiftSales.find(s => s.oilName === oil.oilName);
+    const rows: DataRow[] = shiftSales.map((record, index) => {
+        const oilMaster = oils.find(o => o.oilName === record.oilName);
         return {
             cells: [
-                oil.oilName,
-                (record?.firstTermBalance ?? 0).toString(),
-                (record?.endTermBalance ?? 0).toString(),
-                (record?.incoming ?? 0).toString(),
-                (record?.sold ?? 0).toString(),
-                (oil.price ?? 0).toLocaleString(),
-                (record?.total ?? 0).toLocaleString()
+                record.oilName,
+                (record.firstTermBalance || 0).toString(),
+                (record.endTermBalance || 0).toString(),
+                (record.incoming || 0).toString(),
+                (record.sold || 0).toString(),
+                (oilMaster?.price || 0).toLocaleString(),
+                (record.total || 0).toLocaleString()
             ],
             editable: true,
-            // Only show delete option if a record actually exists for this date
-            deletable: !!record,
-            id: oil.oilName
+            deletable: true,
+            id: record._id || record.id || `record-${index}`
         };
     });
 
@@ -62,35 +64,39 @@ export default function OilSalesTab({ date, oils }: OilSalesTabProps) {
     ];
 
     const handleEdit = (index: number) => {
-        const oil = oils[index];
-        const record = shiftSales.find(s => s.oilName === oil.oilName);
-        setSelectedOil(oil);
+        const record = shiftSales[index];
+        const oilMaster = oils.find(o => o.oilName === record.oilName);
+        setSelectedOil(oilMaster || { oilName: record.oilName });
         setFormData({
-            firstTermBalance: record?.firstTermBalance ?? 0,
-            endTermBalance: record?.endTermBalance ?? 0,
-            incoming: record?.incoming ?? 0
+            oilName: record.oilName,
+            firstTermBalance: record.firstTermBalance || 0,
+            endTermBalance: record.endTermBalance || 0,
+            incoming: record.incoming || 0
         });
         setIsEditOpen(true);
     };
-
     const handleDelete = (index: number) => {
-        const oil = oils[index];
-        const record = shiftSales.find(s => s.oilName === oil.oilName);
-        if (record) {
-            setSelectedOil({ ...oil, recordId: record._id || record.id });
-            setIsDeleteOpen(true);
-        }
+        const record = shiftSales[index];
+        setSelectedOil({ oilName: record.oilName, recordId: record._id || record.id });
+        setIsDeleteOpen(true);
+    };
+
+    const handleAdd = () => {
+        setSelectedOil(null);
+        setFormData({
+            oilName: oils[0]?.oilName || "",
+            firstTermBalance: 0,
+            endTermBalance: 0,
+            incoming: 0
+        });
+        setIsCreateOpen(true);
     };
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedOil) {
-            await updateShiftSales({
-                oilName: selectedOil.oilName,
-                ...formData
-            });
-            setIsEditOpen(false);
-        }
+        await updateShiftSales(formData);
+        setIsEditOpen(false);
+        setIsCreateOpen(false);
     };
 
     const confirmDelete = async () => {
@@ -102,26 +108,52 @@ export default function OilSalesTab({ date, oils }: OilSalesTabProps) {
 
     return (
         <div>
+            <div className="flex justify-end mb-6">
+                <Button onClick={handleAdd} className="flex items-center gap-2">
+                    <i className="bx bx-plus"></i>
+                    {tButtons("add")}
+                </Button>
+            </div>
+
             {isLoading ? (
-                <div className="flex justify-center py-20">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                </div>
+                <OilSalesSkeleton />
             ) : (
-                <DataTable
-                    columns={columns}
-                    rows={rows}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
+                <>
+                    <DataTable
+                        columns={columns}
+                        rows={rows}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                    {rows.length === 0 && (
+                        <div className="text-center py-20 text-slate-400">
+                            <i className="bx bx-receipt text-5xl mb-3 block"></i>
+                            <p>No sales records found for {new Date(date).toLocaleDateString()}.</p>
+                        </div>
+                    )}
+                </>
             )}
 
             <Modal
-                isOpen={isEditOpen}
-                onClose={() => setIsEditOpen(false)}
-                title={`${tModals("editRecordTitle")} - ${selectedOil?.oilName}`}
+                isOpen={isCreateOpen || isEditOpen}
+                onClose={() => { setIsCreateOpen(false); setIsEditOpen(false); }}
+                title={isCreateOpen ? tModals("createRecordTitle") : `${tModals("editRecordTitle")} - ${selectedOil?.oilName}`}
             >
                 <form onSubmit={handleSave} className="space-y-4">
                     <p className="text-sm font-bold text-slate-700 mb-2">{tOils("salesReadingTitle")}</p>
+
+                    {isCreateOpen && (
+                        <div className="mb-4">
+                            <Select
+                                label={t("oilType")}
+                                value={formData.oilName}
+                                onChange={(e) => setFormData({ ...formData, oilName: e.target.value })}
+                                options={oils.map(o => ({ label: o.oilName, value: o.oilName }))}
+                                required
+                            />
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <Input
                             label={tOils("firstTermLabel")}
@@ -146,7 +178,7 @@ export default function OilSalesTab({ date, oils }: OilSalesTabProps) {
                         />
                     </div>
                     <div className="flex justify-end gap-3 mt-6">
-                        <Button variant="secondary" onClick={() => setIsEditOpen(false)}>
+                        <Button variant="secondary" onClick={() => { setIsCreateOpen(false); setIsEditOpen(false); }}>
                             {tButtons("cancel")}
                         </Button>
                         <Button type="submit">

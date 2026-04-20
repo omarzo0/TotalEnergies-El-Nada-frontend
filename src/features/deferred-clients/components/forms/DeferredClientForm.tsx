@@ -68,17 +68,8 @@ export default function DeferredClientForm({ initialData, onSubmit, onCancel, is
                     placeholder="0.00"
                     required
                 />
-                <Input
-                    label={t("amount") || "Amount"}
-                    type="number"
-                    step="0.01"
-                    value={formData.amount}
-                    onChange={(e) => handleChange("amount", Number(e.target.value))}
-                    error={errors.amount}
-                    placeholder="0.00"
-                    required
-                />
             </div>
+
 
             <div className="flex justify-end gap-3 mt-6 border-t pt-4">
                 <Button variant="secondary" onClick={onCancel}>

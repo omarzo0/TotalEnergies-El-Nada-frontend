@@ -12,6 +12,7 @@ import AccountForm from "./forms/AccountForm";
 import { TreasuryMovement, TreasuryMovementType, Account } from "../types/treasury-movement.types";
 import { DataRow, TabItem } from "@/types";
 import { Input, Select } from "@/ui/Input";
+import { TreasuryMovementTableSkeleton, AccountsTableSkeleton } from "../ui/TreasuryMovementSkeleton";
 
 type TabType = 'movements' | 'accounts';
 
@@ -204,9 +205,7 @@ export default function TreasuryMovementPage() {
                 )}
 
                 {(activeTab === 'movements' ? movHook.isLoading : accHook.isLoading) ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    activeTab === 'movements' ? <TreasuryMovementTableSkeleton /> : <AccountsTableSkeleton />
                 ) : (
                     <DataTable
                         columns={activeTab === 'movements' ? movColumns : accColumns}
@@ -239,11 +238,13 @@ export default function TreasuryMovementPage() {
             >
                 {activeTab === 'movements' ? (
                     <TreasuryMovementForm
+                        selectedDate={date}
                         onSubmit={onAddSubmit}
                         onCancel={() => setIsCreateOpen(false)}
                     />
                 ) : (
                     <AccountForm
+                        selectedDate={date}
                         onSubmit={onAddSubmit}
                         onCancel={() => setIsCreateOpen(false)}
                     />
@@ -259,6 +260,7 @@ export default function TreasuryMovementPage() {
                 {activeTab === 'movements' ? (
                     <TreasuryMovementForm
                         initialData={selectedMovement || undefined}
+                        selectedDate={date}
                         onSubmit={onEditSubmit}
                         onCancel={() => setIsEditOpen(false)}
                         isEditing
@@ -266,6 +268,7 @@ export default function TreasuryMovementPage() {
                 ) : (
                     <AccountForm
                         initialData={selectedAccount || undefined}
+                        selectedDate={date}
                         onSubmit={onEditSubmit}
                         onCancel={() => setIsEditOpen(false)}
                         isEditing

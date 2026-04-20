@@ -10,6 +10,7 @@ import { FUEL_TYPES, StandardUpdatePayload } from "../types/supply-book.types";
 import { TabItem } from "@/types";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
+import { BalanceMatchingSkeleton } from "../ui/SupplyBookSkeleton";
 
 const FUEL_KEYS = [FUEL_TYPES.SOLAR, FUEL_TYPES.B80, FUEL_TYPES.B92, FUEL_TYPES.B95];
 const BALANCE_ROWS_KEYS = ["startBalance", "incoming", "total", "dispensed", "remaining"] as const;
@@ -144,80 +145,74 @@ export default function BalanceMatchingPage() {
                 </div>
             </div>
 
-            {/* Balance Table */}
-            <div className="page-card shadow-glass mb-8 overflow-hidden">
-                {isLoading ? (
-                    <div className="flex justify-center py-10">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-100">
-                                    {columns.map((col, i) => (
-                                        <th key={i} className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">{col}</th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {balanceRows.map((row, i) => (
-                                    <tr key={row.id} className={`border-b border-slate-50 ${i === balanceRows.length - 1 ? 'bg-primary/5 font-bold' : 'hover:bg-slate-50'}`}>
-                                        {row.cells.map((cell, j) => (
-                                            <td key={j} className="px-4 py-3 text-center text-slate-700">{cell}</td>
+            {isLoading ? (
+                <BalanceMatchingSkeleton />
+            ) : (
+                <>
+                    {/* Balance Table */}
+                    <div className="page-card shadow-glass mb-8 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-slate-100">
+                                        {columns.map((col, i) => (
+                                            <th key={i} className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">{col}</th>
                                         ))}
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-
-            {/* Gauges Section */}
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <i className="bx bx-tachometer text-primary"></i>
-                    {tBalance("pumpGauges")}
-                </h2>
-                <div className="flex gap-2">
-                    <Button variant="secondary" onClick={handleResetGauge} className="text-xs">
-                        <i className="bx bx-reset me-1"></i>
-                        {tButtons("reset") || "Reset"}
-                    </Button>
-                    <Button onClick={handleEditGauge} className="text-xs">
-                        <i className="bx bx-edit me-1"></i>
-                        {tButtons("edit") || "Edit"}
-                    </Button>
-                </div>
-            </div>
-
-            <div className="page-card shadow-glass overflow-hidden">
-                {isLoading ? (
-                    <div className="flex justify-center py-10">
-                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                    </div>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-slate-100">
-                                    {columns.map((col, i) => (
-                                        <th key={i} className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">{col}</th>
+                                </thead>
+                                <tbody>
+                                    {balanceRows.map((row, i) => (
+                                        <tr key={row.id} className={`border-b border-slate-50 ${i === balanceRows.length - 1 ? 'bg-primary/5 font-bold' : 'hover:bg-slate-50'}`}>
+                                            {row.cells.map((cell, j) => (
+                                                <td key={j} className="px-4 py-3 text-center text-slate-700">{cell}</td>
+                                            ))}
+                                        </tr>
                                     ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr className="hover:bg-slate-50">
-                                    {gaugeRow.cells.map((cell, j) => (
-                                        <td key={j} className="px-4 py-3 text-center text-slate-700 font-semibold">{cell}</td>
-                                    ))}
-                                </tr>
-                            </tbody>
-                        </table>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                )}
-            </div>
+
+                    {/* Gauges Section */}
+                    <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+                            <i className="bx bx-tachometer text-primary"></i>
+                            {tBalance("pumpGauges")}
+                        </h2>
+                        <div className="flex gap-2">
+                            <Button variant="secondary" onClick={handleResetGauge} className="text-xs">
+                                <i className="bx bx-reset me-1"></i>
+                                {tButtons("reset") || "Reset"}
+                            </Button>
+                            <Button onClick={handleEditGauge} className="text-xs">
+                                <i className="bx bx-edit me-1"></i>
+                                {tButtons("edit") || "Edit"}
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="page-card shadow-glass overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-slate-100">
+                                        {columns.map((col, i) => (
+                                            <th key={i} className="px-4 py-3 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">{col}</th>
+                                        ))}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="hover:bg-slate-50">
+                                        {gaugeRow.cells.map((cell, j) => (
+                                            <td key={j} className="px-4 py-3 text-center text-slate-700 font-semibold">{cell}</td>
+                                        ))}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </>
+            )}
 
             {/* Edit Gauge Modal */}
             <Modal

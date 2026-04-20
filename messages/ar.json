@@ -9,7 +9,9 @@
     "username": "أدخل اسم المستخدم",
     "password": "أدخل كلمه المرور",
     "submit": "دخول",
-    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة"
+    "Invalid email or password": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "account_locked_max_attempts": "تم قفل الحساب بسبب محاولات خاطئة كثيرة. حاول مرة أخرى بعد ساعة واحدة.",
+    "too_many_login_attempts_try_later": "محاولات دخول كثيرة جداً. يرجى المحاولة مرة أخرى بعد 15 دقيقة."
   },
   "overview": {
     "totalSales": "إجمالي المبيعات",
@@ -99,7 +101,12 @@
       "transfer": "نقل",
       "description": "البيان",
       "creditor": "دائن",
-      "debtor": "مدين"
+      "debtor": "مدين",
+      "benzType": "نوع الوقود",
+      "standard": "المعيار",
+      "incoming": "الوارد",
+      "pumps": "نهاية طلمبات",
+      "dispensed": "المنصرف"
     },
     "oils": {
       "oilType": "نوع الزيت",
@@ -129,14 +136,14 @@
       "entity": "الجهه",
       "serial": "سريال البونات",
       "total": "الاجمالي",
-      "category": "الفئه",
+      "liters": "اللترات",
       "price": "السعر",
-      "benzType": "نوع البنزين"
+      "pumpType": "نوع المحروقات"
     },
     "voucherMatching": {
       "voucherMatching": "ملخص مطابقة البونات",
       "total": "الاجمالي",
-      "category": "الفئه",
+      "liters": "اللترات",
       "count": "العدد",
       "price": "السعر"
     },
@@ -156,7 +163,8 @@
       "dispensed": "المنصرف",
       "incoming": "الوارد",
       "start": "البدايه",
-      "date": "التاريخ"
+      "date": "التاريخ",
+      "pumpsPlaceholder": "اترك الحقل فارغاً للمزامنة التلقائية مع سجلات البنزين"
     },
     "balanceMatching": {
       "gasoline95": "بنزين 95",
@@ -238,13 +246,30 @@
     "shiftNumber": "يومية الوردية رقم",
     "shiftDate": "تاريخ اليومية",
     "pumpReadings": "قراءات الطلمبات (البنزين)",
+    "expenses": "المصاريف",
+    "totalExpenses": "إجمالي المصاريف",
     "receipts": "المقبوضات",
     "payments": "المدفوعات",
+    "accounts": "الحسابات",
     "noEntries": "لا يوجد قيود",
     "totalOf": "إجمالي الـ",
     "currency": "ج.م",
+    "supplyBook": "مخزون المستودع (المقاييس)",
     "noDataTitle": "لا توجد بيانات متاحة لهذا التاريخ",
     "noDataSubtitle": "برجاء اختيار تاريخ آخر من الأعلى."
+  },
+  "shiftDiaryStatements": {
+    "cashSales": "مبيعات نقدية",
+    "expenses": "مصروفات",
+    "suppliers": "موردين",
+    "bankDeposit": "توريد بنك",
+    "clientAccounts": "ح/العملاء",
+    "accountantAccount": "ح/ المحاسب",
+    "hajSayedAccount": "ح/ الحج سيد",
+    "generalExpenses": "مصروفات (عامة)",
+    "vouchers": "بونات",
+    "deferredClients": "عملاء آجل",
+    "omar": "عمر"
   },
   "systemLog": {
     "adminName": "المسؤول",
@@ -268,11 +293,12 @@
     "endBalanceShort": "رصيد النهايه",
     "receipt": "السند",
     "receiptName": "اسم السند",
+    "receiptNumber": "رقم السند",
     "enterAmount": "ادخل المبلغ",
-    "enterCategory": "ادخل الفئه",
+    "enterLiters": "ادخل اللترات",
     "enterSerial": "ادخل سريال البون",
     "entity": "الجهه",
-    "selectFuelType": "اختر نوع البنزين",
+    "selectFuelType": "اختر نوع المحروقات",
     "client": "العميل",
     "amount": "المبلغ",
     "description": "البيان",
@@ -371,8 +397,8 @@
   "benzene": {
     "title": "إدارة البنزين",
     "form": {
-      "type": "نوع البنزين",
-      "trumbaNumber": "رقم الطلمبة",
+      "pumpType": "نوع البنزين",
+      "pumpNumber": "رقم الطلمبة",
       "startBalance": "رصيد البداية",
       "endBalance": "رصيد النهاية",
       "incoming": "الوارد",
@@ -454,22 +480,27 @@
       "report": "التقرير الدوري"
     },
     "metrics": {
-      "fuelRevenue": "إيرادات الوقود",
-      "oilRevenue": "إيرادات الزيوت",
+      "netProfit": "صافي الربح",
+      "fuelRevenue": "إيراد البنزين",
+      "oilRevenue": "إيراد الزيوت",
+      "expenses": "المصاريف",
       "receipts": "المقبوضات",
       "payments": "المدفوعات",
-      "expenses": "المصاريف التشغيلية",
-      "netProfit": "صافي الربح",
+      "salaries": "الرواتب",
+      "liters": "لتر",
+      "transactionCount": "عدد العمليات",
+      "employees": "موظف",
       "totalIn": "إجمالي الداخل",
       "totalOut": "إجمالي الخارج",
-      "liters": "لترات مباعة",
-      "transactionCount": "عدد العمليات",
-      "salaries": "التزامات الرواتب",
-      "employees": "موظف",
       "clientPayments": "تحصيلات العملاء",
       "clientDebts": "مديونيات العملاء",
       "islandCash": "نقدية الجزيرة",
-      "vouchers": "إجمالي البونات"
+      "vouchers": "إجمالي البونات",
+      "openingBalance": "رصيد أول المدة (يومي)",
+      "closingBalance": "رصيد آخر المدة (يومي)",
+      "runningSafe": "الخزينة الجارية",
+      "globalSafeBalance": "إجمالي الخزينة (العام)",
+      "accountsMovement": "حركة الحسابات"
     },
     "form": {
       "selectDate": "اختر التاريخ",

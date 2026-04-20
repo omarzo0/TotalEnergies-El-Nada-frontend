@@ -8,18 +8,19 @@ import { Account, AccountFormData } from "../../types/treasury-movement.types";
 
 interface AccountFormProps {
     initialData?: Account;
+    selectedDate?: string;
     onSubmit: (data: AccountFormData) => void;
     onCancel: () => void;
     isEditing?: boolean;
 }
 
-export default function AccountForm({ initialData, onSubmit, onCancel, isEditing }: AccountFormProps) {
+export default function AccountForm({ initialData, selectedDate, onSubmit, onCancel, isEditing }: AccountFormProps) {
     const t = useTranslations("treasuryMovement");
     const tLabel = useTranslations("labels");
     const tButtons = useTranslations("buttons");
 
     const [formData, setFormData] = useState<AccountFormData>({
-        date: initialData?.date || new Date().toISOString().split("T")[0],
+        date: initialData?.date || selectedDate || new Date().toISOString().split("T")[0],
         name: initialData?.name || "",
         receiptName: initialData?.receiptName || "",
         money: initialData?.money || 0,
@@ -40,14 +41,16 @@ export default function AccountForm({ initialData, onSubmit, onCancel, isEditing
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-                label={t("date")}
-                name="date"
-                type="date"
-                value={formData.date}
-                onChange={handleChange}
-                required
-            />
+            {isEditing && (
+                <Input
+                    label={t("date")}
+                    name="date"
+                    type="date"
+                    value={formData.date}
+                    onChange={handleChange}
+                    required
+                />
+            )}
 
             <Input
                 label={tLabel("name")}

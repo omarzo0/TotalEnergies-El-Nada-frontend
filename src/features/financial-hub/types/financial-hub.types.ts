@@ -1,5 +1,10 @@
 export interface DailyFinancialSummary {
     date: string;
+    globalBalance: number;
+    openingBalance: number;
+
+    closingBalance: number;
+
     fuel: {
         revenue: number;
         liters: number;
@@ -26,8 +31,10 @@ export interface DailyFinancialSummary {
         count: number;
     };
     clients: {
-        payments: number;
-        debts: number;
+        total: number;
+    };
+    accounts: {
+        netMovement: number;
     };
     island: {
         totalCash: number;
@@ -44,6 +51,9 @@ export interface PeriodicFinancialReport {
         start: string;
         end: string;
     };
+    openingBalance: number;
+    closingBalance: number;
+
     fuelRevenue: number;
     oilRevenue: number;
     receipts: number;

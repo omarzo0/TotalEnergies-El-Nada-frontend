@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { authApi } from "../../auth/api/auth.api";
+import { AccountSettingsSkeleton } from "../ui/SettingsSkeleton";
 
 export default function AccountSettings() {
     const t = useTranslations("settings.account");
@@ -66,11 +67,7 @@ export default function AccountSettings() {
     };
 
     if (loading) {
-        return (
-            <div className="flex justify-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-            </div>
-        );
+        return <AccountSettingsSkeleton />;
     }
 
     return (

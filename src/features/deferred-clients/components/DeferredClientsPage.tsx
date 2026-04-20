@@ -9,6 +9,7 @@ import { useDeferredClients } from "../hooks/useDeferredClients";
 import DeferredClientForm from "./forms/DeferredClientForm";
 import { DeferredClientPayment } from "../types/deferred-clients.types";
 import { DataRow } from "@/types";
+import { DeferredClientsSummarySkeleton, DeferredClientsTableSkeleton } from "../ui/DeferredClientsSkeleton";
 import Button from "@/ui/Button";
 
 export default function DeferredClientsPage() {
@@ -28,23 +29,23 @@ export default function DeferredClientsPage() {
 
     const columns = [
         t("money") || "Money",
-        t("amount") || "Amount",
         t("receiptName") || "Receipt Name",
         t("receiptNumber") || "Receipt No.",
         t("client") || "Client"
     ];
 
+
     const rows: DataRow[] = payments.map(payment => ({
         cells: [
             (payment.money || 0).toLocaleString(),
-            (payment.amount || 0).toLocaleString(),
             payment.receiptName || (payment as any).sand,
-            payment.receiptNumber,
+            payment.receiptNumber || "—",
             payment.clientName
         ],
         editable: true,
         id: payment._id || payment.id
     }));
+
 
     const handleEdit = (index: number) => {
         setSelectedPayment(payments[index]);
@@ -103,25 +104,27 @@ export default function DeferredClientsPage() {
 
             {/* Total Summary Card */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-glass flex items-center justify-between group hover:border-primary/30 transition-all duration-300">
-                    <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t("money") || "Total Money"}</p>
-                        <h3 className="text-3xl font-black text-slate-800 tracking-tight">
-                            {dailyTotal.toLocaleString()}
-                            <span className="text-sm font-medium text-slate-400 ms-2">EGP</span>
-                        </h3>
+                {isLoading ? (
+                    <DeferredClientsSummarySkeleton />
+                ) : (
+                    <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-glass flex items-center justify-between group hover:border-primary/30 transition-all duration-300">
+                        <div>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t("money") || "Total Money"}</p>
+                            <h3 className="text-3xl font-black text-slate-800 tracking-tight">
+                                {dailyTotal.toLocaleString()}
+                                <span className="text-sm font-medium text-slate-400 ms-2">EGP</span>
+                            </h3>
+                        </div>
+                        <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
+                            <i className="bx bx-wallet text-3xl"></i>
+                        </div>
                     </div>
-                    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform duration-300">
-                        <i className="bx bx-wallet text-3xl"></i>
-                    </div>
-                </div>
+                )}
             </div>
 
             <div className="page-card shadow-glass overflow-hidden">
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <DeferredClientsTableSkeleton />
                 ) : (
                     <DataTable
                         columns={columns}

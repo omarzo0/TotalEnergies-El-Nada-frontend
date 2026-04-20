@@ -10,6 +10,7 @@ import { useVouchers } from "../hooks/useVouchers";
 import VoucherForm from "./forms/VoucherForm";
 import { VoucherRecord } from "../types/vouchers.types";
 import { DataRow, TabItem } from "@/types";
+import { VoucherListSkeleton } from "../ui/VoucherSkeleton";
 
 export default function VouchersListPage() {
     const t = useTranslations("table.vouchers");
@@ -37,28 +38,28 @@ export default function VouchersListPage() {
     ];
 
     const columns = [
-        t("date"),
         t("entity"),
         t("serial"),
         t("total"),
-        t("category"),
+        t("liters"),
         t("price"),
-        t("benzType")
+        t("pumpType")
     ];
+
 
     const rows: DataRow[] = vouchers.map(voucher => ({
         cells: [
-            voucher.date,
             voucher.side,
             voucher.voucherSerial,
             (voucher.total ?? 0).toLocaleString(),
-            (voucher.category ?? 0).toString(),
+            (voucher.liters ?? 0).toString(),
             (voucher.price ?? 0).toLocaleString(),
-            voucher.benzType
+            voucher.pumpType
         ],
         editable: true,
         id: voucher.id
     }));
+
 
 
     const handleEdit = (index: number) => {
@@ -125,9 +126,7 @@ export default function VouchersListPage() {
 
             <div className="page-card shadow-glass">
                 {isLoading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-                    </div>
+                    <VoucherListSkeleton />
                 ) : (
                     <>
                         <DataTable
