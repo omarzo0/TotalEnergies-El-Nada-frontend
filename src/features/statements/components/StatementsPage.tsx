@@ -8,11 +8,15 @@ import { useStatements } from "../hooks/useStatements";
 import { Statement } from "../types/statements.types";
 import { StatementsTableSkeleton } from "../ui/StatementsSkeleton";
 
+import { usePermissions } from "@/features/auth/hooks/usePermissions";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
+
 export default function StatementsPage() {
     const t = useTranslations('pages');
     const tTable = useTranslations('table.statements');
     const tButtons = useTranslations('buttons');
     const tModals = useTranslations('modals');
+    const { can } = usePermissions();
 
     const {
         statements,
@@ -90,16 +94,18 @@ export default function StatementsPage() {
         <div className="p-6">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold text-gray-800">{t('statements')}</h1>
-                <button
-                    onClick={() => {
-                        setFormData({ name: '' });
-                        setIsCreateModalOpen(true);
-                    }}
-                    className="btn btn-primary flex items-center gap-2"
-                >
-                    <i className="bx bx-plus"></i>
-                    {tButtons('add')}
-                </button>
+                <PermissionGuard resource="statement" action="create">
+                    <button
+                        onClick={() => {
+                            setFormData({ name: '' });
+                            setIsCreateModalOpen(true);
+                        }}
+                        className="btn btn-primary flex items-center gap-2"
+                    >
+                        <i className="bx bx-plus"></i>
+                        {tButtons('add')}
+                    </button>
+                </PermissionGuard>
             </div>
 
             {error && (
@@ -116,16 +122,16 @@ export default function StatementsPage() {
                     <DataTable
                         columns={columnLabels}
                         rows={rows}
-                        onEdit={(index) => {
+                        onEdit={can('statement', 'update') ? (index) => {
                             const statement = statements[index];
                             setSelectedStatement(statement);
                             setFormData({ name: statement.name });
                             setIsEditModalOpen(true);
-                        }}
-                        onDelete={(index) => {
+                        } : undefined}
+                        onDelete={can('statement', 'delete') ? (index) => {
                             setSelectedStatement(statements[index]);
                             setIsDeleteModalOpen(true);
-                        }}
+                        } : undefined}
                     />
                 )}
             </div>

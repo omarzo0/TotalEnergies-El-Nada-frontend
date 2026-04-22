@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input, Select } from "@/ui/Input";
 import { VoucherRecord } from "../../types/vouchers.types";
 import { useVouchersForm } from "../../hooks/useVouchersForm";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
 
 interface VoucherFormProps {
     initialData?: VoucherRecord;
@@ -114,12 +115,14 @@ export default function VoucherForm({ initialData, onSubmit, onCancel, isEditing
                 >
                     {tButtons("cancel")}
                 </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
-                    {isEditing ? tButtons("save") : tButtons("confirm")}
-                </button>
+                <PermissionGuard resource="voucher" action={isEditing ? 'update' : 'create'}>
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                    >
+                        {isEditing ? tButtons("save") : tButtons("confirm")}
+                    </button>
+                </PermissionGuard>
             </div>
         </form>
     );

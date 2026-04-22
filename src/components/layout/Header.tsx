@@ -4,6 +4,7 @@ import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { ReactNode } from "react";
 import { TabItem } from "@/types";
+import WarningNotification from "@/features/support/components/WarningNotification";
 
 interface HeaderProps {
     titleKey: string;
@@ -31,6 +32,9 @@ export default function Header({ titleKey, tabs, children }: HeaderProps) {
                 <h1 className="text-2xl font-bold text-text">{t(titleKey)}</h1>
 
                 <div className="flex items-center gap-3 flex-wrap">
+                    {/* Warnings Notification */}
+                    <WarningNotification />
+
                     {/* Language Switcher */}
                     <button
                         className="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 text-text-muted hover:bg-slate-200 text-sm font-medium transition-all"

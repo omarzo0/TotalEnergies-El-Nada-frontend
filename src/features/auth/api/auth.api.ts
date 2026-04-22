@@ -1,22 +1,6 @@
+import { getHeaders } from "@/utils/api.utils";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const getHeaders = () => {
-    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-    if (token) {
-        token = token.trim().replace(/^"(.*)"$/, '$1');
-    }
-
-    if (!token || token === "null" || token === "undefined") {
-        return { "Content-Type": "application/json" };
-    }
-
-    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
-
-    return {
-        "Content-Type": "application/json",
-        "Authorization": finalToken
-    };
-};
 
 export const authApi = {
     login: async (email: string, password: string) => {
@@ -30,6 +14,11 @@ export const authApi = {
         });
         const result = await response.json();
         if (!result.success) throw new Error(result.message || "Invalid credentials");
+
+        // Handle if data is wrapped in an array
+        if (Array.isArray(result.data)) {
+            return result.data[0];
+        }
         return result.data;
     },
 

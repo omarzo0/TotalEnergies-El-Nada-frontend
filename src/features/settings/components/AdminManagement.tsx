@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useTranslations } from "next-intl";
 import DataTable from "@/components/shared/DataTable";
 import Modal from "@/components/shared/Modal";
@@ -9,13 +9,15 @@ import { adminsApi } from "../api/admins.api";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { AdminManagementSkeleton } from "../ui/SettingsSkeleton";
-
 import { useAdmins } from "../hooks/useAdmins";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
+import { usePermissions } from "@/features/auth/hooks/usePermissions";
 
-export default function AdminManagement() {
-    const t = useTranslations("settings.admins");
+export default function StaffManagement() {
+    const t = useTranslations("settings.staff");
     const tButtons = useTranslations("buttons");
     const tModals = useTranslations("modals");
+    const { can } = usePermissions();
 
     const {
         admins,
@@ -176,13 +178,15 @@ export default function AdminManagement() {
                         />
                         <i className="bx bx-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
                     </div>
-                    <button
-                        onClick={handleOpenCreate}
-                        className="btn-primary flex items-center gap-2 whitespace-nowrap"
-                    >
-                        <i className="bx bx-plus text-lg"></i>
-                        {tButtons("add")}
-                    </button>
+                    <PermissionGuard resource="stationStaff" action="create">
+                        <button
+                            onClick={handleOpenCreate}
+                            className="btn-primary flex items-center gap-2 whitespace-nowrap"
+                        >
+                            <i className="bx bx-plus text-lg"></i>
+                            {tButtons("add")}
+                        </button>
+                    </PermissionGuard>
                 </div>
             </div>
 
@@ -198,14 +202,14 @@ export default function AdminManagement() {
                 <DataTable
                     columns={columns}
                     rows={rows}
-                    onEdit={(index) => {
-                        const admin = admins[index];
+                    onEdit={can('stationStaff', 'update') ? (index: number) => {
+                        const admin = displayAdmins[index];
                         if (admin) handleOpenEdit(admin.id || admin._id);
-                    }}
-                    onDelete={(index) => {
-                        const admin = admins[index];
+                    } : undefined}
+                    onDelete={can('stationStaff', 'delete') ? (index: number) => {
+                        const admin = displayAdmins[index];
                         if (admin) handleOpenDelete(admin.id || admin._id);
-                    }}
+                    } : undefined}
                 />
             )}
 
@@ -254,7 +258,6 @@ export default function AdminManagement() {
                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                                 className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all text-sm appearance-none"
                             >
-                                <option value="super_admin">{t("roles.super_admin")}</option>
                                 <option value="admin">{t("roles.admin")}</option>
                                 <option value="manager">{t("roles.manager")}</option>
                                 <option value="cashier">{t("roles.cashier")}</option>

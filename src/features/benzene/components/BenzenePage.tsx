@@ -25,7 +25,7 @@ export default function BenzenePage() {
     const [activeTab, setActiveTab] = useState<BenzeneTab>("readings");
 
     // Pass global selectedDate and tab state to hook
-    const { records, isLoading, error, addRecord, updateRecord, removeRecord } = useBenzene('shift', selectedDate, {
+    const { records, isLoading, error, mutationError, addRecord, updateRecord, removeRecord } = useBenzene('shift', selectedDate, {
         fetchPrices: activeTab === 'prices'
     });
 
@@ -88,10 +88,7 @@ export default function BenzenePage() {
 
     const onEditSubmit = async (data: any) => {
         if (selectedRecord) {
-            await updateRecord(selectedRecord.id, {
-                start: data.start,
-                end: data.end
-            });
+            await updateRecord(selectedRecord.id, data);
             setIsEditOpen(false);
         }
     };
@@ -143,12 +140,12 @@ export default function BenzenePage() {
             </div>
 
             {/* Error Message */}
-            {error && (
-                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center gap-3">
+            {(error || mutationError) && (
+                <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-600 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                     <i className="bx bx-error-circle text-2xl"></i>
                     <div>
                         <p className="font-bold">Error</p>
-                        <p className="text-sm">{error}</p>
+                        <p className="text-sm">{error || mutationError}</p>
                     </div>
                 </div>
             )}

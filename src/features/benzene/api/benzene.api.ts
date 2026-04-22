@@ -1,25 +1,8 @@
 import { BenzenePrices, BenzenePumpReading, BenzeneTotals } from '../types/benzene.types';
 
+import { getHeaders } from "@/utils/api.utils";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const getHeaders = () => {
-    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-
-    if (token) {
-        token = token.trim().replace(/^"(.*)"$/, '$1');
-    }
-
-    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
-        console.warn("FrontEnd API: Token is missing or invalid!");
-        return { "Content-Type": "application/json" };
-    }
-
-    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
-    return {
-        "Content-Type": "application/json",
-        "Authorization": finalToken
-    };
-};
 
 export const benzeneApi = {
     // ── Prices ──────────────────────────────────────────
@@ -32,7 +15,6 @@ export const benzeneApi = {
 
         const result = await response.json();
 
-        // Handle case where backend returns success: false or 404 with "no data" message
         if (!response.ok || !result.success) {
             const msg = (result.message || "").toLowerCase();
             const isNoData = response.status === 404 ||
@@ -42,29 +24,38 @@ export const benzeneApi = {
                 msg.includes("not");
 
             if (isNoData) {
-                console.warn(`benzeneApi: No price data for ${date} (Status ${response.status}), returning defaults.`);
+                console.warn(`benzeneApi: No price data for ${date} (Status ${response.status})`);
                 return { solarPrice: 0, ben80Price: 0, ben92Price: 0, ben95Price: 0 };
             }
             throw new Error(result.message || `API Error: ${response.status}`);
         }
 
+        // Handle array or object response
         const data = Array.isArray(result.data) ? result.data[0] : result.data;
 
+        if (!data || Object.keys(data).length === 0) {
+            console.warn(`benzeneApi: Data is empty for ${date}, returning zeros.`);
+            return { solarPrice: 0, ben80Price: 0, ben92Price: 0, ben95Price: 0 };
+        }
+
         return {
-            solarPrice: data?.solarPrice || 0,
-            ben80Price: data?.ben80Price || 0,
-            ben92Price: data?.ben92Price || 0,
-            ben95Price: data?.ben95Price || 0
+            solarPrice: data.solarPrice || 0,
+            ben80Price: data.ben80Price || 0,
+            ben92Price: data.ben92Price || 0,
+            ben95Price: data.ben95Price || 0
         };
     },
 
     updatePrices: async (date: string, data: BenzenePrices): Promise<BenzenePrices> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
+        // Include date in the payload to ensure consistency
+        const payload = { ...data, date };
+
         const response = await fetch(`${API_URL}/benzene/prices/${date}`, {
             method: 'PUT',
             headers: getHeaders(),
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
 
         const result = await response.json();
@@ -139,7 +130,7 @@ export const benzeneApi = {
         return result.data;
     },
 
-    updatePumpReading: async (id: string, data: { start: number; end: number }): Promise<BenzenePumpReading> => {
+    updatePumpReading: async (id: string, data: Partial<BenzenePumpReading>): Promise<BenzenePumpReading> => {
         if (!API_URL) throw new Error("API URL is not defined.");
 
         const response = await fetch(`${API_URL}/benzene/${id}`, {

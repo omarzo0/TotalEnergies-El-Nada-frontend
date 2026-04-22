@@ -81,10 +81,13 @@
         "confirm": "Confirm",
         "addDelete": "Add/Delete",
         "actions": "Actions",
-        "reset": "Reset"
+        "reset": "Reset",
+        "saving": "Saving...",
+        "deleting": "Deleting..."
     },
     "modals": {
         "confirmDeleteTitle": "Confirm Delete",
+        "deleteConfirmTitle": "Confirm Delete",
         "confirmDeleteMessage": "Are you sure you want to delete this record? This action cannot be undone.",
         "editRecordTitle": "Edit Record",
         "createRecordTitle": "Create New Record",
@@ -420,7 +423,10 @@
         "tabs": {
             "account": "Account Settings",
             "security": "Account Security",
-            "admins": "Admin Management"
+            "staff": "Staff Management",
+            "station": "Station Settings",
+            "support": "Support Tickets",
+            "warnings": "Warnings"
         },
         "account": {
             "title": "Account Settings",
@@ -441,11 +447,11 @@
             "passwordsDoNotMatch": "New passwords do not match",
             "passwordUpdateSuccess": "Password changed successfully!"
         },
-        "admins": {
-            "title": "Admin Management",
-            "subtitle": "Manage system administrators and their permissions",
+        "staff": {
+            "title": "Staff Management",
+            "subtitle": "Manage station staff and their permissions",
             "searchPlaceholder": "Search by email...",
-            "deleteConfirmMessage": "Are you sure you want to delete admin",
+            "deleteConfirmMessage": "Are you sure you want to delete staff member",
             "table": {
                 "name": "Name",
                 "email": "Email",
@@ -463,12 +469,26 @@
                 "nationalId": "National ID"
             },
             "roles": {
-                "super_admin": "Super Admin",
                 "admin": "Admin",
                 "manager": "Manager",
                 "cashier": "Cashier",
                 "financial": "Financial"
             }
+        },
+        "station": {
+            "title": "Station Settings",
+            "name": "Station Name (English)",
+            "namePlaceholder": "e.g. El-Nada Station",
+            "nameAr": "Station Name (Arabic)",
+            "nameArPlaceholder": "e.g. محطة الندى",
+            "code": "Station Code",
+            "address": "Address",
+            "addressPlaceholder": "Enter station address",
+            "phone": "Phone Number",
+            "phonePlaceholder": "Enter station phone",
+            "logo": "Logo URL",
+            "logoPlaceholder": "Enter logo image URL",
+            "updateSuccess": "Station details updated successfully!"
         }
     },
     "financialHub": {
@@ -510,5 +530,45 @@
         },
         "noData": "No financial data found for this selection.",
         "loading": "Aggregating financial data..."
+    },
+    "support": {
+        "tickets": {
+            "title": "Support Tickets",
+            "createButton": "New Ticket",
+            "noTickets": "No support tickets found",
+            "selectPrompt": "Select a ticket to view details",
+            "confirmDelete": "Are you sure you want to delete this ticket?",
+            "createTitle": "Create Support Ticket",
+            "responsePlaceholder": "Type your response...",
+            "status": {
+                "open": "Open",
+                "in_progress": "In Progress",
+                "closed": "Closed"
+            },
+            "priority": {
+                "low": "Low",
+                "medium": "Medium",
+                "high": "High"
+            },
+            "form": {
+                "subject": "Subject",
+                "category": "Category",
+                "priority": "Priority",
+                "description": "Description"
+            }
+        },
+        "warnings": {
+            "listTitle": "Active Warnings",
+            "noWarnings": "No warnings found. Great job!",
+            "selectPrompt": "Select a warning to view and respond",
+            "noResponses": "No responses yet",
+            "responsePlaceholder": "Type your response here...",
+            "severity": {
+                "low": "Notice",
+                "medium": "Warning",
+                "high": "High",
+                "critical": "Critical"
+            }
+        }
     }
 }

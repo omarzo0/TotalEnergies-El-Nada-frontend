@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input, Select } from "@/ui/Input";
 import { ShiftRecord } from "../../types/shift-diary.types";
 import { useShiftDiaryForm } from "../../hooks/useShiftDiaryForm";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
 
 interface ShiftDiaryFormProps {
     initialData?: ShiftRecord;
@@ -105,12 +106,14 @@ export default function ShiftDiaryForm({ initialData, onSubmit, onCancel, isEdit
                 >
                     {tButtons("cancel")}
                 </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
-                    {isEditing ? tButtons("save") : tButtons("confirm")}
-                </button>
+                <PermissionGuard resource="shiftDiary" action={isEditing ? 'update' : 'create'}>
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                    >
+                        {isEditing ? tButtons("save") : tButtons("confirm")}
+                    </button>
+                </PermissionGuard>
             </div>
         </form>
     );

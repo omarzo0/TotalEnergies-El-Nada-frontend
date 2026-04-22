@@ -12,14 +12,18 @@ import OilInventoryTab from "./OilInventoryTab";
 
 type OilTab = 'sales' | 'inventory';
 
-export default function OilPage() {
+interface OilPageProps {
+    type?: 'shift' | 'storage';
+}
+
+export default function OilPage({ type }: OilPageProps) {
     const t = useTranslations("oils");
     const tButtons = useTranslations("buttons");
     const tPages = useTranslations("pages");
     const tBenzene = useTranslations("benzene"); // Reusing date label
 
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
-    const [activeTab, setActiveTab] = useState<OilTab>("sales");
+    const [activeTab, setActiveTab] = useState<OilTab>(type === 'storage' ? 'inventory' : 'sales');
     const [isAddOilOpen, setIsAddOilOpen] = useState(false);
 
     const { oils, isLoading: isOilsLoading, addOil } = useOils();

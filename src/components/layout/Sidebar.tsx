@@ -6,22 +6,24 @@ import { Link, usePathname } from "@/i18n/routing";
 import Image from "next/image";
 import { NavItem } from "@/types";
 
+import { usePermissions } from "@/features/auth/hooks/usePermissions";
+
 const navItems: NavItem[] = [
-    { key: "overview", href: "/overview", icon: "bxs-home" },
-    { key: "shiftDiary", href: "/shift-diary", icon: "bxs-book-add" },
-    { key: "benzene", href: "/benzene", icon: "bx-gas-pump" },
-    { key: "oils", href: "/oils/shift", icon: "bx-folder-plus" },
-    { key: "expenses", href: "/expenses", icon: "bx-folder-plus" },
-    { key: "vouchers", href: "/vouchers/list", icon: "bxs-file-plus" },
-    { key: "deferredClients", href: "/deferred-clients", icon: "bx-comment-error" },
-    { key: "dailyTreasury", href: "/daily-treasury", icon: "bx-calendar-check" },
-    { key: "supplyBook", href: "/supply-book/records", icon: "bx-cog" },
-    { key: "treasuryMovement", href: "/treasury-movement", icon: "bx-cog" },
-    { key: "employees", href: "/employees", icon: "bx-cog" },
-    { key: "systemLog", href: "/system-log", icon: "bx-cog" },
-    { key: "financialHub", href: "/financial-hub", icon: "bx-calculator" },
-    { key: "statements", href: "/statements", icon: "bx-list-check" },
-    { key: "settings", href: "/settings", icon: "bx-cog" },
+    { key: "overview", href: "/overview", icon: "bxs-home" }, // Everyone can see overview
+    { key: "shiftDiary", href: "/shift-diary", icon: "bxs-book-add", resource: 'shiftDiary', action: 'read' },
+    { key: "benzene", href: "/benzene", icon: "bx-gas-pump", resource: 'benzene', action: 'read' },
+    { key: "oils", href: "/oils/shift", icon: "bx-folder-plus", resource: 'oil', action: 'read' },
+    { key: "expenses", href: "/expenses", icon: "bx-folder-plus", resource: 'expense', action: 'read' },
+    { key: "vouchers", href: "/vouchers/list", icon: "bxs-file-plus", resource: 'voucher', action: 'read' },
+    { key: "deferredClients", href: "/deferred-clients", icon: "bx-comment-error", resource: 'termClient', action: 'read' },
+    { key: "dailyTreasury", href: "/daily-treasury", icon: "bx-calendar-check", resource: 'dailyTreasury', action: 'read' },
+    { key: "supplyBook", href: "/supply-book/records", icon: "bx-cog", resource: 'supplyBook', action: 'read' },
+    { key: "treasuryMovement", href: "/treasury-movement", icon: "bx-cog", resource: 'treasuryMovement', action: 'read' },
+    { key: "employees", href: "/employees", icon: "bx-cog", resource: 'employee', action: 'read' },
+    { key: "systemLog", href: "/system-log", icon: "bx-cog", resource: 'log', action: 'read' },
+    { key: "financialHub", href: "/financial-hub", icon: "bx-calculator", resource: 'financial', action: 'read' },
+    { key: "statements", href: "/statements", icon: "bx-list-check", resource: 'statement', action: 'read' },
+    { key: "settings", href: "/settings", icon: "bx-cog", resource: 'account', action: 'read' },
 ];
 
 export default function Sidebar() {
@@ -29,6 +31,12 @@ export default function Sidebar() {
     const pathname = usePathname();
     const t = useTranslations("sidebar");
     const tApp = useTranslations("app");
+    const { can } = usePermissions();
+
+    const filteredNavItems = navItems.filter(item => {
+        if (!item.resource) return true;
+        return can(item.resource, item.action || 'read');
+    });
 
     const isActive = (href: string) => {
         if (href === "/overview") return pathname === "/overview";
@@ -75,7 +83,7 @@ export default function Sidebar() {
                 {/* Navigation */}
                 <nav className="flex-1 overflow-y-auto py-4 px-3 scrollbar-hidden">
                     <ul className="space-y-1">
-                        {navItems.map((item) => (
+                        {filteredNavItems.map((item) => (
                             <li key={item.key}>
                                 <Link
                                     href={item.href}

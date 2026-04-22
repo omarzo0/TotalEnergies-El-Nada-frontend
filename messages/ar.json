@@ -81,10 +81,13 @@
     "confirm": "تأكيد",
     "addDelete": "اضافه/حدف",
     "actions": "الإجراءات",
-    "reset": "إعادة تعيين"
+    "reset": "إعادة تعيين",
+    "saving": "جاري الحفظ...",
+    "deleting": "جاري الحذف..."
   },
   "modals": {
     "confirmDeleteTitle": "تأكيد الحذف",
+    "deleteConfirmTitle": "تأكيد الحذف",
     "confirmDeleteMessage": "هل أنت متأكد أنك تريد حذف هذا السجل؟ لا يمكن التراجع عن هذا الإجراء.",
     "editRecordTitle": "تعديل السجل",
     "createRecordTitle": "إضافة سجل جديد",
@@ -420,7 +423,10 @@
     "tabs": {
       "account": "إعدادات الحساب",
       "security": "أمان الحساب",
-      "admins": "إدارة المسؤولين"
+      "staff": "إدارة الموظفين",
+      "station": "إعدادات المحطة",
+      "support": "الدعم الفني",
+      "warnings": "التنبيهات والتحذيرات"
     },
     "account": {
       "title": "إعدادات الحساب",
@@ -441,11 +447,11 @@
       "passwordsDoNotMatch": "كلمات المرور الجديدة غير متطابقة",
       "passwordUpdateSuccess": "تم تغيير كلمة المرور بنجاح!"
     },
-    "admins": {
-      "title": "إدارة المسؤولين",
-      "subtitle": "إدارة مسؤولي النظام وصلاحياتهم",
+    "staff": {
+      "title": "إدارة الموظفين",
+      "subtitle": "إدارة موظفي المحطة وصلاحياتهم",
       "searchPlaceholder": "بحث بالبريد الإلكتروني...",
-      "deleteConfirmMessage": "هل أنت متأكد من حذف المسؤول",
+      "deleteConfirmMessage": "هل أنت متأكد من حذف الموظف",
       "table": {
         "name": "الاسم",
         "email": "البريد الإلكتروني",
@@ -463,12 +469,26 @@
         "nationalId": "الرقم القومي"
       },
       "roles": {
-        "super_admin": "مدير عام",
         "admin": "مدير",
         "manager": "مشرف",
         "cashier": "كاشير",
         "financial": "مالي"
       }
+    },
+    "station": {
+      "title": "إعدادات المحطة",
+      "name": "اسم المحطة (English)",
+      "namePlaceholder": "مثال: El-Nada Station",
+      "nameAr": "اسم المحطة (بالعربية)",
+      "nameArPlaceholder": "مثال: محطة الندى",
+      "code": "كود المحطة",
+      "address": "العنوان",
+      "addressPlaceholder": "أدخل عنوان المحطة",
+      "phone": "رقم الهاتف",
+      "phonePlaceholder": "أدخل رقم هاتف المحطة",
+      "logo": "رابط الشعار",
+      "logoPlaceholder": "أدخل رابط صورة الشعار",
+      "updateSuccess": "تم تحديث بيانات المحطة بنجاح!"
     }
   },
   "financialHub": {
@@ -510,5 +530,45 @@
     },
     "noData": "لا توجد بيانات مالية لهذا الاختيار.",
     "loading": "جاري تجميع البيانات المالية..."
+  },
+  "support": {
+    "tickets": {
+      "title": "تذاكر الدعم الفني",
+      "createButton": "فتح تذكرة جديدة",
+      "noTickets": "لا توجد تذاكر دعم حالياً",
+      "selectPrompt": "اختر تذكرة لعرض التفاصيل",
+      "confirmDelete": "هل أنت متأكد من حذف هذه التذكرة؟",
+      "createTitle": "إنشاء تذكرة دعم جديدة",
+      "responsePlaceholder": "اكتب ردك هنا...",
+      "status": {
+        "open": "مفتوحة",
+        "in_progress": "قيد المعالجة",
+        "closed": "مغلقة"
+      },
+      "priority": {
+        "low": "منخفضة",
+        "medium": "متوسطة",
+        "high": "عالية"
+      },
+      "form": {
+        "subject": "الموضوع",
+        "category": "الفئة",
+        "priority": "الأولوية",
+        "description": "الوصف بالتفصيل"
+      }
+    },
+    "warnings": {
+      "listTitle": "التحذيرات النشطة",
+      "noWarnings": "لا توجد تحذيرات حالياً. أحسنت!",
+      "selectPrompt": "اختر تحذيراً لعرض التفاصيل والرد",
+      "noResponses": "لا توجد ردود بعد على هذا التحذير",
+      "responsePlaceholder": "اكتب ردك أو استفسارك هنا...",
+      "severity": {
+        "low": "تنبيه بسيط",
+        "medium": "تحذير متوسط",
+        "high": "تحذير هام",
+        "critical": "خطير جداً"
+      }
+    }
   }
 }

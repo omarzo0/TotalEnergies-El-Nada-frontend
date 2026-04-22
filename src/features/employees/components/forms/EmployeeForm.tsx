@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
 import Button from "@/ui/Button";
 import { Employee, EmployeeFormData } from "../../types/employees.types";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
 
 interface EmployeeFormProps {
     initialData?: Employee;
@@ -89,9 +90,11 @@ export default function EmployeeForm({ initialData, onSubmit, onCancel, isEditin
                 <Button type="button" variant="secondary" onClick={onCancel}>
                     {tButtons("cancel")}
                 </Button>
-                <Button type="submit">
-                    {isEditing ? tButtons("save") : tButtons("add")}
-                </Button>
+                <PermissionGuard resource="employee" action={isEditing ? 'update' : 'create'}>
+                    <Button type="submit">
+                        {isEditing ? tButtons("save") : tButtons("add")}
+                    </Button>
+                </PermissionGuard>
             </div>
         </form>
     );

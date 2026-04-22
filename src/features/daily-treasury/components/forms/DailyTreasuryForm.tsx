@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { Input } from "@/ui/Input";
 import { TreasuryManualEntry } from "../../types/daily-treasury.types";
 import { useDailyTreasuryForm } from "../../hooks/useDailyTreasuryForm";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
 
 interface DailyTreasuryFormProps {
     initialData?: Partial<TreasuryManualEntry>;
@@ -69,12 +70,14 @@ export default function DailyTreasuryForm({ initialData, onSubmit, onCancel }: D
                 >
                     {tButtons("cancel")}
                 </button>
-                <button
-                    type="submit"
-                    className="btn-primary"
-                >
-                    {tButtons("confirm")}
-                </button>
+                <PermissionGuard resource="dailyTreasury" action={initialData?.id ? 'update' : 'create'}>
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                    >
+                        {tButtons("confirm")}
+                    </button>
+                </PermissionGuard>
             </div>
         </form>
     );

@@ -70,7 +70,7 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string, option
 
     const updateMutation = useMutation({
         mutationFn: ({ id, data }: { id: string, data: any }) =>
-            benzeneApi.updatePumpReading(id, { start: data.start, end: data.end }),
+            benzeneApi.updatePumpReading(id, data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["benzene-readings", formattedDate] });
             queryClient.invalidateQueries({ queryKey: ["shift-diary", formattedDate] });
@@ -87,8 +87,9 @@ export function useBenzene(type: BenzeneRecordType, selectedDate: string, option
 
     return {
         records,
-        isLoading: readingsQuery.isLoading || pricesQuery.isLoading,
+        isLoading: readingsQuery.isLoading || pricesQuery.isLoading || addMutation.isPending || updateMutation.isPending,
         error: (readingsQuery.error || pricesQuery.error) ? "Failed to fetch data" : null,
+        mutationError: (addMutation.error as any)?.message || (updateMutation.error as any)?.message || null,
         addRecord: addMutation.mutateAsync,
         updateRecord: (id: string, data: any) => updateMutation.mutateAsync({ id, data }),
         removeRecord: removeMutation.mutateAsync,

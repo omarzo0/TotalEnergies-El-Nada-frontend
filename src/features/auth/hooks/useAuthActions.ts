@@ -1,10 +1,12 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../api/auth.api';
 import { useRouter } from "@/i18n/routing";
+import { useAuth } from '@/hooks/useAuth';
 
 export function useAuthActions() {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const { setUser } = useAuth();
 
     // Login Mutation
     const loginMutation = useMutation({
@@ -13,11 +15,14 @@ export function useAuthActions() {
             // Determine if data is an array (returned by backend) or an object
             const authData = Array.isArray(data) ? data[0] : data;
             const token = authData?.token;
-            const admin = authData?.admin;
 
             if (token) {
+                const user = authData?.user;
                 localStorage.setItem("token", token);
-                localStorage.setItem("auth_user", JSON.stringify(admin));
+                localStorage.setItem("auth_user", JSON.stringify(user));
+
+                // Update the global auth state immediately
+                setUser(user);
 
                 // Clear all queries on login to ensure no stale data from previous user
                 queryClient.clear();

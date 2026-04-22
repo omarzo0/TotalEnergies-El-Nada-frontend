@@ -6,15 +6,15 @@ import { Employee, EmployeeFormData } from '../types/employees.types';
 export function useEmployeesForm(initialData?: Employee) {
     const [formData, setFormData] = useState<EmployeeFormData>({
         name: initialData?.name || "",
-        nationalId: initialData?.nationalId || "",
-        phone: initialData?.phone || "",
-        position: initialData?.position || "",
-        salary: initialData?.salary || ""
+        nationalId: initialData?.nationalId || 0,
+        mobileNum: initialData?.mobileNum || 0,
+        job: initialData?.job || "",
+        salary: initialData?.salary || 0
     });
 
     const [errors, setErrors] = useState<Partial<Record<keyof EmployeeFormData, string>>>({});
 
-    const handleChange = (field: keyof EmployeeFormData, value: string) => {
+    const handleChange = (field: keyof EmployeeFormData, value: string | number) => {
         setFormData(prev => ({ ...prev, [field]: value }));
         if (errors[field]) {
             setErrors(prev => {
@@ -41,10 +41,10 @@ export function useEmployeesForm(initialData?: Employee) {
         validate,
         reset: () => setFormData({
             name: "",
-            nationalId: "",
-            phone: "",
-            position: "",
-            salary: ""
+            nationalId: 0,
+            mobileNum: 0,
+            job: "",
+            salary: 0
         })
     };
 }

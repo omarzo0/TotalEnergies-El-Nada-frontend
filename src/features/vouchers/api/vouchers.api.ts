@@ -1,26 +1,9 @@
 import { VoucherRecord, VoucherMatchingRecord, FuelType } from '../types/vouchers.types';
 
 
+import { getHeaders } from "@/utils/api.utils";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-const getHeaders = () => {
-    let token = typeof window !== 'undefined' ? localStorage.getItem("token") : null;
-
-    if (token) {
-        token = token.trim().replace(/^"(.*)"$/, '$1');
-    }
-
-    if (!token || token === "null" || token === "undefined" || token === "[object Object]") {
-        console.warn("FrontEnd API: Token is missing or invalid!");
-        return { "Content-Type": "application/json" };
-    }
-
-    const finalToken = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
-    return {
-        "Content-Type": "application/json",
-        "Authorization": finalToken
-    };
-};
 
 export const vouchersApi = {
     getVouchers: async (date: string, pumpType?: FuelType): Promise<VoucherRecord[]> => {

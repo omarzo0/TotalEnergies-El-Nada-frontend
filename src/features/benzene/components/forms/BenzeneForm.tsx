@@ -4,6 +4,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { Input, Select } from "@/ui/Input";
 import Button from "@/ui/Button";
+import { PermissionGuard } from "@/features/auth/components/PermissionGuard";
 import { BenzeneRecord } from "../../types/benzene.types";
 import { useBenzenePrices } from "../../hooks/useBenzenePrices";
 
@@ -155,9 +156,11 @@ export default function BenzeneForm({ initialData, onSubmit, onCancel, isEditing
                         <Button type="button" variant="secondary" onClick={onCancel}>
                             {tButtons("cancel")}
                         </Button>
-                        <Button type="submit">
-                            {isEditing ? tButtons("save") : tButtons("add")}
-                        </Button>
+                        <PermissionGuard resource="benzene" action={isEditing ? 'update' : 'create'}>
+                            <Button type="submit">
+                                {isEditing ? tButtons("save") : tButtons("add")}
+                            </Button>
+                        </PermissionGuard>
                     </div>
                 </>
             )}

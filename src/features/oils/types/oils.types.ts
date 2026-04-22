@@ -31,11 +31,28 @@ export interface OilShift {
     total?: number; // Calculated by backend
 }
 
+export type OilRecordType = 'shift' | 'storage';
+
+export interface OilRecord {
+    id?: string;
+    _id?: string;
+    oilType: string;
+    oilName?: string;
+    incoming: number;
+    startBalance: number;
+    endBalance: number;
+    image: string;
+    date: string;
+}
+
 export interface OilFormData {
     oilName: string;
+    oilType?: string;
     price?: number;
     date?: string;
     startBalance?: number;
     storageIncoming?: number;
     incoming?: number;
+    endBalance?: number;
+    image?: string;
 }
