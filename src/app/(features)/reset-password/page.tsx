@@ -51,15 +51,8 @@ function ResetPasswordForm() {
         <div className="backdrop-blur-xl bg-white/10 rounded-3xl p-8 shadow-2xl border border-white/20">
             {/* Logo */}
             <div className="flex justify-center mb-8">
-                <div className="relative w-28 h-28 bg-white/10 rounded-2xl overflow-hidden flex items-center justify-center p-2 backdrop-blur-md border border-white/20 shadow-xl">
-                    <Image
-                        src="/images/logo.png"
-                        alt="TotalEnergies Logo"
-                        fill
-                        className="object-contain p-3"
-                        priority
-                        unoptimized
-                    />
+                <div className="relative w-full h-12 flex items-center justify-center p-2 group transition-all duration-300">
+                    <span className="text-3xl font-black text-white tracking-tight">Petro<span className="text-secondary opacity-80">Desk</span></span>
                 </div>
             </div>
 

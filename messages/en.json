@@ -1,11 +1,11 @@
 {
     "app": {
-        "title": "Total Al-Nadi Station",
+        "title": "PetroDesk Station",
         "login": "Login",
         "logout": "Logout"
     },
     "login": {
-        "title": "Total Al-Nadi Station",
+        "title": "PetroDesk Station",
         "username": "Enter username",
         "password": "Enter password",
         "submit": "Login",
@@ -385,7 +385,7 @@
     "oils": {
         "addOilTitle": "Add New Oil Type",
         "oilNameLabel": "Oil Name",
-        "oilNamePlaceholder": "e.g. Total 5000",
+        "oilNamePlaceholder": "e.g. PetroDesk 5W-40",
         "priceLabel": "Price",
         "addOilButton": "Add Oil",
         "manageOils": "Manage Oil Types",
@@ -478,7 +478,7 @@
         "station": {
             "title": "Station Settings",
             "name": "Station Name (English)",
-            "namePlaceholder": "e.g. El-Nada Station",
+            "namePlaceholder": "e.g. PetroDesk Station",
             "nameAr": "Station Name (Arabic)",
             "nameArPlaceholder": "e.g. محطة الندى",
             "code": "Station Code",

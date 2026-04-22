@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-    title: "TotalEnergies El-Nada",
-    description: "Gas Station Management System - TotalEnergies",
+    title: "PetroDesk",
+    description: "Gas Station Management System - Professional Admin Dashboard",
 };
 
 export default async function RootLayout({
