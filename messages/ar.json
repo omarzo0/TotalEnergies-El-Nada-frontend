@@ -1,11 +1,11 @@
 {
   "app": {
-    "title": "محطه توتال الندي",
+    "title": "محطة بتروديسك",
     "login": "دخول",
     "logout": "تسجيل الخروج"
   },
   "login": {
-    "title": "محطه توتال الندي",
+    "title": "محطة بتروديسك",
     "username": "أدخل اسم المستخدم",
     "password": "أدخل كلمه المرور",
     "submit": "دخول",
@@ -385,7 +385,7 @@
   "oils": {
     "addOilTitle": "إضافة نوع زيت جديد للمنظومة",
     "oilNameLabel": "اسم الزيت",
-    "oilNamePlaceholder": "مثال: زيت توتال 5000",
+    "oilNamePlaceholder": "مثال: زيت بتروديسك 5W-40",
     "priceLabel": "السعر",
     "addOilButton": "إضافة الزيت",
     "manageOils": "إدارة أنواع الزيوت",
@@ -480,7 +480,7 @@
       "name": "اسم المحطة (English)",
       "namePlaceholder": "مثال: El-Nada Station",
       "nameAr": "اسم المحطة (بالعربية)",
-      "nameArPlaceholder": "مثال: محطة الندى",
+      "nameArPlaceholder": "مثال: محطة بتروديسك",
       "code": "كود المحطة",
       "address": "العنوان",
       "addressPlaceholder": "أدخل عنوان المحطة",

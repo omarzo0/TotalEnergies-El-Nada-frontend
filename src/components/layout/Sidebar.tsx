@@ -69,14 +69,7 @@ export default function Sidebar() {
                 {/* Logo */}
                 <div className="p-4 border-b border-white/10 flex-shrink-0">
                     <div className="relative w-full h-24 bg-white/5 rounded-2xl overflow-hidden flex items-center justify-center p-2 backdrop-blur-sm border border-white/5">
-                        <Image
-                            src="/images/logo.png"
-                            alt="TotalEnergies Logo"
-                            fill
-                            className="object-contain p-2"
-                            priority
-                            unoptimized
-                        />
+                        <span className="text-2xl font-black text-white tracking-tight">Petro<span className="text-primary-light">Desk</span></span>
                     </div>
                 </div>
 
